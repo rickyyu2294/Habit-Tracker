@@ -13,6 +13,9 @@ data class User (
     val email: String,
 
     @Column(nullable = false)
+    val password: String,
+
+    @Column(nullable = false)
     val name: String,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)

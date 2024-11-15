@@ -19,7 +19,7 @@ class HabitTest {
 
     @Test
     fun `should save and retrieve habits for user`() {
-        val user = userRepository.save(User(email = "test@test.com", name = "test"))
+        val user = userRepository.save(User(email = "test@test.com", name = "test", password = "password"))
 
         val habits = listOf(
             Habit(name = "Eat Breakfast", description = "Gotta Eat Breakfast", frequency = Frequency.DAILY, user = user),
