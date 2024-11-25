@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.services
 
+import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.models.User
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -15,7 +16,7 @@ class UserService(
             throw IllegalArgumentException("Email is already registered")
         }
         val hashedPassword = passwordEncoder.encode(rawPassword)
-        val user = User(email = email, password = hashedPassword, name = name)
+        val user = User(email = email, password = hashedPassword, name = name, role = Role.USER)
         userRepository.save(user)
     }
 }

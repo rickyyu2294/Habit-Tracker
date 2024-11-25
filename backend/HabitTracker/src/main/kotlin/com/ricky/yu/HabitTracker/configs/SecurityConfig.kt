@@ -24,7 +24,7 @@ class SecurityConfig(
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
             authorizeHttpRequests {
-                authorize("/login", permitAll) // Allow unauthenticated access to /login
+                authorize("/login", permitAll)
                 authorize("/register", permitAll)
                 authorize(anyRequest, authenticated) // Require authentication for all other endpoints
             }

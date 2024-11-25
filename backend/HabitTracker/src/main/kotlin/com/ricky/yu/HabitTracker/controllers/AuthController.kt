@@ -31,7 +31,7 @@ class AuthController(
             return ResponseEntity.ok("Login successful")
         } catch (ex: Exception) {
             // Handle authentication failure
-            return ResponseEntity.status(401).body("Invalid username or password")
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password")
         }
     }
 

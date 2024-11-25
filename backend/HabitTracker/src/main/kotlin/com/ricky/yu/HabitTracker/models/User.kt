@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.ricky.yu.HabitTracker.enums.Role
 import jakarta.persistence.*
 
 @Entity
@@ -17,6 +18,10 @@ data class User (
 
     @Column(nullable = false)
     val name: String,
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val role: Role,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
     val habits: List<Habit> = mutableListOf()

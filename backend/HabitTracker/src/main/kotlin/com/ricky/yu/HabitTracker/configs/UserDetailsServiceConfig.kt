@@ -10,9 +10,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 class UserDetailsServiceConfig {
     @Bean
     fun userDetailsService(userRepository: UserRepository): UserDetailsService {
-        return UserDetailsService { username ->
-            val user = userRepository.findByEmail(username)
-                ?: throw UsernameNotFoundException("User not found with email: $username")
+        return UserDetailsService { email ->
+            val user = userRepository.findByEmail(email)
+                ?: throw UsernameNotFoundException("User not found with email: $email")
 
             // Return a UserDetails instance for authentication
             org.springframework.security.core.userdetails.User(

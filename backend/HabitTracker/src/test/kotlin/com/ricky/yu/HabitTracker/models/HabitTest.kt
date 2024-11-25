@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.ricky.yu.HabitTracker.BaseTest
 import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
@@ -10,7 +11,7 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 
 @SpringBootTest
-class HabitTest {
+class HabitTest: BaseTest() {
     @Autowired
     private lateinit var userRepository: UserRepository
 
@@ -19,7 +20,7 @@ class HabitTest {
 
     @Test
     fun `should save and retrieve habits for user`() {
-        val user = userRepository.save(User(email = "test@test.com", name = "test", password = "password"))
+        val user = userRepository.save(testUser)
 
         val habits = listOf(
             Habit(name = "Eat Breakfast", description = "Gotta Eat Breakfast", frequency = Frequency.DAILY, user = user),

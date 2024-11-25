@@ -32,6 +32,9 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 }
 
 kotlin {
