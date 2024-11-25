@@ -1,5 +1,10 @@
 package com.ricky.yu.HabitTracker.controllers
 
+import com.ricky.yu.HabitTracker.dtos.AuthenticationResponse
+import com.ricky.yu.HabitTracker.dtos.LoginRequest
+import com.ricky.yu.HabitTracker.dtos.RefreshTokenRequest
+import com.ricky.yu.HabitTracker.dtos.RegisterRequest
+import com.ricky.yu.HabitTracker.services.AuthService
 import com.ricky.yu.HabitTracker.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,31 +16,23 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class AuthController(
-    val authenticationManager: AuthenticationManager,
+    val authenticationService: AuthService,
     val userService: UserService
 ) {
 
     @PostMapping("/login")
-    fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<String> {
+    fun login(@RequestBody loginRequest: LoginRequest): ResponseEntity<Any?> {
         try {
-            // Create the authentication request
-            val authenticationRequest = UsernamePasswordAuthenticationToken(
-                loginRequest.email,
-                loginRequest.password
-            )
-
             // Authenticate the user
-            val authentication = authenticationManager.authenticate(authenticationRequest)
+            val authentication = authenticationService.authentication(loginRequest)
 
             // If authentication succeeds, return a success response (you could also return a token here)
-            return ResponseEntity.ok("Login successful")
+            return ResponseEntity.ok(authentication)
         } catch (ex: Exception) {
             // Handle authentication failure
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password")
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.message)
         }
     }
-
-    data class LoginRequest(val email: String, val password: String)
 
     @PostMapping("/register")
     fun register(@RequestBody registerRequest: RegisterRequest): ResponseEntity<String> {
@@ -48,6 +45,12 @@ class AuthController(
         }
     }
 
-    data class RegisterRequest(val email: String, val password: String, val name: String)
-
+    @PostMapping("/refresh")
+    fun refreshAccessToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<Any?> {
+        try {
+            return ResponseEntity.ok(authenticationService.refreshAccessToken(request.token))
+        } catch (ex: Exception) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
+        }
+    }
 }
