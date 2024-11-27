@@ -32,6 +32,10 @@ class JwtTokenService(
         return extractAllClaims(token).subject
     }
 
+    fun extractClaim(token: String, claim: String): String {
+        return extractAllClaims(token)[claim] as String
+    }
+
     private fun extractAllClaims(token: String): Claims {
         return Jwts.parserBuilder()
             .setSigningKey(signingKey)

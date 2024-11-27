@@ -2,6 +2,7 @@ package com.ricky.yu.HabitTracker.services
 
 import com.ricky.yu.HabitTracker.dtos.AuthenticationResponse
 import com.ricky.yu.HabitTracker.dtos.LoginRequest
+import com.ricky.yu.HabitTracker.enums.JwtTokenType
 import com.ricky.yu.HabitTracker.models.RefreshToken
 import com.ricky.yu.HabitTracker.models.User
 import com.ricky.yu.HabitTracker.repositories.RefreshTokenRepository
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationServiceException
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import java.util.*
@@ -51,24 +51,34 @@ class AuthService(
             val currentUserDetails = userDetailsService.loadUserByUsername(user) as User
             val refreshTokenUserDetails = refreshTokenRepository.findById(refreshToken)
 
-            if (currentUserDetails.email == refreshTokenUserDetails.get().user.email)
+            if (
+                currentUserDetails.email == refreshTokenUserDetails.get().user.email &&
+                enumValueOf<JwtTokenType>(
+                    tokenService.extractClaim(token = refreshToken, claim = "type")
+                ) == JwtTokenType.REFRESH
+            )
                 createAccessToken(currentUserDetails)
             else
                 throw AuthenticationServiceException("Invalid refresh token")
         }
     }
 
-    private fun createAccessToken(user: UserDetails): String {
+    private fun createToken(user: User, type: JwtTokenType, expirationDuration: Long): String {
         return tokenService.generateToken(
-            subject = user.username,
-            expiration = Date(System.currentTimeMillis() + accessTokenExpiration)
+            subject = user.email,
+            expiration = Date(System.currentTimeMillis() + expirationDuration),
+            additionalClaims = mapOf(
+                "type" to type,
+                "role" to user.role.name
+            )
         )
     }
 
-    private fun createRefreshToken(user: UserDetails): String {
-        return tokenService.generateToken(
-            subject = user.username,
-            expiration = Date(System.currentTimeMillis() + refreshTokenExpiration)
-        )
+    private fun createAccessToken(user: User): String {
+        return createToken(user, JwtTokenType.ACCESS, accessTokenExpiration)
+    }
+
+    private fun createRefreshToken(user: User): String {
+        return createToken(user, JwtTokenType.REFRESH, refreshTokenExpiration)
     }
 }
