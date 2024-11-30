@@ -19,7 +19,7 @@ data class Habit(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val frequency: Frequency, // e.g., "daily", "weekly"
+    val frequency: Frequency,
 
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -29,5 +29,8 @@ data class Habit(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User
+    val user: User,
+
+    @OneToMany(mappedBy = "habit", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val completions: List<HabitCompletion>
 )

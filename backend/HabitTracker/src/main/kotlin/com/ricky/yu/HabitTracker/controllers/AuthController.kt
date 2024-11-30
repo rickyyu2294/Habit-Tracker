@@ -62,10 +62,10 @@ class AuthController(
 
     @PostMapping("/refresh")
     fun refreshAccessToken(@RequestBody request: TokenRequest): ResponseEntity<Any?> {
-        try {
-            return ResponseEntity.ok(authenticationService.refreshAccessToken(request.refreshToken))
+        return try {
+            ResponseEntity.ok(authenticationService.refreshAccessToken(request.refreshToken))
         } catch (ex: Exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
         }
     }
 }
