@@ -26,7 +26,10 @@ data class User (
     val role: Role,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val habits: List<Habit> = mutableListOf()
+    val habits: List<Habit> = mutableListOf(),
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val refreshTokens: List<RefreshToken> = mutableListOf()
 ) : UserDetails {
 
     override fun getAuthorities(): Collection<GrantedAuthority> {

@@ -2,10 +2,12 @@ package com.ricky.yu.HabitTracker.services
 
 import com.ricky.yu.HabitTracker.dtos.AuthenticationResponse
 import com.ricky.yu.HabitTracker.dtos.LoginRequest
+import com.ricky.yu.HabitTracker.dtos.TokenRequest
 import com.ricky.yu.HabitTracker.enums.JwtTokenType
 import com.ricky.yu.HabitTracker.models.RefreshToken
 import com.ricky.yu.HabitTracker.models.User
 import com.ricky.yu.HabitTracker.repositories.RefreshTokenRepository
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.AuthenticationServiceException
@@ -14,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 import java.util.*
 
+@Transactional
 @Service
 class AuthService(
     private val authenticationManager: AuthenticationManager,
@@ -44,22 +47,43 @@ class AuthService(
         )
     }
 
-    fun refreshAccessToken(refreshToken: String): String {
-        val username = tokenService.extractUsername(refreshToken)
+    fun refreshAccessToken(refreshToken: String): AuthenticationResponse {
+        val username = tokenService.extractEmail(refreshToken)
 
         return username.let { user ->
-            val currentUserDetails = userDetailsService.loadUserByUsername(user) as User
-            val refreshTokenUserDetails = refreshTokenRepository.findById(refreshToken)
+            val currentUser = userDetailsService.loadUserByUsername(user) as User
+            val refreshTokenEntry = refreshTokenRepository.findById(refreshToken)
 
             if (
-                currentUserDetails.email == refreshTokenUserDetails.get().user.email &&
+                currentUser.email == refreshTokenEntry.get().user.email &&
                 enumValueOf<JwtTokenType>(
                     tokenService.extractClaim(token = refreshToken, claim = "type")
                 ) == JwtTokenType.REFRESH
-            )
-                createAccessToken(currentUserDetails)
+            ) {
+                refreshTokenRepository.deleteByToken(refreshToken)
+                val newAccessToken = createAccessToken(currentUser)
+                val newRefreshToken = createRefreshToken(currentUser)
+                AuthenticationResponse(
+                    accessToken = newAccessToken,
+                    refreshToken = newRefreshToken
+                )
+            }
             else
                 throw AuthenticationServiceException("Invalid refresh token")
+        }
+    }
+
+    fun invalidateRefreshToken(tokenRequest: TokenRequest): Boolean {
+        val (accessToken, refreshToken) = tokenRequest
+        val username = tokenService.extractEmail(accessToken)
+        val currentUser = userDetailsService.loadUserByUsername(username)
+        val refreshTokenEntry = refreshTokenRepository.findById(refreshToken)
+
+        if (currentUser == refreshTokenEntry.get().user) {
+            val deleteCount = refreshTokenRepository.deleteByToken(refreshToken)
+            return deleteCount > 0
+        } else {
+            throw AuthenticationServiceException("Invalid refresh token")
         }
     }
 
@@ -81,4 +105,5 @@ class AuthService(
     private fun createRefreshToken(user: User): String {
         return createToken(user, JwtTokenType.REFRESH, refreshTokenExpiration)
     }
+
 }

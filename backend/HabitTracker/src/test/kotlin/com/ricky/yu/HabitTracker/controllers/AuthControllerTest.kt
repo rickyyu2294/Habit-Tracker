@@ -16,8 +16,8 @@ import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import javax.print.attribute.standard.Media
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -33,11 +33,6 @@ class AuthControllerTest: BaseTest() {
     fun setup() {
         userRepository.deleteAll() // Clean up the database before each test
     }
-
-    val registerTestUserObject: JSONObject = JSONObject()
-        .put("email", "test@test.com")
-        .put("password", "testPassword")
-        .put("name", "Test User")
 
     @Test
     fun `should register a new user`() {
@@ -81,12 +76,19 @@ class AuthControllerTest: BaseTest() {
     @Test
     fun `should login successfully for valid user`() {
         userRepository.save(testUser)
-        val loginObject = JSONObject()
-            .put("email", "test@test.com")
-            .put("password", "testPassword")
-        login(mockMvc, loginObject)
+        val result = login(mockMvc, loginTestUserObject)
             .andExpect(status().isOk)
-            .andExpect(content().string("Login successful"))
+            .andExpect(jsonPath("$.accessToken").isNotEmpty)
+            .andExpect(jsonPath("$.refreshToken").isNotEmpty)
+            .andReturn()
+
+        val responseContent = result.response.contentAsString
+        val responseJson = JSONObject(responseContent)
+        val accessToken = responseJson.getString("accessToken")
+        val refreshToken = responseJson.getString("refreshToken")
+
+        assert(!accessToken.isNullOrEmpty())
+        assert(!refreshToken.isNullOrEmpty())
     }
 
     @Test
@@ -97,7 +99,7 @@ class AuthControllerTest: BaseTest() {
             .put("password", "wrongPassword")
         login(mockMvc, loginObject)
             .andExpect(status().`is`(HttpStatus.UNAUTHORIZED.value()))
-            .andExpect(content().string("Invalid username or password"))
+            .andExpect(content().string("Bad credentials"))
     }
 
     @Test
@@ -118,6 +120,44 @@ class AuthControllerTest: BaseTest() {
             .andExpect(status().`is`(HttpStatus.BAD_REQUEST.value()))
     }
 
+
+    @Test
+    fun `should logout valid user successfully`() {
+        // register and login
+        registerUser(mockMvc, registerTestUserObject)
+        val loginResult = login(mockMvc, loginTestUserObject).andReturn()
+        val responseContent = loginResult.response.contentAsString
+        val responseJson = JSONObject(responseContent)
+        val accessToken = responseJson.getString("accessToken")
+        val refreshToken = responseJson.getString("refreshToken")
+
+        val logoutInput = JSONObject()
+            .put("accessToken", accessToken)
+            .put("refreshToken", refreshToken)
+
+        logout(mockMvc, logoutInput, accessToken)
+            .andExpect(status().isOk)
+            .andExpect(content().string("Logout Successful"))
+    }
+
+    @Test
+    fun `should fail logout for invalid request`() {
+        registerUser(mockMvc, registerTestUserObject)
+        val loginResult = login(mockMvc, loginTestUserObject).andReturn()
+        val responseContent = loginResult.response.contentAsString
+        val responseJson = JSONObject(responseContent)
+        val accessToken = responseJson.getString("accessToken")
+
+        val invalidInput = JSONObject()
+            .put("accessToken", accessToken)
+            .put("refreshToken", "invalid refresh token")
+
+        logout(mockMvc, invalidInput, accessToken)
+            .andExpect(status().isBadRequest)
+    }
+
+    // TODO: add refresh access token tests
+
     fun registerUser(mockMvc: MockMvc, registerInput: JSONObject): ResultActions {
         return mockMvc.perform(
             post("/register")
@@ -132,5 +172,25 @@ class AuthControllerTest: BaseTest() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(loginInput.toString())
         )
+    }
+
+    fun logout(mockMvc: MockMvc, logoutInput: JSONObject, accessToken: String): ResultActions {
+        return mockMvc.perform(
+            post("/logout-app")
+                .header("Authorization", "Bearer $accessToken")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(logoutInput.toString())
+        )
+    }
+
+    companion object {
+        val registerTestUserObject: JSONObject = JSONObject()
+            .put("email", "test@test.com")
+            .put("password", "testPassword")
+            .put("name", "Test User")
+
+        val loginTestUserObject = JSONObject()
+            .put("email", "test@test.com")
+            .put("password", "testPassword")
     }
 }

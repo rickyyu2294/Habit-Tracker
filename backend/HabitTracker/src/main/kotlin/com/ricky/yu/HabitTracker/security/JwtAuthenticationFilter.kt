@@ -2,7 +2,6 @@ package com.ricky.yu.HabitTracker.security
 
 import com.ricky.yu.HabitTracker.enums.JwtTokenType
 import com.ricky.yu.HabitTracker.models.User
-import com.ricky.yu.HabitTracker.services.AuthService
 import com.ricky.yu.HabitTracker.services.JwtTokenService
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
@@ -32,14 +31,14 @@ class JwtAuthenticationFilter(
                 val token: String = authorizationHeader.substringAfter("Bearer ")
                 val tokenType = JwtTokenType.valueOf(tokenService.extractClaim(token, "type"))
                 if (tokenType != JwtTokenType.ACCESS) throw AuthenticationServiceException("Invalid access token")
-                val username: String = tokenService.extractUsername(token)
+                val email: String = tokenService.extractEmail(token)
 
                 if (SecurityContextHolder.getContext().authentication == null) {
-                    val userDetails: User = userDetailsService.loadUserByUsername(username) as User
+                    val user: User = userDetailsService.loadUserByUsername(email) as User
 
-                    if (username == userDetails.username) {
+                    if (email == user.email) {
                         val authToken = UsernamePasswordAuthenticationToken(
-                            userDetails, null, userDetails.authorities
+                            user, null, user.authorities
                         )
                         authToken.details = WebAuthenticationDetailsSource().buildDetails(request)
                         SecurityContextHolder.getContext().authentication = authToken

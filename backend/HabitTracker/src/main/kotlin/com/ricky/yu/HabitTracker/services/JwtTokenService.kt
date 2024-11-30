@@ -28,7 +28,7 @@ class JwtTokenService(
             .compact()
     }
 
-    fun extractUsername(token: String): String {
+    fun extractEmail(token: String): String {
         return extractAllClaims(token).subject
     }
 

@@ -1,15 +1,13 @@
 package com.ricky.yu.HabitTracker.controllers
 
-import com.ricky.yu.HabitTracker.dtos.AuthenticationResponse
-import com.ricky.yu.HabitTracker.dtos.LoginRequest
-import com.ricky.yu.HabitTracker.dtos.RefreshTokenRequest
-import com.ricky.yu.HabitTracker.dtos.RegisterRequest
+import com.ricky.yu.HabitTracker.dtos.*
+import com.ricky.yu.HabitTracker.repositories.RefreshTokenRepository
+import com.ricky.yu.HabitTracker.repositories.UserRepository
 import com.ricky.yu.HabitTracker.services.AuthService
+import com.ricky.yu.HabitTracker.services.JwtTokenService
 import com.ricky.yu.HabitTracker.services.UserService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
@@ -17,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class AuthController(
     val authenticationService: AuthService,
-    val userService: UserService
+    val userService: UserService,
 ) {
 
     @PostMapping("/login")
@@ -34,6 +32,23 @@ class AuthController(
         }
     }
 
+    @PostMapping("/logout-app")
+    fun logout(@RequestBody request: TokenRequest): ResponseEntity<String> {
+        return try {
+            // get user and delete refresh tokens for that user
+            if (
+                authenticationService.invalidateRefreshToken(request)
+            ) {
+                ResponseEntity.ok("Logout Successful")
+            } else {
+                ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid refresh token")
+            }
+
+        } catch (ex: Exception) {
+            ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
+        }
+    }
+
     @PostMapping("/register")
     fun register(@RequestBody registerRequest: RegisterRequest): ResponseEntity<String> {
         try {
@@ -46,9 +61,9 @@ class AuthController(
     }
 
     @PostMapping("/refresh")
-    fun refreshAccessToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<Any?> {
+    fun refreshAccessToken(@RequestBody request: TokenRequest): ResponseEntity<Any?> {
         try {
-            return ResponseEntity.ok(authenticationService.refreshAccessToken(request.token))
+            return ResponseEntity.ok(authenticationService.refreshAccessToken(request.refreshToken))
         } catch (ex: Exception) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
         }
