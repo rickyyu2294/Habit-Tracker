@@ -19,6 +19,6 @@ class HabitCompletionService(
     }
 
     fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
-        return habitCompletionRepository.findByHabitId(habitId)
+        return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
     }
 }
