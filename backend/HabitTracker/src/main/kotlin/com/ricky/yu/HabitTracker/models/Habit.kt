@@ -32,5 +32,5 @@ data class Habit(
     val user: User,
 
     @OneToMany(mappedBy = "habit", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val completions: List<HabitCompletion>
+    val completions: List<HabitCompletion> = mutableListOf()
 )
