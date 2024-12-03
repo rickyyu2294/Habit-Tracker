@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.ricky.yu.HabitTracker.enums.Role
 import jakarta.persistence.*
 import org.springframework.security.core.GrantedAuthority
@@ -25,10 +26,12 @@ data class User (
     @Column(nullable = false)
     val role: Role,
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     val habits: List<Habit> = mutableListOf(),
 
-    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
     val refreshTokens: List<RefreshToken> = mutableListOf()
 ) : UserDetails {
 

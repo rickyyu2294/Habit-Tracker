@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -17,6 +18,7 @@ data class HabitCompletion (
 
     @ManyToOne
     @JoinColumn(name = "habit_id", nullable = false)
+    @JsonBackReference
     val habit: Habit,
 
     @Column(nullable = false)

@@ -1,5 +1,7 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.ricky.yu.HabitTracker.enums.Frequency
 import jakarta.persistence.*
 import java.time.LocalDateTime
@@ -15,7 +17,7 @@ data class Habit(
     val name: String,
 
     @Column(nullable = false)
-    val description: String,
+    val description: String = "",
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -29,8 +31,10 @@ data class Habit(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     val user: User,
 
     @OneToMany(mappedBy = "habit", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JsonManagedReference
     val completions: List<HabitCompletion> = mutableListOf()
 )
