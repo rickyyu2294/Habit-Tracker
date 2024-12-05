@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest
 @AutoConfigureMockMvc
 class AuthControllerTest: BaseTest() {
     @Autowired

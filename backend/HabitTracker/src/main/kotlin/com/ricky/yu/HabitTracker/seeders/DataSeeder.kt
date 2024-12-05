@@ -24,7 +24,7 @@ class DataSeeder(
         if (!userRepository.existsByEmail("test@test.com")) {
             // Create a test user
             val user = User(
-                email = "test@test.com",
+                email = "test.user@test.com",
                 name = "Test User",
                 password = passwordEncoder.encode("testPassword"),
                 role = Role.USER

@@ -7,11 +7,15 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.assertThrows
+import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@SpringBootTest
 class HabitCompletionServiceTest : BaseTest() {
     private val habitCompletionRepository: HabitCompletionRepository = mockk()
     private val habitService: HabitService = mockk()
