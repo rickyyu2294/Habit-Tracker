@@ -21,18 +21,22 @@ class DataSeeder(
 
     override fun run(vararg args: String?) {
         // Check if the test user already exists
-        if (!userRepository.existsByEmail("test@test.com")) {
+
+        if (!userRepository.existsByEmail(userEmail)) {
             // Create a test user
+
             val user = User(
-                email = "test.user@test.com",
-                name = "Test User",
-                password = passwordEncoder.encode("testPassword"),
+                id = 1L,
+                email = userEmail,
+                name = userName,
+                password = passwordEncoder.encode(userPassword),
                 role = Role.USER
             )
 
             val habit = Habit(
-                name = "Test Habit",
-                description = "Test habit description",
+                id = 1L,
+                name = habitName,
+                description = habitDescription,
                 frequency = Frequency.DAILY,
                 user = user
             )
@@ -42,5 +46,13 @@ class DataSeeder(
         } else {
             println("Test user already exists")
         }
+    }
+
+    companion object {
+        val userEmail = "test.user@test.com"
+        val userName = "Test User"
+        val userPassword = "testPassword"
+        val habitName = "Test Habit"
+        val habitDescription = "Test habit description"
     }
 }
