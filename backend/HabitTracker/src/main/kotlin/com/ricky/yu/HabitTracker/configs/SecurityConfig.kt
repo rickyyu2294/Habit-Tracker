@@ -27,6 +27,7 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http {
+            cors {}
             csrf { disable() } // Disable CSRF protection for simplicity
             sessionManagement { SessionCreationPolicy.STATELESS }
             authorizeHttpRequests {
