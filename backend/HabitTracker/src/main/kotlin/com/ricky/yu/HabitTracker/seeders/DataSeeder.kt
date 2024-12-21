@@ -3,19 +3,23 @@ package com.ricky.yu.HabitTracker.seeders
 import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.models.Habit
+import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.models.User
+import com.ricky.yu.HabitTracker.repositories.HabitCompletionRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 @Profile("dev", "test")
 class DataSeeder(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
+    private val habitCompletionRepository: HabitCompletionRepository,
     private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
 
@@ -40,8 +44,22 @@ class DataSeeder(
                 frequency = Frequency.DAILY,
                 user = user
             )
+            val habit2 = Habit(
+                id = 2L,
+                name = "Workout",
+                description = "gotta work out",
+                frequency = Frequency.DAILY,
+                user = user
+            )
+            val completion = HabitCompletion(
+                id = 1L,
+                habit = habit,
+                completionDate = LocalDate.now().minusDays(3)
+            )
             userRepository.save(user)
             habitRepository.save(habit)
+            habitRepository.save(habit2)
+            habitCompletionRepository.save(completion)
             println("Test user seeded: ${user.email}")
         } else {
             println("Test user already exists")

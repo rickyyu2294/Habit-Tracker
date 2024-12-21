@@ -19,8 +19,16 @@ class HabitCompletionController(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
     ): ResponseEntity<HabitCompletion> {
-        val completion = habitCompletionService.markComplete(id, completionRequest.date)
-        return ResponseEntity.status(HttpStatus.CREATED).body(completion)
+        val completions = habitCompletionService.getCompletionHistory(id)
+        val completion = completions.find { it.completionDate == completionRequest.date }
+        return if (completion == null) {
+            val newCompletion = habitCompletionService.markComplete(id, completionRequest.date)
+            ResponseEntity.ok(newCompletion)
+        } else {
+            ResponseEntity.status(HttpStatus.CREATED).body(completion)
+        }
+
+
     }
 
     @GetMapping
