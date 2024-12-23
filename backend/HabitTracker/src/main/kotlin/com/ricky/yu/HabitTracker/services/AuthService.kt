@@ -63,6 +63,8 @@ class AuthService(
                 refreshTokenRepository.deleteByToken(refreshToken)
                 val newAccessToken = createAccessToken(currentUser)
                 val newRefreshToken = createRefreshToken(currentUser)
+                refreshTokenRepository.save(RefreshToken(token = newRefreshToken, user = currentUser))
+
                 AuthenticationResponse(
                     accessToken = newAccessToken,
                     refreshToken = newRefreshToken

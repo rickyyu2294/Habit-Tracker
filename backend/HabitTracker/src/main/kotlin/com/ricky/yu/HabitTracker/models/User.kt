@@ -61,4 +61,8 @@ data class User (
     override fun isEnabled(): Boolean {
         return true
     }
+
+    override fun toString(): String {
+        return "User(id=$id, name='$name', email='$email')"
+    }
 }

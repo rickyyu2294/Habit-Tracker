@@ -61,10 +61,13 @@ class AuthController(
         }
     }
 
+    data class RefreshTokenRequest(val token: String)
     @PostMapping("/refresh")
-    fun refreshAccessToken(@RequestBody request: TokenRequest): ResponseEntity<Any?> {
+    fun refreshAccessToken(@RequestBody request: RefreshTokenRequest): ResponseEntity<Any?> {
+        println("Received refresh token: ${request.token}")
+
         return try {
-            ResponseEntity.ok(authenticationService.refreshAccessToken(request.refreshToken))
+            ResponseEntity.ok(authenticationService.refreshAccessToken(request.token))
         } catch (ex: Exception) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
         }
