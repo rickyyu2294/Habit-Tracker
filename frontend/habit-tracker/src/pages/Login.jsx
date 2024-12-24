@@ -12,10 +12,7 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            const response = await habitTrackerApiPost("/login", {email, password})
-            localStorage.clear()
-            localStorage.setItem("accessToken", response.data.accessToken)
-            localStorage.setItem("refreshToken", response.data.refreshToken)
+            await login(email, password)
             window.location.href = "/dashboard"
         } catch (err) {
             setError("Invalid credentials. Please try again.")

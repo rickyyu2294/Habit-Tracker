@@ -104,6 +104,7 @@ habitTrackerApi.interceptors.response.use(
 
 export async function login(email, password) {
     const response = await habitTrackerApiPost("/login", {email, password})
+    localStorage.clear()
     localStorage.setItem("accessToken", response.data.accessToken)
     localStorage.setItem("refreshToken", response.data.refreshToken)
 }
