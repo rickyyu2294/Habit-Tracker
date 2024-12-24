@@ -18,12 +18,20 @@ class HabitCompletionService(
         return habitCompletionRepository.save(completion)
     }
 
-    fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
-        return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
+    data class MarkOrRetrieveCompletionResult(val completion: HabitCompletion, val isNewlyCreated: Boolean)
+    fun markOrRetrieveCompletion(id: Long, date: LocalDate): MarkOrRetrieveCompletionResult {
+        val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(id, date)
+        return completion?.let {
+            MarkOrRetrieveCompletionResult(completion, false)
+        } ?: run {
+            val habit = habitService.getHabitById(id)
+            val newCompletion = HabitCompletion(habit = habit, completionDate = date)
+            MarkOrRetrieveCompletionResult(habitCompletionRepository.save(newCompletion), true)
+        }
     }
 
-    fun deleteCompletion(id: Long) {
-        habitCompletionRepository.deleteById(id)
+    fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
+        return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
     }
 
     fun deleteCompletion(id: Long, date: LocalDate) {

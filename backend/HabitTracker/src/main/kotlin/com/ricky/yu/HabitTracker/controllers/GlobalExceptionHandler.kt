@@ -19,4 +19,9 @@ class GlobalExceptionHandler {
     fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<String> {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
     }
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleNoSuchElementException(ex: NoSuchElementException): ResponseEntity<Any> {
+        return ResponseEntity.notFound().build()
+    }
 }

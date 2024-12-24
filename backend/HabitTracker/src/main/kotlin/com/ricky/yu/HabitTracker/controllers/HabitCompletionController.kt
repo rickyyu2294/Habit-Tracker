@@ -21,13 +21,11 @@ class HabitCompletionController(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
     ): ResponseEntity<HabitCompletion> {
-        val completions = habitCompletionService.getCompletionHistory(id)
-        val completion = completions.find { it.completionDate == completionRequest.date }
-        return if (completion == null) {
-            val newCompletion = habitCompletionService.markComplete(id, completionRequest.date)
-            ResponseEntity.created(URI.create("/habits/${id}/${newCompletion.completionDate}")).body(newCompletion)
+        val (completion, isNewlyCreated) = habitCompletionService.markOrRetrieveCompletion(id, completionRequest.date)
+        return if (isNewlyCreated) {
+            ResponseEntity.created(URI.create("/habits/$id/completions/${completionRequest.date}")).body(completion)
         } else {
-            ResponseEntity.ok().body(completion)
+            ResponseEntity.ok(completion)
         }
     }
 
@@ -36,12 +34,8 @@ class HabitCompletionController(
         @PathVariable id: Long,
         @PathVariable date: LocalDate
     ): ResponseEntity<Any> {
-        return try {
-            habitCompletionService.deleteCompletion(id, date)
-            ResponseEntity.noContent().build()
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.notFound().build()
-        }
+        habitCompletionService.deleteCompletion(id, date)
+        return ResponseEntity.noContent().build()
     }
 
     @GetMapping
