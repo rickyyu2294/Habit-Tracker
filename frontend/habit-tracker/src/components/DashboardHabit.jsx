@@ -1,6 +1,6 @@
 import { format, isSameDay, subDays } from "date-fns";
 import { getCurrentDate } from "../utils/utils";
-import habitTrackerApi from "../services/habit-tracker-api";
+import habitTrackerApi, { habitTrackerApiPost } from "../services/habit-tracker-api";
 
 function DashboardHabit({habit, onComplete}) {
     const today = new Date();
@@ -12,8 +12,7 @@ function DashboardHabit({habit, onComplete}) {
     const completions = habit.completions || [];
     const isDayComplete = (day) => {
         return completions.some((completion) => {
-            const completionDate = new Date(completion.completionDate)
-            const match = isSameDay(completionDate, day)
+            const match = isSameDay(completion.completionDate, day)
             return match
         }
         );
@@ -22,14 +21,7 @@ function DashboardHabit({habit, onComplete}) {
     const completeHabit = async (id, completeDate) => {
         const date = completeDate
         try {
-            await habitTrackerApi.post(`/habits/${id}/completions`,
-                { date: date },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                    }
-                }
-            )
+            await habitTrackerApiPost(`/habits/${id}/completions`, { date: date })
             onComplete()
         } catch (err) {
             console.log(err)

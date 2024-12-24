@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
 import Error from '../components/Error'
-import habitTrackerApi from '../services/habit-tracker-api' 
+import habitTrackerApi, { habitTrackerApiGet } from '../services/habit-tracker-api' 
 import { getCurrentDate } from '../utils/utils'
 import DashboardHabit from '../components/DashboardHabit'
 
@@ -10,11 +10,7 @@ function Dashboard() {
 
     const fetchHabits = async () => {
         try {
-            const response = await habitTrackerApi.get("/habits", {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-                }
-            })
+            const response = await habitTrackerApiGet('/habits')
             setHabits(response.data)
         } catch (err) {
             setError("Failed to load habits. Please try again.")

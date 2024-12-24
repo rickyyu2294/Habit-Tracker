@@ -52,7 +52,7 @@ class AuthService(
 
         return username.let { user ->
             val currentUser = userDetailsService.loadUserByUsername(user) as User
-            val refreshTokenEntry = refreshTokenRepository.findById(refreshToken)
+            val refreshTokenEntry = refreshTokenRepository.findByToken(refreshToken)
 
             if (
                 currentUser.email == refreshTokenEntry.get().user.email &&

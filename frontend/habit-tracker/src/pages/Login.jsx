@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import Button from '../components/Button'
 import InputField from '../components/InputField'
-import habitTrackerApi from "../services/habit-tracker-api"
 import FormContainer from '../components/FormContainer'
+import { habitTrackerApiPost, login } from '../services/habit-tracker-api'
 
 function Login() {
     const [email, setEmail] = useState("")
@@ -12,7 +12,8 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            const response = await habitTrackerApi.post("/login", { email, password })
+            const response = await habitTrackerApiPost("/login", {email, password})
+            localStorage.clear()
             localStorage.setItem("accessToken", response.data.accessToken)
             localStorage.setItem("refreshToken", response.data.refreshToken)
             window.location.href = "/dashboard"
@@ -32,7 +33,7 @@ function Login() {
             <InputField 
                 label='Password' 
                 value={password} 
-                type='email' 
+                type='password' 
                 onChange={(e) => setPassword(e.target.value)}
             />
             <Button type='submit' onClick={handleLogin}>
