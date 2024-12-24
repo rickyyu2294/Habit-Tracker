@@ -1,6 +1,6 @@
 import { format, isSameDay, subDays } from "date-fns";
 import { getCurrentDate } from "../utils/utils";
-import habitTrackerApi, { habitTrackerApiPost } from "../services/habit-tracker-api";
+import habitTrackerApi, { habitTrackerApiDelete, habitTrackerApiPost } from "../services/habit-tracker-api";
 
 function DashboardHabit({habit, onComplete}) {
     const today = new Date();
@@ -18,10 +18,14 @@ function DashboardHabit({habit, onComplete}) {
         );
     };
 
-    const completeHabit = async (id, completeDate) => {
-        const date = completeDate
+    const toggleCompletion = async (id, date) => {
+        const isComplete = isDayComplete(date)
         try {
-            await habitTrackerApiPost(`/habits/${id}/completions`, { date: date })
+            if (isComplete) {
+                await habitTrackerApiDelete(`/habits/${id}/completions`, { date: date })
+            } else {
+                await habitTrackerApiPost(`/habits/${id}/completions`, { date: date })
+            }
             onComplete()
         } catch (err) {
             console.log(err)
@@ -42,9 +46,9 @@ function DashboardHabit({habit, onComplete}) {
                         key={index}
                         // Date completion icon
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                            ${isDayComplete(day) ? 'bg-blue-200 text-black' : 'bg-gray-300 text-gray-600'}
+                            ${isDayComplete(day) ? 'bg-blue-200 text-black hover:bg-blue-100' : 'bg-gray-300 text-gray-600 hover:bg-blue-100'}
                         `}
-                        onClick={() => completeHabit(habit.id, day)}
+                        onClick={() => toggleCompletion(habit.id, day)}
                     >
                         {format(day, 'EE').charAt(0)} {/* First letter of weekday */}
                     </button>

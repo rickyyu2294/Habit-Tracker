@@ -116,3 +116,7 @@ export function habitTrackerApiGet(url, params) {
 export function habitTrackerApiPost(url, data) {
     return habitTrackerApi.post(url, data)
 }
+
+export function habitTrackerApiDelete(url, data) {
+    return habitTrackerApi.delete(url, { data })
+}
