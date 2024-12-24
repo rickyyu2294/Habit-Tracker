@@ -21,4 +21,15 @@ class HabitCompletionService(
     fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
         return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
     }
+
+    fun deleteCompletion(id: Long) {
+        habitCompletionRepository.deleteById(id)
+    }
+
+    fun deleteCompletion(id: Long, date: LocalDate) {
+        val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(id, date)
+            ?: throw IllegalArgumentException("Habit $id has no completion for date $date")
+
+        habitCompletionRepository.delete(completion)
+    }
 }
