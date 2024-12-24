@@ -22,7 +22,7 @@ function DashboardHabit({habit, onComplete}) {
         const isComplete = isDayComplete(date)
         try {
             if (isComplete) {
-                await habitTrackerApiDelete(`/habits/${id}/completions`, { date: date })
+                await habitTrackerApiDelete(`/habits/${id}/completions/${date}`)
             } else {
                 await habitTrackerApiPost(`/habits/${id}/completions`, { date: date })
             }
