@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.models
 
+import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
 
 @Entity
@@ -17,5 +18,6 @@ data class HabitGroup (
 
     @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     val user: User
 )
