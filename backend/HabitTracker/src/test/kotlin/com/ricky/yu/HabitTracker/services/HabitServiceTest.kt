@@ -8,7 +8,6 @@ import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
-import com.ricky.yu.HabitTracker.repositories.UserRepository
 import io.mockk.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -89,7 +88,7 @@ class HabitServiceTest: BaseTest() {
 
         every { habitRepository.findByUserId(testUser.id) } returns habits
 
-        val result = habitService.getAllHabits()
+        val result = habitService.getHabitsForCurrentUser()
 
         assertEquals(2, result.size)
         assertEquals("Exercise", result[0].name)
@@ -142,8 +141,13 @@ class HabitServiceTest: BaseTest() {
     fun `should get habit by user and group`() {
         every { habitGroupRepository.findById(any()) } returns Optional.of(testGroup)
         every { habitRepository.findByUserIdAndGroupId(any(), any()) } returns listOf(testHabit)
+        every { RequestCtxHolder.getRequestContext() } returns RequestCtx(
+            userId = 998L,
+            role = Role.USER,
+            requestId = "test-request-id"
+        )
 
-        val result = habitService.getAllHabitsForUserForGroup(testUser.id, testGroup.id)
+        val result = habitService.getHabitsForCurrentUserAndGroup(testGroup.id)
 
         assertEquals(1, result.size)
         assertEquals(testHabit, result[0])

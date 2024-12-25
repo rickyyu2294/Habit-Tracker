@@ -11,6 +11,14 @@ import java.net.URI
 class HabitController(
     private val habitService: HabitService
 ) {
+    // DTOs
+    data class CreateHabitRequest(
+        val name: String,
+        val description: String,
+        val frequency: String,
+        val groupId: Long? = null
+    )
+
     data class HabitResponse(
         val id: Long,
         val name: String,
@@ -29,7 +37,7 @@ class HabitController(
         )
     }
 
-    data class CreateHabitRequest(val name: String, val description: String, val frequency: String, val groupId: Long? = null)
+    // APIs
 
     @PostMapping
     fun createHabit(@RequestBody input: CreateHabitRequest): ResponseEntity<HabitResponse> {
@@ -39,7 +47,7 @@ class HabitController(
 
     @GetMapping
     fun getAllHabits(): ResponseEntity<List<HabitResponse>> {
-        val habits = habitService.getAllHabits()
+        val habits = habitService.getHabitsForCurrentUser()
         return ResponseEntity.ok(habits.map { it.toResponse() })
     }
 

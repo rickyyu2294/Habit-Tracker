@@ -9,6 +9,7 @@ import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.web.client.HttpClientErrorException.Unauthorized
 import java.time.LocalDateTime
 
 @Transactional
@@ -31,13 +32,13 @@ class HabitService(
         return habitRepository.save(habit)
     }
 
-    fun getAllHabits(): List<Habit> {
+    fun getHabitsForCurrentUser(): List<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
         return habitRepository.findByUserId(userId)
     }
 
-    fun getAllHabitsForUserForGroup(userId: Long, groupId: Long): List<Habit> {
-        // validate group is owned by user
+    fun getHabitsForCurrentUserAndGroup(groupId: Long): List<Habit> {
+        val userId = RequestCtxHolder.getRequestContext().userId
         val group = habitGroupRepository.findById(groupId).get()
         if (userId == group.user.id) {
             return habitRepository.findByUserIdAndGroupId(userId, groupId)
@@ -47,8 +48,15 @@ class HabitService(
     }
 
     fun getHabitById(id: Long): Habit {
-        return habitRepository.findById(id)
+        // validate user owns habit
+        val userId = RequestCtxHolder.getRequestContext().userId
+        val habit = habitRepository.findById(id)
             .orElseThrow { NoSuchElementException("Habit not found with id: $id") }
+        if (userId == habit.user.id) {
+            return habit
+        } else {
+            throw IllegalArgumentException("User $userId does not own habit ${habit.id}")
+        }
     }
 
     fun updateHabit(id: Long, updateRequest: HabitController.CreateHabitRequest): Habit {
@@ -71,6 +79,10 @@ class HabitService(
     }
 
     fun deleteHabit(id: Long) {
+        val habit = getHabitById(id)
+        val userId = RequestCtxHolder.getRequestContext().userId
+        if (userId != habit.user.id)
+            throw IllegalArgumentException("User $userId does not own habit ${habit.id}")
         habitRepository.deleteById(id)
     }
 
