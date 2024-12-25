@@ -3,6 +3,7 @@ package com.ricky.yu.HabitTracker.services
 import com.ricky.yu.HabitTracker.controllers.HabitController
 import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.models.Habit
+import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import jakarta.transaction.Transactional
@@ -14,7 +15,8 @@ import java.time.LocalDateTime
 @Service
 class HabitService(
     private val habitRepository: HabitRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val habitGroupRepository: HabitGroupRepository
 ) {
     fun createHabit(input: HabitController.CreateHabitRequest): Habit {
         val user = userRepository.findByEmail(SecurityContextHolder.getContext().authentication.name)
@@ -31,6 +33,16 @@ class HabitService(
 
     fun getAllHabitsForUser(userId: Long): List<Habit> {
         return habitRepository.findByUserId(userId)
+    }
+
+    fun getAllHabitsForUserForGroup(userId: Long, groupId: Long): List<Habit> {
+        // validate group is owned by user
+        val group = habitGroupRepository.findById(groupId).get()
+        if (userId == group.user.id) {
+            return habitRepository.findByUserIdAndGroupId(userId, groupId)
+        } else {
+            throw IllegalArgumentException("User $userId does not own group $groupId")
+        }
     }
 
     fun getHabitById(id: Long): Habit {

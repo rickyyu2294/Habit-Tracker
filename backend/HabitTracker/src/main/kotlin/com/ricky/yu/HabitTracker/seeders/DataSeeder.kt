@@ -4,8 +4,10 @@ import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.models.Habit
 import com.ricky.yu.HabitTracker.models.HabitCompletion
+import com.ricky.yu.HabitTracker.models.HabitGroup
 import com.ricky.yu.HabitTracker.models.User
 import com.ricky.yu.HabitTracker.repositories.HabitCompletionRepository
+import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import org.springframework.boot.CommandLineRunner
@@ -20,6 +22,7 @@ class DataSeeder(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
     private val habitCompletionRepository: HabitCompletionRepository,
+    private val groupRepository: HabitGroupRepository,
     private val passwordEncoder: PasswordEncoder
 ) : CommandLineRunner {
 
@@ -37,12 +40,19 @@ class DataSeeder(
                 role = Role.USER
             )
 
+            val group = HabitGroup(
+                id = 1L,
+                name = "Test Group",
+                user = user
+            )
+
             val habit = Habit(
                 id = 1L,
                 name = habitName,
                 description = habitDescription,
                 frequency = Frequency.DAILY,
-                user = user
+                user = user,
+                group = group
             )
             val habit2 = Habit(
                 id = 2L,
@@ -57,6 +67,7 @@ class DataSeeder(
                 completionDate = LocalDate.now().minusDays(3)
             )
             userRepository.save(user)
+            groupRepository.save(group)
             habitRepository.save(habit)
             habitRepository.save(habit2)
             habitCompletionRepository.save(completion)

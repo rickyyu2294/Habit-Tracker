@@ -3,6 +3,7 @@ package com.ricky.yu.HabitTracker.services
 import com.ricky.yu.HabitTracker.BaseTest
 import com.ricky.yu.HabitTracker.controllers.HabitController
 import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import io.mockk.InternalPlatformDsl.toStr
@@ -24,7 +25,8 @@ import kotlin.test.assertEquals
 class HabitServiceTest: BaseTest() {
     private val habitRepository: HabitRepository = mockk()
     private val userRepository: UserRepository = mockk()
-    private val habitService: HabitService = HabitService(habitRepository, userRepository)
+    private val habitGroupRepository: HabitGroupRepository = mockk()
+    private val habitService: HabitService = HabitService(habitRepository, userRepository, habitGroupRepository)
 
     @Test
     fun `should create a habit successfully`() {
@@ -112,5 +114,19 @@ class HabitServiceTest: BaseTest() {
         habitService.deleteHabit(testHabit.id)
 
         verify { habitRepository.deleteById(testHabit.id) }
+    }
+
+    @Test
+    fun `should get habit by user and group`() {
+        every { habitGroupRepository.findById(any()) } returns Optional.of(testGroup)
+        every { habitRepository.findByUserIdAndGroupId(any(), any()) } returns listOf(testHabit)
+
+        val result = habitService.getAllHabitsForUserForGroup(testUser.id, testGroup.id)
+
+        assertEquals(1, result.size)
+        assertEquals(testHabit, result[0])
+
+        verify { habitGroupRepository.findById(testGroup.id) }
+        verify { habitRepository.findByUserIdAndGroupId(testUser.id, testGroup.id) }
     }
 }
