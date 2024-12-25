@@ -14,7 +14,7 @@ class HabitController(
     private val habitService: HabitService,
     private val userRepository: UserRepository
 ) {
-    data class CreateHabitRequest(val name: String, val description: String, val frequency: String)
+    data class CreateHabitRequest(val name: String, val description: String, val frequency: String, val groupId: Long? = null)
     @PostMapping
     fun createHabit(@RequestBody input: CreateHabitRequest): ResponseEntity<Habit> {
         val newHabit = habitService.createHabit(input)
@@ -36,9 +36,9 @@ class HabitController(
     }
 
     @PutMapping("/{id}")
-    fun updateHabit(@PathVariable id: Long, @RequestBody input: CreateHabitRequest): ResponseEntity<Habit> {
-        val habit = habitService.updateHabit(id, input)
-        return ResponseEntity.ok(habit)
+    fun updateHabit(@PathVariable id: Long, @RequestBody updateRequest: CreateHabitRequest): ResponseEntity<Habit> {
+        val updatedHabit = habitService.updateHabit(id, updateRequest)
+        return ResponseEntity.ok(updatedHabit)
     }
 
     @DeleteMapping("/{id}")

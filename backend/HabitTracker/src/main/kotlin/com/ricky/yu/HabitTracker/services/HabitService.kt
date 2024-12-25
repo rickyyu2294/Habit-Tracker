@@ -50,16 +50,34 @@ class HabitService(
             .orElseThrow { NoSuchElementException("Habit not found with id: $id") }
     }
 
-    fun updateHabit(id: Long, updateHabit: HabitController.CreateHabitRequest): Habit {
+    fun updateHabit(id: Long, updateRequest: HabitController.CreateHabitRequest): Habit {
         val existingHabit = getHabitById(id)
-        return habitRepository.save(
-            existingHabit.copy(
-                name = updateHabit.name,
-                description = updateHabit.description,
-                frequency = Frequency.valueOf(updateHabit.frequency.uppercase()),
-                updatedAt = LocalDateTime.now()
-            )
+
+        // Find and validate the group if a groupId is provided
+        val group = updateRequest.groupId?.let {
+            habitGroupRepository.findById(it).orElseThrow {
+                NoSuchElementException("Habit group with ID $it not found")
+            }
+        }
+
+        // Parse and validate frequency
+        val frequency = try {
+            Frequency.valueOf(updateRequest.frequency.uppercase())
+        } catch (e: IllegalArgumentException) {
+            throw IllegalArgumentException("Invalid frequency: ${updateRequest.frequency}")
+        }
+
+        // Create updated habit entity
+        val updatedHabit = existingHabit.copy(
+            name = updateRequest.name,
+            description = updateRequest.description,
+            frequency = frequency,
+            updatedAt = LocalDateTime.now(),
+            group = group
         )
+
+        // Save and return updated habit
+        return habitRepository.save(updatedHabit)
     }
 
     fun deleteHabit(id: Long) {

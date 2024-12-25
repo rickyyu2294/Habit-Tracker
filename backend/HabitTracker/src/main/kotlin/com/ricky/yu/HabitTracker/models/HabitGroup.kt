@@ -15,7 +15,7 @@ data class HabitGroup (
     @Column(nullable = false, unique = true)
     val name: String,
 
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "user_id", nullable = false)
     val user: User
 )
