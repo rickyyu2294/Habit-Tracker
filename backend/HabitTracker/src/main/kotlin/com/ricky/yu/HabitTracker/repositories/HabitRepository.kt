@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface HabitRepository : JpaRepository<Habit, Long> {
     fun findByUserId(userId: Long): List<Habit>
+
+    fun findByUserIdAndGroupId(userId: Long, groupId: Long): List<Habit>
 }
