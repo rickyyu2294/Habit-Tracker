@@ -3,10 +3,10 @@ package com.ricky.yu.HabitTracker.controllers
 import com.ricky.yu.HabitTracker.models.Habit
 import com.ricky.yu.HabitTracker.repositories.UserRepository
 import com.ricky.yu.HabitTracker.services.HabitService
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 
 @RestController
 @RequestMapping("/habits")
@@ -18,7 +18,7 @@ class HabitController(
     @PostMapping
     fun createHabit(@RequestBody input: CreateHabitRequest): ResponseEntity<Habit> {
         val newHabit = habitService.createHabit(input)
-        return ResponseEntity.status(HttpStatus.CREATED).body(newHabit)
+        return ResponseEntity.created(URI.create("/habits/${newHabit.id}")).body(newHabit)
     }
 
     @GetMapping

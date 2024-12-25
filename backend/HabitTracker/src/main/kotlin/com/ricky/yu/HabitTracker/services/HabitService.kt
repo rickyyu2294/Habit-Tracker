@@ -7,6 +7,7 @@ import com.ricky.yu.HabitTracker.models.HabitGroup
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
+import com.ricky.yu.HabitTracker.utils.SecurityUtil
 import jakarta.transaction.Transactional
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
@@ -16,12 +17,11 @@ import java.time.LocalDateTime
 @Service
 class HabitService(
     private val habitRepository: HabitRepository,
-    private val userRepository: UserRepository,
-    private val habitGroupRepository: HabitGroupRepository
+    private val habitGroupRepository: HabitGroupRepository,
+    private val securityUtil: SecurityUtil
 ) {
     fun createHabit(createRequest: HabitController.CreateHabitRequest): Habit {
-        val user = userRepository.findByEmail(SecurityContextHolder.getContext().authentication.name)
-            ?: throw NoSuchElementException("User not found")
+        val user = securityUtil.getAuthenticatedUser()
 
         val habit = Habit(
             name = createRequest.name,
