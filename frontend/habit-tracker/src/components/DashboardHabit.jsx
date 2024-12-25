@@ -2,7 +2,7 @@ import { format, isSameDay, subDays } from "date-fns";
 import { getCurrentDate } from "../utils/utils";
 import habitTrackerApi, { habitTrackerApiDelete, habitTrackerApiPost } from "../services/habit-tracker-api";
 
-function DashboardHabit({habit, onComplete}) {
+function DashboardHabit({ habit, onComplete }) {
     const today = new Date();
     const last7Days = Array.from(
         { length: 7 }, (_, i) => format(subDays(today, i), 'yyyy-MM-dd')
@@ -33,14 +33,15 @@ function DashboardHabit({habit, onComplete}) {
     }
 
     return (
-        <li className='flex flex-col gap-2'>
+        <li className='flex flex-col gap-2 bg-slate-50 shadow-lg border rounded-xl border-gray-200 p-4 hover:border-slate-300 hover:bg-slate-100'>
             {/* Habit title */}
-            <div className='flex justify-between items-center'>
+            <div className='flex flex-col justify-between items-center'>
+                <h2 className='flex-1 text-center font-bold'>{habit.name}</h2>
+
                 <p className='font-thin lowercase'>{habit.frequency}</p>
-                <h2 className='flex-1 text-center'>{habit.name}</h2>
             </div>
             {/* Last 7 days completions */}
-            <div className="flex gap-4 justify-center"> 
+            <div className="flex gap-4 justify-center">
                 {last7Days.map((day, index) => (
                     <button
                         key={index}
@@ -54,7 +55,7 @@ function DashboardHabit({habit, onComplete}) {
                     </button>
                 ))}
             </div>
-        </li> 
+        </li>
     )
 }
 

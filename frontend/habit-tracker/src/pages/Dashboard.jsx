@@ -26,12 +26,12 @@ function Dashboard() {
         // Allow users to View/Complete/Add/edit/delete habits
         <div>
             <div>
-                <h1 className='text-2xl font-bold p-8 mb-4'>Habits Dashboard</h1>
+                <h1 className='text-2xl font-bold p-8 mb-4'>Dashboard</h1>
                 <Error error={error} />
             </div>
             
             <div className='min-h-80 flex items-center justify-center bg-gray-100'>
-                <ul className='flex flex-col w-3/5 bg-white p-4 rounded shadow-md gap-6'>
+                <ul className='flex flex-col w-3/5 gap-6'>
                     {habits.map((habit) => (
                         <DashboardHabit key={habit.id} habit={habit} onComplete={fetchHabits}/> 
                     ))}
