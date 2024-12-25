@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import Button from '../components/Button'
 import InputField from '../components/InputField'
 import FormContainer from '../components/FormContainer'
-import { login } from '../services/habit-tracker-api'
+import api from '../services/habit-tracker-api'
 
 function Login() {
     const [email, setEmail] = useState("")
@@ -12,8 +12,8 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault()
         try {
-            await login(email, password)
-            window.location.href = "/dashboard"
+            await api.login(email, password);
+            window.location.href = "/dashboard";
         } catch (err) {
             switch(err.code) {
                 case "ERR_NETWORK":
@@ -23,7 +23,7 @@ function Login() {
                     setError("Invalid Credentials");
                     break;
                 default:
-                    setError("Unknown Error" + err.code);
+                    setError("Unknown Error " + err.code);
             }
         }
     }

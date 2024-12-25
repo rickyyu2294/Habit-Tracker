@@ -31,6 +31,7 @@ class HabitCompletionService(
     }
 
     fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
+        // todo: ensure habit is owned by authenticated user
         return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
     }
 

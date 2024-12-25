@@ -1,7 +1,6 @@
 import {useState, useEffect} from 'react'
 import Error from '../components/Error'
-import habitTrackerApi, { habitTrackerApiGet } from '../services/habit-tracker-api' 
-import { getCurrentDate } from '../utils/utils'
+import api from '../services/habit-tracker-api' 
 import DashboardHabit from '../components/DashboardHabit'
 
 function Dashboard() {
@@ -10,8 +9,8 @@ function Dashboard() {
 
     const fetchHabits = async () => {
         try {
-            const response = await habitTrackerApiGet('/habits')
-            setHabits(response.data)
+            const habits = (await api.getHabits()).data
+            setHabits(habits)
         } catch (err) {
             setError("Failed to load habits. Please try again.")
         }
@@ -31,7 +30,7 @@ function Dashboard() {
             </div>
             
             <div className='min-h-80 flex items-center justify-center bg-gray-100'>
-                <ul className='flex flex-col w-3/5 gap-6'>
+                <ul className='flex flex-col w-1/3 gap-6'>
                     {habits.map((habit) => (
                         <DashboardHabit key={habit.id} habit={habit} onComplete={fetchHabits}/> 
                     ))}

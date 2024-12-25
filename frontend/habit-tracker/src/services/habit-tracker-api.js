@@ -3,43 +3,11 @@ import axios from "axios"
 const habitTrackerApi = axios.create({
     baseURL: "http://localhost:8080"
 })
-const authEndpoints = ["/login", "/refresh", "/register"]
+const authEndpoints = ["/login", "/refresh", "/register", "/logout"]
 let isRefreshing = false;
 let refreshSubscribers = [];
 
-export default habitTrackerApi
-
-// Function to add subscribers to the queue
-function subscribeTokenRefresh(cb) {
-    refreshSubscribers.push(cb);
-}
-
-// Notify all subscribers once the token refresh is complete
-function onRefreshed(newAccessToken) {
-    refreshSubscribers.forEach((cb) => cb(newAccessToken));
-    refreshSubscribers = [];
-}
-
-async function refreshAccessToken() {
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) {
-        console.error("Refresh token is missing");
-        throw new Error("Refresh token is missing");
-    }
-
-    try {
-        const response = await habitTrackerApi.post("/refresh", { token: refreshToken });
-        const {accessToken: newAccessToken, refreshToken: newRefreshToken} = response.data;
-
-        // Store the new access token in localStorage
-        localStorage.setItem("accessToken", newAccessToken);
-        localStorage.setItem("refreshToken", newRefreshToken);
-        return newAccessToken
-    } catch (error) {
-        console.error("Failed to refresh access tokens:", error);
-        throw error;
-    }
-}
+// Interceptors
 
 // axios request interceptor to add access token to headers
 habitTrackerApi.interceptors.request.use(
@@ -102,21 +70,61 @@ habitTrackerApi.interceptors.response.use(
     }
 );
 
-export async function login(email, password) {
-    const response = await habitTrackerApiPost("/login", {email, password})
+// Helpers
+async function login(email, password) {
+    const response = await habitTrackerApi.post("/login", { email, password })
     localStorage.clear()
     localStorage.setItem("accessToken", response.data.accessToken)
     localStorage.setItem("refreshToken", response.data.refreshToken)
 }
 
-export function habitTrackerApiGet(url, params) {
-    return habitTrackerApi.get(url, { params })
+// Function to add subscribers to the queue
+function subscribeTokenRefresh(cb) {
+    refreshSubscribers.push(cb);
 }
 
-export function habitTrackerApiPost(url, data) {
-    return habitTrackerApi.post(url, data)
+// Notify all subscribers once the token refresh is complete
+function onRefreshed(newAccessToken) {
+    refreshSubscribers.forEach((cb) => cb(newAccessToken));
+    refreshSubscribers = [];
 }
 
-export function habitTrackerApiDelete(url) {
-    return habitTrackerApi.delete(url)
+async function refreshAccessToken() {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+        console.error("Refresh token is missing");
+        throw new Error("Refresh token is missing");
+    }
+
+    try {
+        const response = await habitTrackerApi.post("/refresh", { token: refreshToken });
+        const {accessToken: newAccessToken, refreshToken: newRefreshToken} = response.data;
+
+        // Store the new access token in localStorage
+        localStorage.setItem("accessToken", newAccessToken);
+        localStorage.setItem("refreshToken", newRefreshToken);
+        return newAccessToken
+    } catch (error) {
+        console.error("Failed to refresh access tokens:", error);
+        throw error;
+    }
 }
+
+// API
+
+const api = {
+    // auth
+    login: (email, password) => login(email, password),
+    
+    // habit
+    getHabits: () => habitTrackerApi.get("/habits"),
+
+    // habit completion
+    getCompletions: (habitId) => habitTrackerApi.get(`/habits/${habitId}/completions`),
+    markCompletion: (habitId, date) => habitTrackerApi.post(`/habits/${habitId}/completions`, { date: date }),
+    deleteCompletion: (habitId, date) => habitTrackerApi.delete(`/habits/${habitId}/completions/${date}`)
+
+    // habit group
+}
+
+export default api

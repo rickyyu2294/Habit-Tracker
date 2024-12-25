@@ -1,15 +1,25 @@
 import { format, isSameDay, subDays } from "date-fns";
-import { getCurrentDate } from "../utils/utils";
-import habitTrackerApi, { habitTrackerApiDelete, habitTrackerApiPost } from "../services/habit-tracker-api";
+import api from "../services/habit-tracker-api";
+import { useState, useEffect } from "react";
 
 function DashboardHabit({ habit, onComplete }) {
+    const [completions, setCompletions] = useState([])
+
     const today = new Date();
     const last7Days = Array.from(
         { length: 7 }, (_, i) => format(subDays(today, i), 'yyyy-MM-dd')
     ).reverse();
 
+    const fetchCompletions = async () => {
+        try {
+            const response = await api.getCompletions(habit.id);
+            setCompletions(response.data || [])
+        } catch (err) {
+
+        }
+    };
+
     // Check if each day is in the completions list
-    const completions = habit.completions || [];
     const isDayComplete = (day) => {
         return completions.some((completion) => {
             const match = isSameDay(completion.completionDate, day)
@@ -18,19 +28,25 @@ function DashboardHabit({ habit, onComplete }) {
         );
     };
 
-    const toggleCompletion = async (id, date) => {
-        const isComplete = isDayComplete(date)
+    const toggleCompletion = async (habitId, date) => {
+        const isComplete = isDayComplete(date);
         try {
             if (isComplete) {
-                await habitTrackerApiDelete(`/habits/${id}/completions/${date}`)
+                await api.deleteCompletion(habitId, date);
             } else {
-                await habitTrackerApiPost(`/habits/${id}/completions`, { date: date })
+                await api.markCompletion(habitId, date);
             }
-            onComplete()
+            const response = await api.getCompletions(habitId);
+            setCompletions(response.data || []);
+            onComplete();
         } catch (err) {
             console.log(err)
         }
     }
+
+    useEffect(() => {
+        fetchCompletions();
+    }, [])
 
     return (
         <li className='flex flex-col gap-2 bg-slate-50 shadow-lg border rounded-xl border-gray-200 p-4 hover:border-slate-300 hover:bg-slate-100'>
@@ -43,9 +59,9 @@ function DashboardHabit({ habit, onComplete }) {
             {/* Last 7 days completions */}
             <div className="flex gap-4 justify-center">
                 {last7Days.map((day, index) => (
+                    // Date completion icon
                     <button
                         key={index}
-                        // Date completion icon
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
                             ${isDayComplete(day) ? 'bg-blue-200 text-black hover:bg-blue-100' : 'bg-gray-300 text-gray-600 hover:bg-blue-100'}
                         `}
