@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.configs
 
+import com.ricky.yu.HabitTracker.context.RequestCtxFilter
 import com.ricky.yu.HabitTracker.security.JwtAuthenticationFilter
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -21,7 +22,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 class SecurityConfig(
     private val userDetailsService: UserDetailsService,
-    private val jwtAuthenticationFilter: JwtAuthenticationFilter
+    private val jwtAuthenticationFilter: JwtAuthenticationFilter,
+    private val requestContextFilter: RequestCtxFilter
 ) {
 
     @Bean
@@ -38,6 +40,7 @@ class SecurityConfig(
             }
             httpBasic { } // Enable HTTP Basic auth
             addFilterBefore<UsernamePasswordAuthenticationFilter>(jwtAuthenticationFilter)
+            addFilterBefore<UsernamePasswordAuthenticationFilter>(requestContextFilter)
         }
 
         return http.build()

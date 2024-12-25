@@ -19,4 +19,8 @@ class UserService(
         val user = User(email = email, password = hashedPassword, name = name, role = Role.USER)
         userRepository.save(user)
     }
+
+    fun getUserById(id: Long): User {
+        return userRepository.findById(id).orElseThrow()
+    }
 }

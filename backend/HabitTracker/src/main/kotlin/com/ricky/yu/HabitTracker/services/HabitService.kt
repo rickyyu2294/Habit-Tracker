@@ -1,15 +1,13 @@
 package com.ricky.yu.HabitTracker.services
 
+import com.ricky.yu.HabitTracker.context.RequestCtxHolder
 import com.ricky.yu.HabitTracker.controllers.HabitController
 import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.models.Habit
 import com.ricky.yu.HabitTracker.models.HabitGroup
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
-import com.ricky.yu.HabitTracker.repositories.UserRepository
-import com.ricky.yu.HabitTracker.utils.SecurityUtil
 import jakarta.transaction.Transactional
-import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
@@ -18,11 +16,11 @@ import java.time.LocalDateTime
 class HabitService(
     private val habitRepository: HabitRepository,
     private val habitGroupRepository: HabitGroupRepository,
-    private val securityUtil: SecurityUtil
+    private val userService: UserService
 ) {
     fun createHabit(createRequest: HabitController.CreateHabitRequest): Habit {
-        val user = securityUtil.getAuthenticatedUser()
-
+        val ctx = RequestCtxHolder.getRequestContext()
+        val user = userService.getUserById(ctx.userId)
         val habit = Habit(
             name = createRequest.name,
             description = createRequest.description,
