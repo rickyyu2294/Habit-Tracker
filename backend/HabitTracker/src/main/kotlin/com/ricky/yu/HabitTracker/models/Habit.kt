@@ -7,7 +7,10 @@ import jakarta.persistence.*
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "habits")
+@Table(
+    name = "habits",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["name", "user_id"])]
+)
 data class Habit(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,5 +39,11 @@ data class Habit(
 
     @OneToMany(mappedBy = "habit", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonManagedReference
-    val completions: List<HabitCompletion> = mutableListOf()
-)
+    val completions: List<HabitCompletion> = listOf(),
+
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    val group: HabitGroup? = null
+) {
+
+}

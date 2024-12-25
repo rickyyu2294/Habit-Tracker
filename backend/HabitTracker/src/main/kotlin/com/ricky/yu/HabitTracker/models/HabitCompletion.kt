@@ -1,16 +1,14 @@
 package com.ricky.yu.HabitTracker.models
 
 import com.fasterxml.jackson.annotation.JsonBackReference
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
 import java.time.LocalDate
 
 @Entity
+@Table(
+    name = "habitCompletions",
+    uniqueConstraints = [UniqueConstraint(columnNames = ["completion_date", "habit_id"])]
+)
 data class HabitCompletion (
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
