@@ -31,7 +31,8 @@ class HabitService(
         return habitRepository.save(habit)
     }
 
-    fun getAllHabitsForUser(userId: Long): List<Habit> {
+    fun getAllHabits(): List<Habit> {
+        val userId = RequestCtxHolder.getRequestContext().userId
         return habitRepository.findByUserId(userId)
     }
 
@@ -74,6 +75,7 @@ class HabitService(
     }
 
     // helpers
+    // todo: maybe move these helpers
 
     private fun parseHabitGroup(createHabitRequest: HabitController.CreateHabitRequest): HabitGroup? {
         val group = createHabitRequest.groupId?.let {

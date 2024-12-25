@@ -2,8 +2,6 @@ package com.ricky.yu.HabitTracker.controllers
 
 import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.services.HabitCompletionService
-import org.apache.coyote.Response
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -16,16 +14,30 @@ class HabitCompletionController(
 ) {
     data class CompletionRequest(val date: LocalDate)
 
+    data class CompletionResponse(
+        val id: Long,
+        val habitId: Long,
+        val completionDate: LocalDate
+    )
+
+    fun HabitCompletion.toResponse(): CompletionResponse {
+        return CompletionResponse(
+            id = this.id,
+            habitId = this.habit.id,
+            completionDate = this.completionDate
+        )
+    }
+
     @PostMapping
     fun markComplete(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
-    ): ResponseEntity<HabitCompletion> {
+    ): ResponseEntity<CompletionResponse> {
         val (completion, isNewlyCreated) = habitCompletionService.markOrRetrieveCompletion(id, completionRequest.date)
         return if (isNewlyCreated) {
-            ResponseEntity.created(URI.create("/habits/$id/completions/${completionRequest.date}")).body(completion)
+            ResponseEntity.created(URI.create("/habits/$id/completions/${completionRequest.date}")).body(completion.toResponse())
         } else {
-            ResponseEntity.ok(completion)
+            ResponseEntity.ok(completion.toResponse())
         }
     }
 
@@ -41,8 +53,8 @@ class HabitCompletionController(
     @GetMapping
     fun getCompletionHistory(
         @PathVariable id: Long
-    ): ResponseEntity<List<HabitCompletion>> {
+    ): ResponseEntity<List<CompletionResponse>> {
         val completions = habitCompletionService.getCompletionHistory(id)
-        return ResponseEntity.ok(completions)
+        return ResponseEntity.ok(completions.map { it.toResponse() })
     }
 }

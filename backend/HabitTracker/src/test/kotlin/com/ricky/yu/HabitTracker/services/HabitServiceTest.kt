@@ -1,16 +1,17 @@
 package com.ricky.yu.HabitTracker.services
 
 import com.ricky.yu.HabitTracker.BaseTest
+import com.ricky.yu.HabitTracker.context.RequestCtx
+import com.ricky.yu.HabitTracker.context.RequestCtxHolder
 import com.ricky.yu.HabitTracker.controllers.HabitController
 import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import com.ricky.yu.HabitTracker.repositories.UserRepository
-import io.mockk.InternalPlatformDsl.toStr
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.verify
+import io.mockk.*
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
@@ -24,12 +25,29 @@ import kotlin.test.assertEquals
 @SpringBootTest
 class HabitServiceTest: BaseTest() {
     private val habitRepository: HabitRepository = mockk()
-    private val userRepository: UserRepository = mockk()
+    private val userService: UserService = mockk()
     private val habitGroupRepository: HabitGroupRepository = mockk()
-    private val habitService: HabitService = HabitService(habitRepository, userRepository, habitGroupRepository)
+    private val habitService: HabitService = HabitService(habitRepository, habitGroupRepository, userService)
+
+    @BeforeEach
+    fun setup() {
+        // Mock the RequestCtxHolder
+        mockkObject(RequestCtxHolder)
+    }
+
+    @AfterEach
+    fun teardown() {
+        // Unmock after each test to avoid test pollution
+        unmockkObject(RequestCtxHolder)
+    }
 
     @Test
     fun `should create a habit successfully`() {
+        every { RequestCtxHolder.getRequestContext() } returns RequestCtx(
+            userId = 998L,
+            role = Role.USER,
+            requestId = "test-request-id"
+        )
         every { habitRepository.save(any()) } returns testHabit
         // Mock the SecurityContextHolder
         mockkStatic(SecurityContextHolder::class)
@@ -40,7 +58,7 @@ class HabitServiceTest: BaseTest() {
             every { authentication } returns mockAuthentication
         }
 
-        every { userRepository.findByEmail(any()) } returns testUser
+        every { userService.getUserById(any()) } returns testUser
 
         every { SecurityContextHolder.getContext() } returns mockSecurityContext
         val create = HabitController.CreateHabitRequest(
@@ -54,12 +72,16 @@ class HabitServiceTest: BaseTest() {
         assertEquals(testHabit.user.id, testUser.id)
 
         verify { habitRepository.save(any()) }
-        verify { SecurityContextHolder.getContext() }
-        verify { userRepository.findByEmail(any()) }
+        verify { userService.getUserById(any()) }
     }
 
     @Test
     fun `should get all habits for a user`() {
+        every { RequestCtxHolder.getRequestContext() } returns RequestCtx(
+            userId = 998L,
+            role = Role.USER,
+            requestId = "test-request-id"
+        )
         val habits = listOf(
             testHabit.copy(name = "Exercise"),
             testHabit.copy(name = "Meditate")
@@ -67,7 +89,7 @@ class HabitServiceTest: BaseTest() {
 
         every { habitRepository.findByUserId(testUser.id) } returns habits
 
-        val result = habitService.getAllHabitsForUser(testUser.id)
+        val result = habitService.getAllHabits()
 
         assertEquals(2, result.size)
         assertEquals("Exercise", result[0].name)
