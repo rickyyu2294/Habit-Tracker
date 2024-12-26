@@ -33,12 +33,10 @@ class HabitCompletionController(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
     ): ResponseEntity<CompletionResponse> {
-        val (completion, isNewlyCreated) = habitCompletionService.markOrRetrieveCompletion(id, completionRequest.date)
-        return if (isNewlyCreated) {
-            ResponseEntity.created(URI.create("/habits/$id/completions/${completionRequest.date}")).body(completion.toResponse())
-        } else {
-            ResponseEntity.ok(completion.toResponse())
-        }
+        val completion = habitCompletionService.markCompletion(id, completionRequest.date)
+        return ResponseEntity.created(
+            URI.create("/habits/${id}/completions/${completionRequest.date}")
+        ).body(completion.toResponse())
     }
 
     @DeleteMapping("/{date}")

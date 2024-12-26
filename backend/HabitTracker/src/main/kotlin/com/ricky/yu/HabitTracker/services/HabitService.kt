@@ -9,7 +9,6 @@ import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException.Unauthorized
 import java.time.LocalDateTime
 
 @Transactional
@@ -48,15 +47,9 @@ class HabitService(
     }
 
     fun getHabitById(id: Long): Habit {
-        // validate user owns habit
         val userId = RequestCtxHolder.getRequestContext().userId
-        val habit = habitRepository.findById(id)
-            .orElseThrow { NoSuchElementException("Habit not found with id: $id") }
-        if (userId == habit.user.id) {
-            return habit
-        } else {
-            throw IllegalArgumentException("User $userId does not own habit ${habit.id}")
-        }
+        val habit = habitRepository.findByIdAndUserId(id, userId).orElseThrow()
+        return habit
     }
 
     fun updateHabit(id: Long, updateRequest: HabitController.CreateHabitRequest): Habit {
@@ -78,17 +71,21 @@ class HabitService(
         return habitRepository.save(updatedHabit)
     }
 
-    fun deleteHabit(id: Long) {
-        val habit = getHabitById(id)
+    fun deleteHabit(habitId: Long) {
+        val habit = getHabitById(habitId)
+        habitRepository.delete(habit)
+    }
+
+    fun validateUserOwnsHabit(habitId: Long) {
         val userId = RequestCtxHolder.getRequestContext().userId
-        if (userId != habit.user.id)
-            throw IllegalArgumentException("User $userId does not own habit ${habit.id}")
-        habitRepository.deleteById(id)
+        val isOwner = habitRepository.existsByIdAndUserId(habitId, userId)
+        if (!isOwner) {
+            throw IllegalArgumentException("User $userId does not own habit $habitId")
+        }
     }
 
     // helpers
     // todo: maybe move these helpers
-
     private fun parseHabitGroup(createHabitRequest: HabitController.CreateHabitRequest): HabitGroup? {
         val group = createHabitRequest.groupId?.let {
             habitGroupRepository.findById(it).orElseThrow {
