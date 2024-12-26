@@ -1,11 +1,12 @@
 package com.ricky.yu.HabitTracker.services
 
-import com.ricky.yu.HabitTracker.context.RequestCtxHolder
+import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.repositories.HabitCompletionRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Transactional
 @Service
@@ -28,9 +29,21 @@ class HabitCompletionService(
         }
     }
 
-    fun getCompletionHistory(habitId: Long): List<HabitCompletion> {
+    fun getCompletions(habitId: Long): List<HabitCompletion> {
         habitService.validateUserOwnsHabit(habitId)
         return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
+    }
+
+    fun getCompletionsGroupedByInterval(habitId: Long, frequency: Frequency): Map<String, List<HabitCompletion>> {
+        habitService.validateUserOwnsHabit(habitId)
+        val completions = habitCompletionRepository.findByHabitId(habitId)
+
+        return when (frequency) {
+            Frequency.DAILY -> completions.groupBy { it.completionDate.toString() }
+            Frequency.WEEKLY -> completions.groupBy { it.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
+            Frequency.MONTHLY -> completions.groupBy { it.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
+            else -> throw IllegalArgumentException("Unsupported interval: $frequency")
+        }
     }
 
     fun deleteCompletion(habitId: Long, date: LocalDate) {

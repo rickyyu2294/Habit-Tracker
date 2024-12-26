@@ -1,5 +1,6 @@
 package com.ricky.yu.HabitTracker.controllers
 
+import com.ricky.yu.HabitTracker.enums.Frequency
 import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.services.HabitCompletionService
 import org.springframework.http.ResponseEntity
@@ -12,12 +13,18 @@ import java.time.LocalDate
 class HabitCompletionController(
     private val habitCompletionService: HabitCompletionService
 ) {
+    // DTOs
     data class CompletionRequest(val date: LocalDate)
 
     data class CompletionResponse(
         val id: Long,
         val habitId: Long,
         val completionDate: LocalDate
+    )
+
+    data class GroupedCompletionsResponse(
+        val frequency: String,
+        val completions: Map<String, List<CompletionResponse>>
     )
 
     fun HabitCompletion.toResponse(): CompletionResponse {
@@ -27,6 +34,8 @@ class HabitCompletionController(
             completionDate = this.completionDate
         )
     }
+
+    // APIs
 
     @PostMapping
     fun markComplete(
@@ -43,16 +52,31 @@ class HabitCompletionController(
     fun deleteCompletion(
         @PathVariable id: Long,
         @PathVariable date: LocalDate
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<Unit> {
         habitCompletionService.deleteCompletion(id, date)
         return ResponseEntity.noContent().build()
     }
 
     @GetMapping
-    fun getCompletionHistory(
-        @PathVariable id: Long
-    ): ResponseEntity<List<CompletionResponse>> {
-        val completions = habitCompletionService.getCompletionHistory(id)
-        return ResponseEntity.ok(completions.map { it.toResponse() })
+    fun getCompletions(
+        @PathVariable id: Long,
+        @RequestParam(required = false) frequency: String?
+    ): ResponseEntity<Any> {
+        return if (!frequency.isNullOrBlank()) {
+            val groupedCompletions = habitCompletionService.getCompletionsGroupedByInterval(
+                id,
+                Frequency.valueOf(frequency.uppercase())
+            ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
+
+            ResponseEntity.ok(
+                GroupedCompletionsResponse(
+                    frequency = frequency,
+                    completions = groupedCompletions
+                )
+            )
+        } else {
+            val completions = habitCompletionService.getCompletions(id)
+            ResponseEntity.ok(completions.map { it.toResponse() })
+        }
     }
 }

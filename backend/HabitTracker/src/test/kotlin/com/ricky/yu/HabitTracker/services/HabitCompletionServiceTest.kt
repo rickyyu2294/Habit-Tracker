@@ -68,7 +68,7 @@ class HabitCompletionServiceTest : BaseTest() {
 
         every { habitCompletionRepository.findByHabitId(testHabit.id) } returns completions
 
-        val result = habitCompletionService.getCompletionHistory(testHabit.id)
+        val result = habitCompletionService.getCompletions(testHabit.id)
 
         assertEquals(2, result.size)
         assertEquals(completionDate, result[0].completionDate)
@@ -82,7 +82,7 @@ class HabitCompletionServiceTest : BaseTest() {
     fun `should return empty list when there are no completions of habit`() {
         every { habitCompletionRepository.findByHabitId(testHabit.id) } returns listOf()
 
-        val result = habitCompletionService.getCompletionHistory(testHabit.id)
+        val result = habitCompletionService.getCompletions(testHabit.id)
 
         assertTrue { result.isEmpty() }
 

@@ -18,7 +18,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<String> {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.message)
+        return ResponseEntity.badRequest().body(ex.message)
     }
 
     @ExceptionHandler(NoSuchElementException::class)
