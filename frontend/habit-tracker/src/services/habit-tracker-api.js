@@ -120,7 +120,10 @@ const api = {
     getHabits: () => habitTrackerApi.get("/habits"),
 
     // habit completion
-    getCompletions: (habitId) => habitTrackerApi.get(`/habits/${habitId}/completions`),
+    getCompletions: (habitId, frequency) => {
+        const params = frequency ? { frequency } : {};
+        return habitTrackerApi.get(`/habits/${habitId}/completions`, { params });
+    },
     markCompletion: (habitId, date) => habitTrackerApi.post(`/habits/${habitId}/completions`, { date: date }),
     deleteCompletion: (habitId, date) => habitTrackerApi.delete(`/habits/${habitId}/completions/${date}`)
 

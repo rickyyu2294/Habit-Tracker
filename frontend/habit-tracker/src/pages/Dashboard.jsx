@@ -1,7 +1,7 @@
 import {useState, useEffect} from 'react'
 import Error from '../components/Error'
 import api from '../services/habit-tracker-api' 
-import DashboardHabit from '../components/DashboardHabit'
+import HabitCard from '../components/HabitCard'
 
 function Dashboard() {
     const [error, setError] = useState("")
@@ -32,7 +32,7 @@ function Dashboard() {
             <div className='min-h-80 flex items-center justify-center bg-gray-100'>
                 <ul className='flex flex-col w-1/3 gap-6'>
                     {habits.map((habit) => (
-                        <DashboardHabit key={habit.id} habit={habit} onComplete={fetchHabits}/> 
+                        <HabitCard key={habit.id} habit={habit} onComplete={fetchHabits}/> 
                     ))}
                 </ul>
             </div>
