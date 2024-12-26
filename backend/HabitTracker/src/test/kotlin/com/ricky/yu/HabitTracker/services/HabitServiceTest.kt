@@ -99,20 +99,22 @@ class HabitServiceTest: BaseTest() {
 
     @Test
     fun `should get a habit by id`() {
-        every { habitRepository.findById(testHabit.id) } returns Optional.of(testHabit)
+        every { habitRepository.findByIdAndUserId(any(), any()) } returns Optional.of(testHabit)
+        every { RequestCtxHolder.getRequestContext() } returns requestCtx
 
         val result = habitService.getHabitById(testHabit.id)
 
         assertEquals(result.name, testHabit.name)
 
-        verify { habitRepository.findById(testHabit.id) }
+        verify { habitRepository.findByIdAndUserId(any(), any()) }
     }
 
     @Test
     fun `should update a habit`() {
         val updatedHabit = testHabit.copy(name = "Updated Habit", frequency = Frequency.DAILY)
-        every { habitRepository.findById(testHabit.id) } returns Optional.of(testHabit)
+        every { habitRepository.findByIdAndUserId(any(), any()) } returns Optional.of(testHabit)
         every { habitRepository.save(any()) } returns updatedHabit
+        every { RequestCtxHolder.getRequestContext() } returns requestCtx
 
         val update = HabitController.CreateHabitRequest(
             name = updatedHabit.name,
@@ -124,28 +126,27 @@ class HabitServiceTest: BaseTest() {
         assertEquals("Updated Habit", result.name)
         assertEquals(Frequency.DAILY, result.frequency)
 
-        verify { habitRepository.findById(testHabit.id) }
+        verify { habitRepository.findByIdAndUserId(any(), any()) }
         verify { habitRepository.save(any()) }
     }
 
     @Test
     fun `should delete a habit`() {
-        every { habitRepository.deleteById(testHabit.id) } returns Unit
+        every { habitRepository.delete(testHabit) } returns Unit
+        every { habitService.getHabitById(any()) } returns testHabit
+        every { habitRepository.findByIdAndUserId(any(), any()) } returns Optional.of(testHabit)
+        every { RequestCtxHolder.getRequestContext() } returns requestCtx
 
         habitService.deleteHabit(testHabit.id)
 
-        verify { habitRepository.deleteById(testHabit.id) }
+        verify { habitRepository.delete(testHabit) }
     }
 
     @Test
     fun `should get habit by user and group`() {
         every { habitGroupRepository.findById(any()) } returns Optional.of(testGroup)
         every { habitRepository.findByUserIdAndGroupId(any(), any()) } returns listOf(testHabit)
-        every { RequestCtxHolder.getRequestContext() } returns RequestCtx(
-            userId = 998L,
-            role = Role.USER,
-            requestId = "test-request-id"
-        )
+        every { RequestCtxHolder.getRequestContext() } returns requestCtx
 
         val result = habitService.getHabitsForCurrentUserAndGroup(testGroup.id)
 
@@ -154,5 +155,13 @@ class HabitServiceTest: BaseTest() {
 
         verify { habitGroupRepository.findById(testGroup.id) }
         verify { habitRepository.findByUserIdAndGroupId(testUser.id, testGroup.id) }
+    }
+
+    companion object {
+        val requestCtx = RequestCtx(
+            userId = 998L,
+            role = Role.USER,
+            requestId = "test-request-id"
+        )
     }
 }

@@ -61,16 +61,47 @@ class DataSeeder(
                 frequency = Frequency.DAILY,
                 user = user
             )
-            val completion = HabitCompletion(
+
+            val habit3 = Habit(
+                id = 3L,
+                name = "Pay Bills",
+                description = "gotta pay bills",
+                frequency = Frequency.MONTHLY,
+                user = user
+            )
+
+            val completion1 = HabitCompletion(
                 id = 1L,
                 habit = habit,
                 completionDate = LocalDate.now().minusWeeks(3)
+            )
+
+            val completion3 = HabitCompletion(
+                id = 3L,
+                habit = habit,
+                completionDate = LocalDate.now().minusWeeks(1)
+            )
+
+            val completion4 = HabitCompletion(
+                id = 4L,
+                habit = habit,
+                completionDate = LocalDate.now().minusWeeks(1).minusDays(1)
+            )
+
+            val completion2 = HabitCompletion(
+                id = 2L,
+                habit = habit2,
+                completionDate = LocalDate.now().minusDays(2)
             )
             userRepository.save(user)
             groupRepository.save(group)
             habitRepository.save(habit)
             habitRepository.save(habit2)
-            habitCompletionRepository.save(completion)
+            habitRepository.save(habit3)
+            habitCompletionRepository.save(completion1)
+            habitCompletionRepository.save(completion2)
+            habitCompletionRepository.save(completion3)
+            habitCompletionRepository.save(completion4)
             println("Test user seeded: ${user.email}")
         } else {
             println("Test user already exists")
