@@ -10,17 +10,19 @@ import org.springframework.stereotype.Service
 @Transactional
 @Service
 class HabitGroupService(
-    private val habitGroupRepository: HabitGroupRepository
+    private val habitGroupRepository: HabitGroupRepository,
+    private val userService: UserService
 ) {
-    fun createGroup(name: String, user: User): HabitGroup {
+    fun createGroup(name: String): HabitGroup {
+        val userId = RequestCtxHolder.getRequestContext().userId
         val habitGroup = HabitGroup(
             name = name,
-            user = user
+            user = userService.getUserById(userId)
         )
         return habitGroupRepository.save(habitGroup)
     }
 
-    fun deleteGroup(groupId: Long, user: User) {
+    fun deleteGroup(groupId: Long) {
         val group = getGroupById(groupId)
         habitGroupRepository.delete(group)
     }
