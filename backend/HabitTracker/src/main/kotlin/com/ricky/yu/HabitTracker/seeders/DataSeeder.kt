@@ -64,7 +64,7 @@ class DataSeeder(
             val completion = HabitCompletion(
                 id = 1L,
                 habit = habit,
-                completionDate = LocalDate.now().minusDays(3)
+                completionDate = LocalDate.now().minusWeeks(3)
             )
             userRepository.save(user)
             groupRepository.save(group)

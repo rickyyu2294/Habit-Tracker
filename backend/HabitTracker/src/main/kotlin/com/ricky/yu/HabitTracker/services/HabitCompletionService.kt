@@ -39,9 +39,9 @@ class HabitCompletionService(
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
         return when (frequency) {
-            Frequency.DAILY -> completions.groupBy { it.completionDate.toString() }
-            Frequency.WEEKLY -> completions.groupBy { it.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
-            Frequency.MONTHLY -> completions.groupBy { it.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
+            Frequency.DAILY -> completions.groupBy { completion -> completion.completionDate.toString() }
+            Frequency.WEEKLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
+            Frequency.MONTHLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
             else -> throw IllegalArgumentException("Unsupported interval: $frequency")
         }
     }
