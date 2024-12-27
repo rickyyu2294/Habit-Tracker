@@ -24,15 +24,15 @@ class HabitCompletionServiceTest : BaseTest() {
     @Test
     fun `should mark a habit completion successfully`() {
         val completionDate = LocalDate.now()
-        val completion = HabitCompletion(id = 1L, habit = testHabit, completionDate = completionDate)
+        val completion = HabitCompletion(id = 1L, habit = testHabit, completionDateTime = completionDate)
 
         every { habitService.getHabitById(testHabit.id) } returns testHabit
         every { habitCompletionRepository.save(any()) } returns completion
 
-        val result = habitCompletionService.markCompletion(testUser.id, LocalDate.now())
+        val result = habitCompletionService.createCompletion(testUser.id, LocalDate.now())
 
         assertEquals(completion.id, result.id)
-        assertEquals(completionDate, result.completionDate)
+        assertEquals(completionDate, result.completionDateTime)
 
         verify { habitCompletionRepository.save(any()) }
     }
@@ -43,7 +43,7 @@ class HabitCompletionServiceTest : BaseTest() {
         every { habitCompletionRepository.findByHabitIdAndCompletionDate(any(), any()) } returns null
 
         assertThrows<NoSuchElementException> {
-            habitCompletionService.markCompletion(999L, LocalDate.now())
+            habitCompletionService.createCompletion(999L, LocalDate.now())
         }
         verify { habitService.getHabitById(999L) }
     }
@@ -56,22 +56,22 @@ class HabitCompletionServiceTest : BaseTest() {
             HabitCompletion(
                 id = 1L,
                 habit = testHabit,
-                completionDate = completionDate
+                completionDateTime = completionDate
             ),
             HabitCompletion(
                 id = 2L,
                 habit = testHabit,
-                completionDate = completionDate.minusWeeks(2)
+                completionDateTime = completionDate.minusWeeks(2)
             )
-        ).sortedByDescending { it.completionDate }
+        ).sortedByDescending { it.completionDateTime }
 
         every { habitCompletionRepository.findByHabitId(testHabit.id) } returns completions
 
         val result = habitCompletionService.getCompletions(testHabit.id)
 
         assertEquals(2, result.size)
-        assertEquals(completionDate, result[0].completionDate)
-        assertEquals(completionDate.minusWeeks(2), result[1].completionDate)
+        assertEquals(completionDate, result[0].completionDateTime)
+        assertEquals(completionDate.minusWeeks(2), result[1].completionDateTime)
         assertEquals(testHabit.name, result[0].habit.name)
 
         verify { habitCompletionRepository.findByHabitId(testHabit.id) }

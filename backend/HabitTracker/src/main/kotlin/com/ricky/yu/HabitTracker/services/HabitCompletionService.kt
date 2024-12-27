@@ -5,7 +5,6 @@ import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.repositories.HabitCompletionRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -16,7 +15,7 @@ class HabitCompletionService(
     private val habitCompletionRepository: HabitCompletionRepository
 ) {
 
-    fun markCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
+    fun createCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
         val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(habitId, date)
         // todo: customize calculation of habit completion by frequency
         if (completion != null) {
@@ -24,7 +23,7 @@ class HabitCompletionService(
         } else {
             val newCompletion = HabitCompletion(
                 habit = habitService.getHabitById(habitId),
-                completionDate = date
+                completionDateTime = date
             )
             return habitCompletionRepository.save(newCompletion)
         }
@@ -32,7 +31,7 @@ class HabitCompletionService(
 
     fun getCompletions(habitId: Long): List<HabitCompletion> {
         habitService.validateUserOwnsHabit(habitId)
-        return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
+        return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDateTime }
     }
 
     fun getCompletionsGroupedByInterval(habitId: Long, frequency: Interval): Map<String, List<HabitCompletion>> {
@@ -40,9 +39,9 @@ class HabitCompletionService(
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
         return when (frequency) {
-            Interval.DAILY -> completions.groupBy { completion -> completion.completionDate.toString() }
-            Interval.WEEKLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
-            Interval.MONTHLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
+            Interval.DAILY -> completions.groupBy { completion -> completion.completionDateTime.toString() }
+            Interval.WEEKLY -> completions.groupBy { completion -> completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
+            Interval.MONTHLY -> completions.groupBy { completion -> completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
             else -> throw IllegalArgumentException("Unsupported interval: $frequency")
         }
     }

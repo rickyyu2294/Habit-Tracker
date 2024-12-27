@@ -20,5 +20,5 @@ data class HabitCompletion (
     val habit: Habit,
 
     @Column(nullable = false)
-    val completionDate: LocalDateTime
+    val completionDateTime: LocalDateTime
 )

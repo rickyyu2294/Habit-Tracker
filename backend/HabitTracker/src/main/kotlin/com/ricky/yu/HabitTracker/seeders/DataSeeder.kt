@@ -14,7 +14,6 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Component
@@ -73,22 +72,22 @@ class DataSeeder(
 
             val completion1 = HabitCompletion(
                 habit = habit,
-                completionDate = LocalDateTime.now().minusWeeks(3)
+                completionDateTime = LocalDateTime.now().minusWeeks(3)
             )
 
             val completion3 = HabitCompletion(
                 habit = habit,
-                completionDate = LocalDateTime.now().minusWeeks(1)
+                completionDateTime = LocalDateTime.now().minusWeeks(1)
             )
 
             val completion4 = HabitCompletion(
                 habit = habit,
-                completionDate = LocalDateTime.now().minusWeeks(1).minusDays(1)
+                completionDateTime = LocalDateTime.now().minusWeeks(1).minusDays(1)
             )
 
             val completion2 = HabitCompletion(
                 habit = habit2,
-                completionDate = LocalDateTime.now().minusDays(2)
+                completionDateTime = LocalDateTime.now().minusDays(2)
             )
             userRepository.save(user)
             groupRepository.save(group)
