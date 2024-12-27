@@ -1,4 +1,4 @@
-import { format, isSameDay, subDays, subWeeks } from "date-fns";
+import { format, subDays, subWeeks, subMonths } from "date-fns";
 import api from "../services/habit-tracker-api";
 import { useState, useEffect } from "react";
 import HabitCardCompletionIcon from "./HabitCardCompletionIcon";
@@ -8,7 +8,7 @@ function HabitCard({ habit, onComplete }) {
 
     const fetchCompletions = async () => {
         try {
-            const response = await api.getCompletions(habit.id, habit.frequency);
+            const response = await api.getCompletions(habit.id, habit.interval);
             setCompletions(response.data)
         } catch (err) {
             console.log(err)
@@ -28,18 +28,18 @@ function HabitCard({ habit, onComplete }) {
                 ).reverse();
             case "monthly":
                 return Array.from(
-                    { length: 12 }, (_, i) => format(subMonths(today, i), "yyyy-MM")
+                    { length: 7 }, (_, i) => format(subMonths(today, i), "yyyy-MM")
                 ).reverse();
             default:
                 return [];
         }
     }
 
-    const intervals = getIntervals(habit.frequency);
+    const intervals = getIntervals(habit.interval);
 
     const isIntervalComplete = (interval) => {
         // if completions is populated, find if completions map contains a key with this interval
-        if (completions) {
+        if (completions && completions.completions) {
             return Object.keys(completions.completions).some((value) => value === interval);
         } else {
             return false
@@ -72,7 +72,7 @@ function HabitCard({ habit, onComplete }) {
             <div className='flex flex-col justify-between items-center'>
                 <h2 className='flex-1 text-center font-bold'>{habit.name}</h2>
 
-                <p className='font-thin lowercase'>{habit.frequency}</p>
+                <p className='font-thin lowercase'>{habit.interval}</p>
             </div>
             {/* Completion buttons */}
             <div className="flex gap-4 justify-center">
@@ -85,12 +85,12 @@ function HabitCard({ habit, onComplete }) {
                             isCurrent={isCurrent}
                             isComplete={isIntervalComplete(interval)}
                         >
-                            {habit.frequency.toLowerCase() === "daily"
+                            {habit.interval.toLowerCase() === "daily"
                                 ? format(new Date(interval), "EE").charAt(0) // First letter of weekday
-                                : habit.frequency.toLowerCase() === "weekly"
+                                : habit.interval.toLowerCase() === "weekly"
                                 ? `W${interval.split("W")[1]}` // Week number
-                                : habit.frequency.toLowerCase() === "monthly"
-                                ? format(new Date(interval + "-01"), "MM") // Month name
+                                : habit.interval.toLowerCase() === "monthly"
+                                ? (interval.split("-")[1]) // Month name
                                 : ""}
                         </HabitCardCompletionIcon>
                     )})

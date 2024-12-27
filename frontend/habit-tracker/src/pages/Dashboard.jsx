@@ -29,7 +29,7 @@ function Dashboard() {
                 <Error error={error} />
             </div>
             
-            <div className='min-h-80 flex items-center justify-center bg-gray-100'>
+            <div className='min-h-80 flex items-center justify-center bg-gray-100 py-4'>
                 <ul className='flex flex-col w-1/3 gap-6'>
                     {habits.map((habit) => (
                         <HabitCard key={habit.id} habit={habit} onComplete={fetchHabits}/> 
