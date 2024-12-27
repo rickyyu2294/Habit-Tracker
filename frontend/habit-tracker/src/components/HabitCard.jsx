@@ -2,6 +2,7 @@ import { format, subDays, subWeeks, subMonths } from "date-fns";
 import api from "../services/habit-tracker-api";
 import { useState, useEffect } from "react";
 import HabitCardCompletionIcon from "./HabitCardCompletionIcon";
+import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
 
 function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null)
@@ -70,36 +71,57 @@ function HabitCard({ habit, onComplete }) {
     }, [])
 
     return (
-        <li className='flex flex-col gap-2 bg-slate-50 shadow-lg border rounded-xl border-gray-200 p-4 hover:border-slate-300 hover:bg-slate-100'>
-            {/* Habit title */}
-            <div className='flex flex-col justify-between items-center'>
-                <h2 className='flex-1 text-center font-bold'>{habit.name}</h2>
-
-                <p className='font-thin lowercase'>{habit.interval}</p>
-            </div>
-            {/* Completion buttons */}
-            <div className="flex gap-4 justify-center">
-                {intervals.map((interval, index) => {
-                    const isCurrent = interval === intervals[intervals.length - 1];
-                    return ( // Date completion icon
-                        <HabitCardCompletionIcon 
-                            key={index}
-                            onClick={() => isCurrent && toggleCompletion(habit, interval)}
-                            isCurrent={isCurrent}
-                            isComplete={isIntervalComplete(interval)}
-                        >
-                            {habit.interval.toLowerCase() === "daily"
-                                ? format(new Date(interval), "EE").charAt(0) // First letter of weekday
-                                : habit.interval.toLowerCase() === "weekly"
-                                ? `W${interval.split("W")[1]}` // Week number
-                                : habit.interval.toLowerCase() === "monthly"
-                                ? (interval.split("-")[1]) // Month name
-                                : ""}
-                        </HabitCardCompletionIcon>
-                    )})
-                }
-            </div>
-        </li>
+        <Card
+            elevation={3}
+            sx={{
+                minWidth: 500,
+                margin: "auto",
+                padding: 2,
+                borderRadius: 8,
+                backgroundColor: "#f8f9fa",
+            }}>
+            <CardContent>
+                <Typography variant="h6" align="center" gutterBottom>
+                    {habit.name}
+                </Typography>
+                <Typography
+                    variant="subtitle2"
+                    align="center"
+                    sx={{ textTransform: "capitalize", color: "text.secondary" }}
+                >
+                    {habit.interval}
+                </Typography>
+                <Box display="flex" justifyContent="center" gap={1} mt={2}>
+                    {intervals.map((interval, index) => {
+                        const isCurrent = interval === intervals[intervals.length - 1];
+                        const isComplete = isIntervalComplete(interval)
+                        return (
+                            <Chip
+                                key={index}
+                                label={
+                                    habit.interval.toLowerCase() === "daily"
+                                        ? format(new Date(interval), "EE").charAt(0) // First letter of weekday
+                                        : habit.interval.toLowerCase() === "weekly"
+                                            ? `W${interval.split("W")[1]}` // Week number
+                                            : habit.interval.toLowerCase() === "monthly"
+                                                ? interval.split("-")[1] // Month name
+                                                : ""
+                                }
+                                onClick={() => isCurrent && toggleCompletion(habit, interval)}
+                                clickable={isCurrent}
+                                sx={{
+                                    border: isCurrent ? "2px solid grey" : "",
+                                    backgroundColor: isComplete ? "green" : "grey.300",
+                                    color: isComplete ? "white" : "grey.800",
+                                    opacity: isCurrent ? 1 : 0.8,
+                                    fontWeight: "bold",
+                                }}
+                            />
+                        );
+                    })}
+                </Box>
+            </CardContent>
+        </Card>
     )
 }
 

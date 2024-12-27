@@ -1,44 +1,57 @@
-import {useState, useEffect} from 'react'
-import Error from '../components/Error'
-import api from '../services/habit-tracker-api' 
-import HabitCard from '../components/HabitCard'
+import { useState, useEffect } from 'react';
+import { Container, Typography, Box, Grid, Grid2, Stack } from '@mui/material';
+import Error from '../components/Error';
+import HabitCard from '../components/HabitCard';
+import Page from '../components/Page';
+import api from '../services/habit-tracker-api';
 
 function Dashboard() {
-    const [error, setError] = useState("")
-    const [habits, setHabits] = useState([])
+    const [error, setError] = useState('');
+    const [habits, setHabits] = useState([]);
 
     const fetchHabits = async () => {
         try {
-            const habits = (await api.getHabits()).data
-            setHabits(habits)
+            const response = await api.getHabits();
+            setHabits(response.data);
         } catch (err) {
-            setError("Failed to load habits. Please try again.")
+            setError('Failed to load habits. Please try again.');
         }
-    }
+    };
 
     useEffect(() => {
-        fetchHabits()
-    }, [])
+        fetchHabits();
+    }, []);
 
     return (
-        // Display a list of habits for the logged-in user
-        // Allow users to View/Complete/Add/edit/delete habits
-        <div>
-            <div>
-                <h1 className='text-2xl font-bold p-8 mb-4'>Dashboard</h1>
-                <Error error={error} />
-            </div>
-            
-            <div className='min-h-80 flex items-center justify-center bg-gray-100 py-4'>
-                <ul className='flex flex-col w-1/3 gap-6'>
-                    {habits.map((habit) => (
-                        <HabitCard key={habit.id} habit={habit} onComplete={fetchHabits}/> 
-                    ))}
-                </ul>
-            </div>
-            
-        </div>
-    )
+        <Page title="Dashboard">
+            <Box display="flex" flexDirection="column" alignItems="center">
+                {error && <Error error={error} />}
+                {habits.length > 0 ? (
+                    <Stack maxWidth="sm" minWidth="sm" spacing={3} sx={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                    }}>
+                        {habits.map((habit) => (
+                            <Grid2 key={habit.id}>
+                                <HabitCard habit={habit} onComplete={fetchHabits} />
+                            </Grid2>
+                        ))}
+                    </Stack>
+                ) : (
+                    <Box
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        minHeight="50vh"
+                    >
+                        <Typography variant="body1" color="textSecondary">
+                            No habits found. Add a new habit to get started!
+                        </Typography>
+                    </Box>
+                )}
+            </Box>
+        </Page>
+    );
 }
 
-export default Dashboard
+export default Dashboard;
