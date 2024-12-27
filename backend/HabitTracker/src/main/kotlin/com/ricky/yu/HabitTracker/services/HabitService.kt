@@ -31,12 +31,22 @@ class HabitService(
         return habitRepository.save(habit)
     }
 
-    fun getHabitsForCurrentUser(): List<Habit> {
+    fun getHabitsForCurrentUser(
+        interval: Interval? = null,
+        groupId: Long? = null
+    ): List<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
-        return habitRepository.findByUserId(userId)
+        if (interval != null) {
+            return habitRepository.findByUserIdAndInterval(userId, interval)
+        } else if (groupId != null) {
+            return getHabitsForCurrentUserAndGroup(groupId)
+        } else {
+            return habitRepository.findByUserId(userId)
+        }
     }
 
     fun getHabitsForCurrentUserAndGroup(groupId: Long): List<Habit> {
+
         val userId = RequestCtxHolder.getRequestContext().userId
         val group = habitGroupRepository.findById(groupId).get()
         if (userId == group.user.id) {

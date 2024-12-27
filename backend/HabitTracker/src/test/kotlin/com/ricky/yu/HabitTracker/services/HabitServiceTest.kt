@@ -63,7 +63,8 @@ class HabitServiceTest: BaseTest() {
         val create = HabitController.CreateHabitRequest(
             testHabit.name,
             testHabit.description,
-            testHabit.interval.toString()
+            testHabit.interval.toString(),
+            testHabit.frequency
         )
         val createdHabit = habitService.createHabit(create)
 
@@ -119,7 +120,8 @@ class HabitServiceTest: BaseTest() {
         val update = HabitController.CreateHabitRequest(
             name = updatedHabit.name,
             description = updatedHabit.description,
-            frequency = updatedHabit.interval.toString()
+            frequency = updatedHabit.frequency,
+            interval = updatedHabit.interval.toString()
         )
         val result = habitService.updateHabit(id = testHabit.id, update)
 
