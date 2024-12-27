@@ -15,7 +15,8 @@ class HabitController(
     data class CreateHabitRequest(
         val name: String,
         val description: String,
-        val frequency: String,
+        val interval: String,
+        val frequency: Int,
         val groupId: Long? = null
     )
 
@@ -23,7 +24,8 @@ class HabitController(
         val id: Long,
         val name: String,
         val description: String,
-        val frequency: String,
+        val interval: String,
+        val frequency: Int,
         val groupId: Long?
     )
 
@@ -32,7 +34,8 @@ class HabitController(
             id = this.id,
             name = this.name,
             description = this.description,
-            frequency = this.interval.toString(),
+            interval = this.interval.toString(),
+            frequency = this.frequency,
             groupId = this.group?.id
         )
     }

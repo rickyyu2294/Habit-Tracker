@@ -24,7 +24,7 @@ class HabitService(
         val habit = Habit(
             name = createRequest.name,
             description = createRequest.description,
-            interval = parseFrequency(createRequest),
+            interval = parseInterval(createRequest),
             user = user,
             group = parseHabitGroup(createRequest)
         )
@@ -62,7 +62,7 @@ class HabitService(
         val updatedHabit = existingHabit.copy(
             name = updateRequest.name,
             description = updateRequest.description,
-            interval = parseFrequency(updateRequest),
+            interval = parseInterval(updateRequest),
             updatedAt = LocalDateTime.now(),
             group = group
         )
@@ -95,9 +95,9 @@ class HabitService(
         return group
     }
 
-    private fun parseFrequency(createHabitRequest: HabitController.CreateHabitRequest): Interval {
+    private fun parseInterval(createHabitRequest: HabitController.CreateHabitRequest): Interval {
         val frequency = try {
-            Interval.valueOf(createHabitRequest.frequency.uppercase())
+            Interval.valueOf(createHabitRequest.interval.uppercase())
         } catch (e: IllegalArgumentException) {
             throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}")
         }

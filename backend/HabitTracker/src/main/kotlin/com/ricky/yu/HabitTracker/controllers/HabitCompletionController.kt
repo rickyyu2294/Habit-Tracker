@@ -22,7 +22,7 @@ class HabitCompletionController(
     )
 
     data class GroupedCompletionsResponse(
-        val frequency: String,
+        val interval: String,
         val completions: Map<String, List<CompletionResponse>>
     )
 
@@ -58,17 +58,17 @@ class HabitCompletionController(
     @GetMapping
     fun getCompletions(
         @PathVariable id: Long,
-        @RequestParam(required = false) frequency: String?
+        @RequestParam(required = false) interval: String?
     ): ResponseEntity<Any> {
-        return if (!frequency.isNullOrBlank()) {
+        return if (!interval.isNullOrBlank()) {
             val groupedCompletions = habitCompletionService.getCompletionsGroupedByInterval(
                 id,
-                Interval.valueOf(frequency.uppercase())
+                Interval.valueOf(interval.uppercase())
             ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
 
             ResponseEntity.ok(
                 GroupedCompletionsResponse(
-                    frequency = frequency,
+                    interval = interval,
                     completions = groupedCompletions
                 )
             )
