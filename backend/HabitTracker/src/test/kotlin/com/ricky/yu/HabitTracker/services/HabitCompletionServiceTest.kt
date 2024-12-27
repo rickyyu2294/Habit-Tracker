@@ -29,7 +29,7 @@ class HabitCompletionServiceTest : BaseTest() {
         every { habitService.getHabitById(testHabit.id) } returns testHabit
         every { habitCompletionRepository.save(any()) } returns completion
 
-        val result = habitCompletionService.markCompletion(testUser.id, LocalDate.now())
+        val result = habitCompletionService.createCompletion(testUser.id, LocalDate.now())
 
         assertEquals(completion.id, result.id)
         assertEquals(completionDate, result.completionDateTime)
@@ -43,7 +43,7 @@ class HabitCompletionServiceTest : BaseTest() {
         every { habitCompletionRepository.findByHabitIdAndCompletionDateTime(any(), any()) } returns null
 
         assertThrows<NoSuchElementException> {
-            habitCompletionService.markCompletion(999L, LocalDate.now())
+            habitCompletionService.createCompletion(999L, LocalDate.now())
         }
         verify { habitService.getHabitById(999L) }
     }

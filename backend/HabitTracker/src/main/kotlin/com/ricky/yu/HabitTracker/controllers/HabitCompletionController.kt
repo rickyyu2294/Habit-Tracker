@@ -36,11 +36,11 @@ class HabitCompletionController(
     // APIs
 
     @PostMapping
-    fun markComplete(
+    fun createCompletion(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
     ): ResponseEntity<CompletionResponse> {
-        val completion = habitCompletionService.markCompletion(id, completionRequest.date)
+        val completion = habitCompletionService.createCompletion(id, completionRequest.date)
         return ResponseEntity.created(
             URI.create("/habits/${id}/completions/${completionRequest.date}")
         ).body(completion.toResponse())

@@ -87,7 +87,12 @@ class DataSeeder(
 
             val completion2 = HabitCompletion(
                 habit = habit2,
-                completionDateTime = LocalDateTime.now().minusDays(2)
+                completionDateTime = LocalDateTime.now().minusDays(3)
+            )
+
+            val completion5 = HabitCompletion(
+                habit = habit3,
+                completionDateTime = LocalDateTime.now().minusMonths(3)
             )
             userRepository.save(user)
             groupRepository.save(group)
@@ -98,6 +103,7 @@ class DataSeeder(
             habitCompletionRepository.save(completion2)
             habitCompletionRepository.save(completion3)
             habitCompletionRepository.save(completion4)
+            habitCompletionRepository.save(completion5)
             println("Test user seeded: ${user.email}")
         } else {
             println("Test user already exists")

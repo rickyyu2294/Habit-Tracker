@@ -15,9 +15,8 @@ class HabitCompletionService(
     private val habitCompletionRepository: HabitCompletionRepository
 ) {
 
-    fun markCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
+    fun createCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
         val completion = habitCompletionRepository.findByHabitIdAndCompletionDateTime(habitId, date)
-        // todo: customize calculation of habit completion by frequency
         if (completion != null) {
             throw IllegalArgumentException("Habit $habitId already complete for date $date")
         } else {
@@ -39,7 +38,7 @@ class HabitCompletionService(
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
         return when (frequency) {
-            Interval.DAILY -> completions.groupBy { completion -> completion.completionDateTime.toString() }
+            Interval.DAILY -> completions.groupBy { completion -> completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) }
             Interval.WEEKLY -> completions.groupBy { completion -> completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
             Interval.MONTHLY -> completions.groupBy { completion -> completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
             else -> throw IllegalArgumentException("Unsupported interval: $frequency")
