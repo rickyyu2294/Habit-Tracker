@@ -31,6 +31,9 @@ data class Habit(
     @Column(nullable = false)
     val frequency: Int = 1,
 
+    @Column(nullable = true)
+    val schedule: String? = null, // JSON representation of custom schedule
+
     @Column(nullable = false)
     val createdAt: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC),
 
