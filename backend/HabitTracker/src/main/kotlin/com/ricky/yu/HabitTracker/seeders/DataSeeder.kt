@@ -1,6 +1,6 @@
 package com.ricky.yu.HabitTracker.seeders
 
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.models.Habit
 import com.ricky.yu.HabitTracker.models.HabitCompletion
@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Component
 @Profile("dev", "test")
@@ -50,7 +51,7 @@ class DataSeeder(
                 id = 1L,
                 name = habitName,
                 description = habitDescription,
-                frequency = Frequency.WEEKLY,
+                interval = Interval.WEEKLY,
                 user = user,
                 group = group
             )
@@ -58,7 +59,7 @@ class DataSeeder(
                 id = 2L,
                 name = "Workout",
                 description = "gotta work out",
-                frequency = Frequency.DAILY,
+                interval = Interval.DAILY,
                 user = user
             )
 
@@ -66,32 +67,28 @@ class DataSeeder(
                 id = 3L,
                 name = "Pay Bills",
                 description = "gotta pay bills",
-                frequency = Frequency.MONTHLY,
+                interval = Interval.MONTHLY,
                 user = user
             )
 
             val completion1 = HabitCompletion(
-                id = 1L,
                 habit = habit,
-                completionDate = LocalDate.now().minusWeeks(3)
+                completionDate = LocalDateTime.now().minusWeeks(3)
             )
 
             val completion3 = HabitCompletion(
-                id = 3L,
                 habit = habit,
-                completionDate = LocalDate.now().minusWeeks(1)
+                completionDate = LocalDateTime.now().minusWeeks(1)
             )
 
             val completion4 = HabitCompletion(
-                id = 4L,
                 habit = habit,
-                completionDate = LocalDate.now().minusWeeks(1).minusDays(1)
+                completionDate = LocalDateTime.now().minusWeeks(1).minusDays(1)
             )
 
             val completion2 = HabitCompletion(
-                id = 2L,
                 habit = habit2,
-                completionDate = LocalDate.now().minusDays(2)
+                completionDate = LocalDateTime.now().minusDays(2)
             )
             userRepository.save(user)
             groupRepository.save(group)
@@ -112,7 +109,7 @@ class DataSeeder(
         val userEmail = "test.user@test.com"
         val userName = "Test User"
         val userPassword = "testPassword"
-        val habitName = "Test Habit"
-        val habitDescription = "Test habit description"
+        val habitName = "Meditate"
+        val habitDescription = "gotta meditate"
     }
 }

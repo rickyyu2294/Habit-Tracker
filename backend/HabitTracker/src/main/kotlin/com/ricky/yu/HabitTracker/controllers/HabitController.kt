@@ -32,7 +32,7 @@ class HabitController(
             id = this.id,
             name = this.name,
             description = this.description,
-            frequency = this.frequency.toString(),
+            frequency = this.interval.toString(),
             groupId = this.group?.id
         )
     }

@@ -1,12 +1,12 @@
 package com.ricky.yu.HabitTracker.controllers
 
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.services.HabitCompletionService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @RestController
 @RequestMapping("/habits/{id}/completions")
@@ -14,12 +14,11 @@ class HabitCompletionController(
     private val habitCompletionService: HabitCompletionService
 ) {
     // DTOs
-    data class CompletionRequest(val date: LocalDate)
+    data class CompletionRequest(val date: LocalDateTime)
 
     data class CompletionResponse(
-        val id: Long,
         val habitId: Long,
-        val completionDate: LocalDate
+        val completionDate: LocalDateTime
     )
 
     data class GroupedCompletionsResponse(
@@ -29,7 +28,6 @@ class HabitCompletionController(
 
     fun HabitCompletion.toResponse(): CompletionResponse {
         return CompletionResponse(
-            id = this.id,
             habitId = this.habit.id,
             completionDate = this.completionDate
         )
@@ -51,7 +49,7 @@ class HabitCompletionController(
     @DeleteMapping("/{date}")
     fun deleteCompletion(
         @PathVariable id: Long,
-        @PathVariable date: LocalDate
+        @PathVariable date: LocalDateTime
     ): ResponseEntity<Unit> {
         habitCompletionService.deleteCompletion(id, date)
         return ResponseEntity.noContent().build()
@@ -65,7 +63,7 @@ class HabitCompletionController(
         return if (!frequency.isNullOrBlank()) {
             val groupedCompletions = habitCompletionService.getCompletionsGroupedByInterval(
                 id,
-                Frequency.valueOf(frequency.uppercase())
+                Interval.valueOf(frequency.uppercase())
             ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
 
             ResponseEntity.ok(

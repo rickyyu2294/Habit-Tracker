@@ -2,9 +2,11 @@ package com.ricky.yu.HabitTracker.models
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import jakarta.persistence.*
+import jdk.jfr.Frequency
 import java.time.LocalDateTime
+import java.time.ZoneOffset
 
 @Entity
 @Table(
@@ -24,13 +26,16 @@ data class Habit(
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val frequency: Frequency,
+    val interval: Interval,
 
     @Column(nullable = false)
-    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val frequency: Int = 1,
 
     @Column(nullable = false)
-    val updatedAt: LocalDateTime = LocalDateTime.now(),
+    val createdAt: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC),
+
+    @Column(nullable = false)
+    val updatedAt: LocalDateTime = LocalDateTime.now(ZoneOffset.UTC),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

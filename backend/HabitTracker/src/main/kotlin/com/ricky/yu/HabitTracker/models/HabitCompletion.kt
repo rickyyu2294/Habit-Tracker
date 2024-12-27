@@ -2,7 +2,7 @@ package com.ricky.yu.HabitTracker.models
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import jakarta.persistence.*
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Entity
 @Table(
@@ -20,5 +20,5 @@ data class HabitCompletion (
     val habit: Habit,
 
     @Column(nullable = false)
-    val completionDate: LocalDate
+    val completionDate: LocalDateTime
 )

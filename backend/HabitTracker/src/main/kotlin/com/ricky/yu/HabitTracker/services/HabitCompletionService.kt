@@ -1,11 +1,12 @@
 package com.ricky.yu.HabitTracker.services
 
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import com.ricky.yu.HabitTracker.models.HabitCompletion
 import com.ricky.yu.HabitTracker.repositories.HabitCompletionRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Transactional
@@ -15,7 +16,7 @@ class HabitCompletionService(
     private val habitCompletionRepository: HabitCompletionRepository
 ) {
 
-    fun markCompletion(habitId: Long, date: LocalDate): HabitCompletion {
+    fun markCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
         val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(habitId, date)
         // todo: customize calculation of habit completion by frequency
         if (completion != null) {
@@ -34,19 +35,19 @@ class HabitCompletionService(
         return habitCompletionRepository.findByHabitId(habitId).sortedByDescending { it.completionDate }
     }
 
-    fun getCompletionsGroupedByInterval(habitId: Long, frequency: Frequency): Map<String, List<HabitCompletion>> {
+    fun getCompletionsGroupedByInterval(habitId: Long, frequency: Interval): Map<String, List<HabitCompletion>> {
         habitService.validateUserOwnsHabit(habitId)
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
         return when (frequency) {
-            Frequency.DAILY -> completions.groupBy { completion -> completion.completionDate.toString() }
-            Frequency.WEEKLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
-            Frequency.MONTHLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
+            Interval.DAILY -> completions.groupBy { completion -> completion.completionDate.toString() }
+            Interval.WEEKLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-'W'ww")) }
+            Interval.MONTHLY -> completions.groupBy { completion -> completion.completionDate.format(DateTimeFormatter.ofPattern("yyyy-MM")) }
             else -> throw IllegalArgumentException("Unsupported interval: $frequency")
         }
     }
 
-    fun deleteCompletion(habitId: Long, date: LocalDate) {
+    fun deleteCompletion(habitId: Long, date: LocalDateTime) {
         habitService.validateUserOwnsHabit(habitId)
 
         val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(habitId, date)

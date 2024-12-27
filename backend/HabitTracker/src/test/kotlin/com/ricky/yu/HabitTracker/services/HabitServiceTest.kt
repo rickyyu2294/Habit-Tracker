@@ -4,7 +4,7 @@ import com.ricky.yu.HabitTracker.BaseTest
 import com.ricky.yu.HabitTracker.context.RequestCtx
 import com.ricky.yu.HabitTracker.context.RequestCtxHolder
 import com.ricky.yu.HabitTracker.controllers.HabitController
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import com.ricky.yu.HabitTracker.enums.Role
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.HabitTracker.repositories.HabitRepository
@@ -63,7 +63,7 @@ class HabitServiceTest: BaseTest() {
         val create = HabitController.CreateHabitRequest(
             testHabit.name,
             testHabit.description,
-            testHabit.frequency.toString()
+            testHabit.interval.toString()
         )
         val createdHabit = habitService.createHabit(create)
 
@@ -111,7 +111,7 @@ class HabitServiceTest: BaseTest() {
 
     @Test
     fun `should update a habit`() {
-        val updatedHabit = testHabit.copy(name = "Updated Habit", frequency = Frequency.DAILY)
+        val updatedHabit = testHabit.copy(name = "Updated Habit", interval = Interval.DAILY)
         every { habitRepository.findByIdAndUserId(any(), any()) } returns Optional.of(testHabit)
         every { habitRepository.save(any()) } returns updatedHabit
         every { RequestCtxHolder.getRequestContext() } returns requestCtx
@@ -119,12 +119,12 @@ class HabitServiceTest: BaseTest() {
         val update = HabitController.CreateHabitRequest(
             name = updatedHabit.name,
             description = updatedHabit.description,
-            frequency = updatedHabit.frequency.toString()
+            frequency = updatedHabit.interval.toString()
         )
         val result = habitService.updateHabit(id = testHabit.id, update)
 
         assertEquals("Updated Habit", result.name)
-        assertEquals(Frequency.DAILY, result.frequency)
+        assertEquals(Interval.DAILY, result.interval)
 
         verify { habitRepository.findByIdAndUserId(any(), any()) }
         verify { habitRepository.save(any()) }

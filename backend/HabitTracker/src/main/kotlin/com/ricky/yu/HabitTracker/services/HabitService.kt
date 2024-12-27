@@ -2,7 +2,7 @@ package com.ricky.yu.HabitTracker.services
 
 import com.ricky.yu.HabitTracker.context.RequestCtxHolder
 import com.ricky.yu.HabitTracker.controllers.HabitController
-import com.ricky.yu.HabitTracker.enums.Frequency
+import com.ricky.yu.HabitTracker.enums.Interval
 import com.ricky.yu.HabitTracker.models.Habit
 import com.ricky.yu.HabitTracker.models.HabitGroup
 import com.ricky.yu.HabitTracker.repositories.HabitGroupRepository
@@ -24,7 +24,7 @@ class HabitService(
         val habit = Habit(
             name = createRequest.name,
             description = createRequest.description,
-            frequency = parseFrequency(createRequest),
+            interval = parseFrequency(createRequest),
             user = user,
             group = parseHabitGroup(createRequest)
         )
@@ -62,7 +62,7 @@ class HabitService(
         val updatedHabit = existingHabit.copy(
             name = updateRequest.name,
             description = updateRequest.description,
-            frequency = parseFrequency(updateRequest),
+            interval = parseFrequency(updateRequest),
             updatedAt = LocalDateTime.now(),
             group = group
         )
@@ -95,9 +95,9 @@ class HabitService(
         return group
     }
 
-    private fun parseFrequency(createHabitRequest: HabitController.CreateHabitRequest): Frequency {
+    private fun parseFrequency(createHabitRequest: HabitController.CreateHabitRequest): Interval {
         val frequency = try {
-            Frequency.valueOf(createHabitRequest.frequency.uppercase())
+            Interval.valueOf(createHabitRequest.frequency.uppercase())
         } catch (e: IllegalArgumentException) {
             throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}")
         }

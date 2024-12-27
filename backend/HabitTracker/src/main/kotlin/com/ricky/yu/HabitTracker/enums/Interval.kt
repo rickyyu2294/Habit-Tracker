@@ -1,9 +1,8 @@
 package com.ricky.yu.HabitTracker.enums
 
-enum class Frequency {
+enum class Interval {
     DAILY,
     WEEKLY,
     MONTHLY,
-    YEARLY,
-    CUSTOM
+    YEARLY
 }
