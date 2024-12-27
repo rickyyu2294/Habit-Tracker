@@ -29,7 +29,7 @@ class HabitCompletionServiceTest : BaseTest() {
         every { habitService.getHabitById(testHabit.id) } returns testHabit
         every { habitCompletionRepository.save(any()) } returns completion
 
-        val result = habitCompletionService.createCompletion(testUser.id, LocalDate.now())
+        val result = habitCompletionService.markCompletion(testUser.id, LocalDate.now())
 
         assertEquals(completion.id, result.id)
         assertEquals(completionDate, result.completionDateTime)
@@ -40,10 +40,10 @@ class HabitCompletionServiceTest : BaseTest() {
     @Test
     fun `should throw exception when marking completion for a non-existent habit`() {
         every { habitService.getHabitById(any()) } throws NoSuchElementException("Habit not found")
-        every { habitCompletionRepository.findByHabitIdAndCompletionDate(any(), any()) } returns null
+        every { habitCompletionRepository.findByHabitIdAndCompletionDateTime(any(), any()) } returns null
 
         assertThrows<NoSuchElementException> {
-            habitCompletionService.createCompletion(999L, LocalDate.now())
+            habitCompletionService.markCompletion(999L, LocalDate.now())
         }
         verify { habitService.getHabitById(999L) }
     }

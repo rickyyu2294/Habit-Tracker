@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 @Entity
 @Table(
     name = "habitCompletions",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["completion_date", "habit_id"])]
+    uniqueConstraints = [UniqueConstraint(columnNames = ["completion_date_time", "habit_id"])]
 )
 data class HabitCompletion (
     @Id

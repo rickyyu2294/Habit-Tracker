@@ -14,11 +14,11 @@ class HabitCompletionController(
     private val habitCompletionService: HabitCompletionService
 ) {
     // DTOs
-    data class CompletionRequest(val dateTime: LocalDateTime)
+    data class CompletionRequest(val date: LocalDateTime)
 
     data class CompletionResponse(
         val habitId: Long,
-        val completionDateTime: LocalDateTime
+        val completionDate: LocalDateTime
     )
 
     data class GroupedCompletionsResponse(
@@ -29,38 +29,36 @@ class HabitCompletionController(
     fun HabitCompletion.toResponse(): CompletionResponse {
         return CompletionResponse(
             habitId = this.habit.id,
-            completionDateTime = this.completionDateTime
+            completionDate = this.completionDateTime
         )
     }
 
     // APIs
 
     @PostMapping
-    fun createCompletion(
+    fun markComplete(
         @PathVariable id: Long,
         @RequestBody completionRequest: CompletionRequest
     ): ResponseEntity<CompletionResponse> {
-        val completion = habitCompletionService.createCompletion(id, completionRequest.dateTime)
+        val completion = habitCompletionService.markCompletion(id, completionRequest.date)
         return ResponseEntity.created(
-            URI.create("/habits/${id}/completions/${completionRequest.dateTime}")
+            URI.create("/habits/${id}/completions/${completionRequest.date}")
         ).body(completion.toResponse())
     }
 
-    @DeleteMapping("/{dateTime}")
+    @DeleteMapping("/{date}")
     fun deleteCompletion(
         @PathVariable id: Long,
-        @PathVariable dateTime: LocalDateTime
+        @PathVariable date: LocalDateTime
     ): ResponseEntity<Unit> {
-        habitCompletionService.deleteCompletion(id, dateTime)
+        habitCompletionService.deleteCompletion(id, date)
         return ResponseEntity.noContent().build()
     }
 
     @GetMapping
     fun getCompletions(
         @PathVariable id: Long,
-        @RequestParam(required = false) interval: String?,
-        @RequestParam(required = false) startDate: String?,
-        @RequestParam(required = false) endDate: String?
+        @RequestParam(required = false) interval: String?
     ): ResponseEntity<Any> {
         return if (!interval.isNullOrBlank()) {
             val groupedCompletions = habitCompletionService.getCompletionsGroupedByInterval(

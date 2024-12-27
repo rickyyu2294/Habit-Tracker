@@ -7,5 +7,5 @@ import java.time.LocalDateTime
 interface HabitCompletionRepository: JpaRepository<HabitCompletion, Long> {
     fun findByHabitId(habitId: Long): List<HabitCompletion>
 
-    fun findByHabitIdAndCompletionDate(habitId: Long, completionDate: LocalDateTime): HabitCompletion?
+    fun findByHabitIdAndCompletionDateTime(habitId: Long, completionDateTIme: LocalDateTime): HabitCompletion?
 }

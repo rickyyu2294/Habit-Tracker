@@ -15,8 +15,8 @@ class HabitCompletionService(
     private val habitCompletionRepository: HabitCompletionRepository
 ) {
 
-    fun createCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
-        val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(habitId, date)
+    fun markCompletion(habitId: Long, date: LocalDateTime): HabitCompletion {
+        val completion = habitCompletionRepository.findByHabitIdAndCompletionDateTime(habitId, date)
         // todo: customize calculation of habit completion by frequency
         if (completion != null) {
             throw IllegalArgumentException("Habit $habitId already complete for date $date")
@@ -49,7 +49,7 @@ class HabitCompletionService(
     fun deleteCompletion(habitId: Long, date: LocalDateTime) {
         habitService.validateUserOwnsHabit(habitId)
 
-        val completion = habitCompletionRepository.findByHabitIdAndCompletionDate(habitId, date)
+        val completion = habitCompletionRepository.findByHabitIdAndCompletionDateTime(habitId, date)
             ?: throw IllegalArgumentException("Habit $habitId has no completion for date $date")
 
         habitCompletionRepository.delete(completion)
