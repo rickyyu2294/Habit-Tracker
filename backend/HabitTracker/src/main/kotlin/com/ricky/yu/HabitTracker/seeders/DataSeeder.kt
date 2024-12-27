@@ -56,8 +56,8 @@ class DataSeeder(
             )
             val habit2 = Habit(
                 id = 2L,
-                name = "Workout",
-                description = "gotta work out",
+                name = "Meditate",
+                description = "gotta meditate",
                 interval = Interval.DAILY,
                 user = user
             )
@@ -114,7 +114,7 @@ class DataSeeder(
         val userEmail = "test.user@test.com"
         val userName = "Test User"
         val userPassword = "testPassword"
-        val habitName = "Meditate"
-        val habitDescription = "gotta meditate"
+        val habitName = "Climb"
+        val habitDescription = "gotta climb"
     }
 }
