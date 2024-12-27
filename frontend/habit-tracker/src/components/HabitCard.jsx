@@ -47,7 +47,10 @@ function HabitCard({ habit, onComplete }) {
     };
 
     const toggleCompletion = async (habit, date) => {
+        // todo: change this from toggling to opening a dialog to complete or delete
+
         const isComplete = isIntervalComplete(date);
+        const habitId = habit.id;
         try {
             if (isComplete) {
                 await api.deleteCompletion(habitId, date);

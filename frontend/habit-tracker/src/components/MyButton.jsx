@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Button({
+function MyButton({
     children, 
     onClick, 
     type = "button", 
@@ -17,4 +17,4 @@ function Button({
     )
 }
 
-export default Button
+export default MyButton
