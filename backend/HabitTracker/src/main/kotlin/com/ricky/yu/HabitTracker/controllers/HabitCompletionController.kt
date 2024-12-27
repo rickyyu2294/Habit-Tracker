@@ -55,6 +55,15 @@ class HabitCompletionController(
         return ResponseEntity.noContent().build()
     }
 
+    @PostMapping("/bulkDelete")
+    fun bulkDelete(
+        @PathVariable id: Long,
+        @RequestBody completionResponses: List<CompletionResponse>
+    ): ResponseEntity<Unit> {
+        habitCompletionService.deleteCompletions(id, completionResponses.map { it.completionDate })
+        return  ResponseEntity.noContent().build()
+    }
+
     @GetMapping
     fun getCompletions(
         @PathVariable id: Long,

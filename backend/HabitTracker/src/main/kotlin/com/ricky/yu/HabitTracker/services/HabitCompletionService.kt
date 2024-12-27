@@ -54,4 +54,8 @@ class HabitCompletionService(
 
         habitCompletionRepository.delete(completion)
     }
+
+    fun deleteCompletions(habitId: Long, dateTimes: List<LocalDateTime>) {
+        habitCompletionRepository.deleteAllByHabitIdAndCompletionDateTimeIn(habitId, dateTimes)
+    }
 }
