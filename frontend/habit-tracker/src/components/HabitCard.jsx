@@ -87,7 +87,7 @@ function HabitCard({ habit, onComplete }) {
                 <Typography
                     variant="subtitle2"
                     align="center"
-                    sx={{ textTransform: "capitalize", color: "text.secondary" }}
+                    sx={{ textTransform: "lowercase", color: "text.secondary" }}
                 >
                     {habit.interval}
                 </Typography>
@@ -109,10 +109,9 @@ function HabitCard({ habit, onComplete }) {
                                 }
                                 onClick={() => isCurrent && toggleCompletion(habit, interval)}
                                 clickable={isCurrent}
+                                color={isComplete ? "success" : "default"}
                                 sx={{
                                     border: isCurrent ? "2px solid grey" : "",
-                                    backgroundColor: isComplete ? "green" : "grey.300",
-                                    color: isComplete ? "white" : "grey.800",
                                     opacity: isCurrent ? 1 : 0.8,
                                     fontWeight: "bold",
                                 }}

@@ -1,13 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Container, Typography, Box, Grid, Grid2, Stack } from '@mui/material';
+import { Typography, Box, Grid2, Stack, Fab, Modal } from '@mui/material';
 import Error from '../components/Error';
 import HabitCard from '../components/HabitCard';
 import Page from '../components/Page';
 import api from '../services/habit-tracker-api';
+import { Add, AddCircleOutline } from '@mui/icons-material';
+import NewHabitForm from '../components/NewHabitForm';
 
 function Dashboard() {
     const [error, setError] = useState('');
     const [habits, setHabits] = useState([]);
+    const [newHabitModalOpen, setNewHabitModalOpen] = useState(false);
+
+    const handleNewHabitOnClose = () => {
+        setNewHabitModalOpen(false);
+        fetchHabits();
+    }
 
     const fetchHabits = async () => {
         try {
@@ -49,7 +57,25 @@ function Dashboard() {
                         </Typography>
                     </Box>
                 )}
+                <Box display="flex" justifyContent="flex-end" width="100%" p={2}>
+                    <Fab color="primary" aria-label="add" onClick={() => setNewHabitModalOpen(true)}>
+                        <Add />
+                    </Fab>
+                </Box>
             </Box>
+
+            {/* New Habit Modal */}
+            <Modal
+                open={newHabitModalOpen}
+                onClose={() => setNewHabitModalOpen(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box display={"flex"}>
+                    <NewHabitForm onClose={handleNewHabitOnClose} />
+                </Box>
+            </Modal>
+
         </Page>
     );
 }

@@ -34,7 +34,7 @@ habitTrackerApi.interceptors.response.use(
         const isAuthEndpoint = authEndpoints.some((endpoint) => {
             return originalRequest.url.includes(endpoint)
         })
-        
+
         // Check if the error is due to an expired access token
         if (error.response && error.response.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
             originalRequest._retry = true; // Prevent infinite retry loops
@@ -55,7 +55,7 @@ habitTrackerApi.interceptors.response.use(
                     window.location.href = "/login"; // Redirect to login page
                 }
             }
-            
+
             // Wait for the current refresh attempt to complete
             return new Promise((resolve, reject) => {
                 subscribeTokenRefresh((newAccessToken) => {
@@ -98,7 +98,7 @@ async function refreshAccessToken() {
 
     try {
         const response = await habitTrackerApi.post("/refresh", { token: refreshToken });
-        const {accessToken: newAccessToken, refreshToken: newRefreshToken} = response.data;
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data;
 
         // Store the new access token in localStorage
         localStorage.setItem("accessToken", newAccessToken);
@@ -115,9 +115,12 @@ async function refreshAccessToken() {
 const api = {
     // auth
     login: (email, password) => login(email, password),
-    
+
     // habit
     getHabits: () => habitTrackerApi.get("/habits"),
+    createHabit: (name, description, interval, frequency) => {
+        return habitTrackerApi.post("/habits", { name, description, interval, frequency });
+    },
 
     // habit completion
     getCompletions: (habitId, interval) => {
