@@ -22,20 +22,20 @@ const LoginForm = () => {
     console.log("Password:", password);
     // Add your login logic here (e.g., API call)
     try {
-        await api.login(email, password);
-        navigate("/dashboard");
+      await api.login(email, password);
+      navigate("/dashboard");
     } catch (err) {
-        switch(err.code) {
-            case "ERR_NETWORK":
-                setError("Network Error");
-                break;
-            case "ERR_BAD_REQUEST":
-                setError("Invalid Credentials");
-                break;
-            default:
-                setError("Unknown Error " + err.code);
-        }
-        console.log(error)
+      switch (err.code) {
+        case "ERR_NETWORK":
+          setError("Network Error");
+          break;
+        case "ERR_BAD_REQUEST":
+          setError("Invalid Credentials");
+          break;
+        default:
+          setError("Unknown Error " + err.code);
+      }
+      console.log(error);
     }
   };
 
@@ -70,12 +70,7 @@ const LoginForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-            >
+            <Button type="submit" variant="contained" color="primary" fullWidth>
               Login
             </Button>
           </Box>
