@@ -121,6 +121,7 @@ const api = {
     createHabit: (name, description, interval, frequency) => {
         return habitTrackerApi.post("/habits", { name, description, interval, frequency });
     },
+    deleteHabit: (habitId) => habitTrackerApi.delete(`/habits/${habitId}`),
 
     // habit completion
     getCompletions: (habitId, interval) => {

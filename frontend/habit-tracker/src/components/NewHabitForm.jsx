@@ -12,6 +12,8 @@ import {
     MenuItem,
 } from "@mui/material";
 import api from "../services/habit-tracker-api";
+import Form from "./Form";
+import { Height } from "@mui/icons-material";
 
 const NewHabitForm = ({ onClose }) => {
     const [formStep, setFormStep] = useState(1);
@@ -20,21 +22,6 @@ const NewHabitForm = ({ onClose }) => {
     const [interval, setInterval] = useState("");
     const [frequency, setFrequency] = useState("");
     const [error, setError] = useState("");
-
-    const validateStep = () => {
-        switch (formStep) {
-            case 1:
-                if (!name) return "Habit Name is required.";
-                if (!description) return "Description is required.";
-                return "";
-            case 2:
-                if (!frequency) return "Frequency is required.";
-                if (!interval) return "Interval is required.";
-                return "";
-            default:
-                return "";
-        }
-    };
 
     const handleNext = () => {
         const validationError = validateStep();
@@ -69,6 +56,21 @@ const NewHabitForm = ({ onClose }) => {
         }
     };
 
+    const validateStep = () => {
+        switch (formStep) {
+            case 1:
+                if (!name) return "Habit Name is required.";
+                if (!description) return "Description is required.";
+                return "";
+            case 2:
+                if (!frequency) return "Frequency is required.";
+                if (!interval) return "Interval is required.";
+                return "";
+            default:
+                return "";
+        }
+    };
+
     const renderStepContent = () => {
         switch (formStep) {
             case 1:
@@ -98,14 +100,20 @@ const NewHabitForm = ({ onClose }) => {
                 return (
                     <>
                         <FormControl fullWidth required>
-                            <InputLabel id="frequency-select-label">Frequency</InputLabel>
+                            <InputLabel id="frequency-select-label">How many times?</InputLabel>
                             <Select
                                 labelId="frequency-select-label"
                                 id="frequency-select"
                                 value={frequency}
+                                label="How many times?"
                                 onChange={(e) => setFrequency(e.target.value)}
+                                MenuProps={{slotProps: {
+                                    paper: {
+                                        sx: { maxHeight: 1/3 }
+                                    }
+                                } }}
                             >
-                                {[...Array(30).keys()].map((num) => (
+                                {[...Array(31).keys()].map((num) => (
                                     <MenuItem key={num + 1} value={num + 1}>
                                         {num + 1} time{num + 1 > 1 ? "s" : ""}
                                     </MenuItem>
@@ -113,11 +121,12 @@ const NewHabitForm = ({ onClose }) => {
                             </Select>
                         </FormControl>
                         <FormControl fullWidth required>
-                            <InputLabel id="interval-select-label">Interval</InputLabel>
+                            <InputLabel id="interval-select-label">Per period of time?</InputLabel>
                             <Select
                                 labelId="interval-select-label"
                                 id="interval-select"
                                 value={interval}
+                                label="Per period of time?"
                                 onChange={(e) => setInterval(e.target.value)}
                             >
                                 <MenuItem value={"DAILY"}>Per Day</MenuItem>
@@ -132,44 +141,44 @@ const NewHabitForm = ({ onClose }) => {
         }
     };
 
+
+    // JSX
     return (
-        <Container maxWidth="xs">
-            <Paper elevation={3} sx={{ padding: 4, marginTop: 8 }}>
-                <Typography variant="h5" component="h1" gutterBottom>
-                    New Habit
+        <Form>
+            <Typography variant="h5" component="h1" gutterBottom>
+                New Habit
+            </Typography>
+            {error && (
+                <Typography color="error" variant="body2" gutterBottom>
+                    {error}
                 </Typography>
-                {error && (
-                    <Typography color="error" variant="body2" gutterBottom>
-                        {error}
-                    </Typography>
-                )}
-                <form onSubmit={handleSubmit}>
-                    <Box display="flex" flexDirection="column" gap={2}>
-                        {renderStepContent()}
-                        <Box display="flex" justifyContent="space-between">
-                            {formStep > 1 ? (
-                                <Button variant="outlined" onClick={handleBack}>
-                                    Back
-                                </Button>
-                            ) : (
-                                <Button variant="outlined" color="secondary" onClick={onClose}>
-                                    Cancel
-                                </Button>
-                            )}
-                            {formStep < 2 ? (
-                                <Button variant="contained" color="primary" onClick={handleNext}>
-                                    Next
-                                </Button>
-                            ) : (
-                                <Button type="submit" variant="contained" color="primary">
-                                    Submit
-                                </Button>
-                            )}
-                        </Box>
+            )}
+            <form onSubmit={handleSubmit}>
+                <Box display="flex" flexDirection="column" gap={2}>
+                    {renderStepContent()}
+                    <Box display="flex" justifyContent="space-between">
+                        {formStep > 1 ? (
+                            <Button variant="outlined" onClick={handleBack}>
+                                Back
+                            </Button>
+                        ) : (
+                            <Button variant="outlined" color="secondary" onClick={onClose}>
+                                Cancel
+                            </Button>
+                        )}
+                        {formStep < 2 ? (
+                            <Button variant="contained" color="primary" onClick={handleNext}>
+                                Next
+                            </Button>
+                        ) : (
+                            <Button type="submit" variant="contained" color="primary">
+                                Submit
+                            </Button>
+                        )}
                     </Box>
-                </form>
-            </Paper>
-        </Container>
+                </Box>
+            </form>
+        </Form>
     );
 };
 

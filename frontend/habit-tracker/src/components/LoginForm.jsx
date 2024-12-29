@@ -45,6 +45,11 @@ const LoginForm = () => {
         <Typography variant="h5" component="h1" gutterBottom>
           Login
         </Typography>
+        {error && (
+          <Typography variant="body2" color="error" gutterBottom>
+            {error}
+          </Typography>
+        )}
         <form onSubmit={handleSubmit}>
           <Box display="flex" flexDirection="column" gap={2}>
             <TextField

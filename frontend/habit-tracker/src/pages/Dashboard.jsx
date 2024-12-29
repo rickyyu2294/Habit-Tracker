@@ -57,7 +57,15 @@ function Dashboard() {
                         </Typography>
                     </Box>
                 )}
-                <Box display="flex" justifyContent="flex-end" width="100%" p={2}>
+                <Box display="flex" justifyContent="flex-end" width="100%" p={2}
+                    sx={
+                        {
+                            position: "fixed",
+                            bottom: '5vw', // 16px from the bottom of the screen
+                            right: '5vw',  // 16px from the right of the screen
+                        }
+                    }
+                >
                     <Fab color="primary" aria-label="add" onClick={() => setNewHabitModalOpen(true)}>
                         <Add />
                     </Fab>
@@ -67,7 +75,7 @@ function Dashboard() {
             {/* New Habit Modal */}
             <Modal
                 open={newHabitModalOpen}
-                onClose={() => setNewHabitModalOpen(false)}
+                onClose={handleNewHabitOnClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
