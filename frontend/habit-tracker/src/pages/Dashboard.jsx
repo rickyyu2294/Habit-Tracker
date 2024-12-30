@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { Typography, Box, Grid2, Stack, Fab, Modal } from "@mui/material";
-import Error from "../components/Error";
-import HabitCard from "../components/HabitCard";
-import Page from "../components/Page";
+import HabitCard from "../components/Dashboard/HabitCard";
+import Page from "../components/Layout/Page";
 import api from "../services/habit-tracker-api";
 import { Add } from "@mui/icons-material";
-import NewHabitForm from "../components/NewHabitForm";
+import NewHabitForm from "../components/Forms/NewHabitForm";
+import ErrorMessage from "../components/Layout/ErrorMessage";
 import React from "react";
 
 const Dashboard = () => {
@@ -35,7 +35,7 @@ const Dashboard = () => {
     return (
         <Page title="Dashboard">
             <Box display="flex" flexDirection="column" alignItems="center">
-                {error && <Error error={error} />}
+                {error && <ErrorMessage error={error} />}
                 {habits.length > 0 ? (
                     <Stack
                         maxWidth="sm"

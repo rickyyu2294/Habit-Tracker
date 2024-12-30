@@ -7,7 +7,7 @@ import {
     Container,
     Paper,
 } from "@mui/material";
-import ErrorMessage from "../ErrorMessage";
+import ErrorMessage from "../Layout/ErrorMessage";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/habit-tracker-api";
 

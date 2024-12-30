@@ -10,7 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import { Close, Menu } from "@mui/icons-material";
-import DeleteHabitModal from "./DeleteHabitModal";
+import DeleteHabitModal from "../Modals/DeleteHabitModal";
 import React from "react";
 import PropTypes from "prop-types";
 

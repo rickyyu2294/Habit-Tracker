@@ -10,8 +10,8 @@ import {
     MenuItem,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import api from "../services/habit-tracker-api";
-import Form from "./Forms/Form";
+import api from "../../services/habit-tracker-api";
+import Form from "./Form";
 
 const NewHabitForm = ({ onClose }) => {
     const [formStep, setFormStep] = useState(1);
