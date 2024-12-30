@@ -1,19 +1,13 @@
 import { format, subDays, subWeeks, subMonths } from "date-fns";
 import api from "../../services/habit-tracker-api";
 import { useState, useEffect } from "react";
-import {
-    Box,
-    Card,
-    CardContent,
-    Chip,
-    IconButton,
-    Typography,
-} from "@mui/material";
+import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import DeleteHabitModal from "../Modals/DeleteHabitModal";
 import React from "react";
 import PropTypes from "prop-types";
 import MenuIcon from "@mui/icons-material/Menu";
 import HabitCardMenu from "./HabitCardMenu";
+import HabitCardCompletionChip from "./HabitCardCompletionChip";
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);
@@ -69,10 +63,11 @@ export default function HabitCard({ habit, onComplete }) {
 
     const handleMenuClose = () => {
         setMenuAnchorEl(null);
-    }
+    };
 
     const handleDeleteClicked = () => {
         setDeleteModalOpen(true);
+        setMenuAnchorEl(null);
     };
 
     const handleDeleteModalClose = async () => {
@@ -80,119 +75,97 @@ export default function HabitCard({ habit, onComplete }) {
         onComplete();
     };
 
-    const toggleCompletion = async (habit, date) => {
-        // todo: change this from toggling to opening a dialog to complete or delete
+    // const toggleCompletion = async (habit, date) => {
+    //     // todo: change this from toggling to opening a dialog to complete or delete
 
-        const isComplete = isIntervalComplete(date);
-        const habitId = habit.id;
-        try {
-            if (isComplete) {
-                await api.deleteCompletion(habitId, date);
-            } else {
-                await api.markCompletion(habitId, date);
-            }
-            const response = await api.getCompletions(habitId);
-            setCompletions(response.data || []);
-            onComplete();
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    //     const isComplete = isIntervalComplete(date);
+    //     const habitId = habit.id;
+    //     try {
+    //         if (isComplete) {
+    //             await api.deleteCompletion(habitId, date);
+    //         } else {
+    //             await api.markCompletion(habitId, date);
+    //         }
+    //         const response = await api.getCompletions(habitId);
+    //         setCompletions(response.data || []);
+    //         onComplete();
+    //     } catch (err) {
+    //         console.log(err);
+    //     }
+    // };
 
     useEffect(() => {
         fetchCompletions();
     }, []);
 
     return (
-        <>
-            <Card
-                elevation={3}
-                sx={{
-                    minWidth: 500,
-                    margin: "auto",
-                    padding: 2,
-                    borderRadius: 8,
-                    backgroundColor: "#f8f9fa",
-                }}
-            >
-                <CardContent>
-                    {/* Action Icons */}
-                    <Box display={"flex"} justifyContent={"flex-end"}>
-                        <IconButton onClick={handleMenuClick}>
-                            <MenuIcon />
-                        </IconButton>
-                        <HabitCardMenu 
-                            menuAnchorEl={menuAnchorEl} 
-                            menuOpen={menuOpen} 
-                            handleMenuClose={handleMenuClose} 
-                            handleDeleteClicked={handleDeleteClicked}
-                        />
-                    </Box>
+        <Card
+            elevation={3}
+            sx={{
+                minWidth: 500,
+                margin: "auto",
+                padding: 2,
+                borderRadius: 8,
+                backgroundColor: "#f8f9fa",
+            }}
+        >
+            <CardContent>
+                {/* Action Icons */}
+                <Box display={"flex"} justifyContent={"flex-end"}>
+                    <IconButton onClick={handleMenuClick}>
+                        <MenuIcon />
+                    </IconButton>
+                </Box>
 
-                    {/* Title */}
-                    <Typography variant="h6" align="center" gutterBottom>
-                        {habit.name}
-                    </Typography>
-                    <Typography
-                        variant="subtitle2"
-                        align="center"
-                        sx={{
-                            textTransform: "lowercase",
-                            color: "text.secondary",
-                        }}
-                    >
-                        {habit.interval}
-                    </Typography>
+                {/* Title */}
+                <Typography variant="h6" align="center" gutterBottom>
+                    {habit.name}
+                </Typography>
+                <Typography
+                    variant="subtitle2"
+                    align="center"
+                    sx={{
+                        textTransform: "lowercase",
+                        color: "text.secondary",
+                    }}
+                >
+                    {habit.interval}
+                </Typography>
 
-                    {/* Completion Icons */}
-                    <Box display="flex" justifyContent="center" gap={1} mt={2}>
-                        {intervals.map((interval, index) => {
-                            const isCurrent =
-                                interval === intervals[intervals.length - 1];
-                            const isComplete = isIntervalComplete(interval);
-                            return (
-                                <Chip
-                                    key={index}
-                                    label={
-                                        habit.interval.toLowerCase() === "daily"
-                                            ? format(
-                                                  new Date(interval),
-                                                  "EE",
-                                              ).charAt(0) // First letter of weekday
-                                            : habit.interval.toLowerCase() ===
-                                                "weekly"
-                                              ? `W${interval.split("W")[1]}` // Week number
-                                              : habit.interval.toLowerCase() ===
-                                                  "monthly"
-                                                ? interval.split("-")[1] // Month name
-                                                : ""
-                                    }
-                                    onClick={() =>
-                                        isCurrent &&
-                                        toggleCompletion(habit, interval)
-                                    }
-                                    clickable={isCurrent}
-                                    color={isComplete ? "success" : "default"}
-                                    sx={{
-                                        border: isCurrent
-                                            ? "2px solid grey"
-                                            : "",
-                                        opacity: isCurrent ? 1 : 0.8,
-                                        fontWeight: "bold",
-                                    }}
-                                />
-                            );
-                        })}
-                    </Box>
-                </CardContent>
-            </Card>
+                {/* Completion Icons */}
+                <Box display="flex" justifyContent="center" gap={1} mt={2}>
+                    {intervals.map((interval, index) => {
+                        const isCurrent =
+                            interval === intervals[intervals.length - 1];
+                        const isComplete = isIntervalComplete(interval);
+                        return (
+                            <HabitCardCompletionChip
+                                key={index}
+                                interval={interval}
+                                habit={habit}
+                                isCurrent={isCurrent}
+                                isComplete={isComplete}
+                            />
+                        );
+                    })}
+                </Box>
+            </CardContent>
+            {/* Menus */}
+            <HabitCardMenu
+                menuAnchorEl={menuAnchorEl}
+                menuOpen={menuOpen}
+                handleMenuClose={handleMenuClose}
+                handleDeleteClicked={handleDeleteClicked}
+            />
+
+            {/* Modals */}
             <DeleteHabitModal
                 open={deleteModalOpen}
                 onClose={handleDeleteModalClose}
                 habit={habit}
                 onComplete={onComplete}
             />
-        </>
+        </Card>
     );
 }
 HabitCard.propTypes = {
