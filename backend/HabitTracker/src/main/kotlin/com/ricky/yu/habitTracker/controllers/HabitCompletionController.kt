@@ -1,0 +1,97 @@
+package com.ricky.yu.habitTracker.controllers
+
+import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.models.HabitCompletion
+import com.ricky.yu.habitTracker.services.HabitCompletionService
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
+import java.net.URI
+import java.time.LocalDateTime
+
+@RestController
+@RequestMapping("/habits/{id}/completions")
+class HabitCompletionController(
+    private val habitCompletionService: HabitCompletionService,
+) {
+    // DTOs
+    data class CompletionRequest(val date: LocalDateTime)
+
+    data class CompletionResponse(
+        val habitId: Long,
+        val completionDate: LocalDateTime,
+    )
+
+    data class GroupedCompletionsResponse(
+        val interval: String,
+        val completions: Map<String, List<CompletionResponse>>,
+    )
+
+    fun HabitCompletion.toResponse(): CompletionResponse {
+        return CompletionResponse(
+            habitId = this.habit.id,
+            completionDate = this.completionDateTime,
+        )
+    }
+
+    // APIs
+
+    @PostMapping
+    fun createCompletion(
+        @PathVariable id: Long,
+        @RequestBody completionRequest: CompletionRequest,
+    ): ResponseEntity<CompletionResponse> {
+        val completion = habitCompletionService.createCompletion(id, completionRequest.date)
+        return ResponseEntity.created(
+            URI.create("/habits/$id/completions/${completionRequest.date}"),
+        ).body(completion.toResponse())
+    }
+
+    @DeleteMapping("/{date}")
+    fun deleteCompletion(
+        @PathVariable id: Long,
+        @PathVariable date: LocalDateTime,
+    ): ResponseEntity<Unit> {
+        habitCompletionService.deleteCompletion(id, date)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/bulkDelete")
+    fun bulkDelete(
+        @PathVariable id: Long,
+        @RequestBody completionResponses: List<CompletionResponse>,
+    ): ResponseEntity<Unit> {
+        habitCompletionService.deleteCompletions(id, completionResponses.map { it.completionDate })
+        return ResponseEntity.noContent().build()
+    }
+
+    @GetMapping
+    fun getCompletions(
+        @PathVariable id: Long,
+        @RequestParam(required = false) interval: String?,
+    ): ResponseEntity<Any> {
+        return if (!interval.isNullOrBlank()) {
+            val groupedCompletions =
+                habitCompletionService.getCompletionsGroupedByInterval(
+                    id,
+                    Interval.valueOf(interval.uppercase()),
+                ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
+
+            ResponseEntity.ok(
+                GroupedCompletionsResponse(
+                    interval = interval,
+                    completions = groupedCompletions,
+                ),
+            )
+        } else {
+            val completions = habitCompletionService.getCompletions(id)
+            ResponseEntity.ok(completions.map { it.toResponse() })
+        }
+    }
+}
