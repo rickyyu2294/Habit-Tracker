@@ -2,7 +2,7 @@ import React from "react";
 import { Container, Typography, Box } from "@mui/material";
 import PropTypes from "prop-types";
 
-const Page = ({ title, children }) => {
+export default function Page({ title, children }) {
     return (
         <Container maxWidth="lg" sx={{ minHeight: "100vh", py: 4 }}>
             <Box sx={{ mb: 4 }}>
@@ -18,5 +18,3 @@ Page.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
 };
-
-export default Page;

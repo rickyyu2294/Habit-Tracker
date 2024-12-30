@@ -38,8 +38,8 @@ const Dashboard = () => {
                 {error && <ErrorMessage error={error} />}
                 {habits.length > 0 ? (
                     <Stack
-                        maxWidth="sm"
-                        minWidth="sm"
+                        maxWidth="lg"
+                        minWidth="lg"
                         spacing={3}
                         sx={{
                             justifyContent: "center",

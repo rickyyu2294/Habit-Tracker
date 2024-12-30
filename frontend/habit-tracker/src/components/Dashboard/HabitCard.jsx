@@ -3,20 +3,23 @@ import api from "../../services/habit-tracker-api";
 import { useState, useEffect } from "react";
 import {
     Box,
-    Button,
     Card,
     CardContent,
     Chip,
+    IconButton,
     Typography,
 } from "@mui/material";
-import { Close, Menu } from "@mui/icons-material";
 import DeleteHabitModal from "../Modals/DeleteHabitModal";
 import React from "react";
 import PropTypes from "prop-types";
+import MenuIcon from "@mui/icons-material/Menu";
+import HabitCardMenu from "./HabitCardMenu";
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+    const menuOpen = Boolean(menuAnchorEl);
 
     const fetchCompletions = async () => {
         try {
@@ -59,6 +62,14 @@ export default function HabitCard({ habit, onComplete }) {
             return false;
         }
     };
+
+    const handleMenuClick = (event) => {
+        setMenuAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setMenuAnchorEl(null);
+    }
 
     const handleDeleteClicked = () => {
         setDeleteModalOpen(true);
@@ -106,15 +117,16 @@ export default function HabitCard({ habit, onComplete }) {
             >
                 <CardContent>
                     {/* Action Icons */}
-                    <Box display={"flex"} justifyContent={"space-between"}>
-                        <Menu
-                            aria-controls="habit-card-menu"
-                            aria-haspopup="true"
-                            onClick={(e) => e.stopPropagation()}
+                    <Box display={"flex"} justifyContent={"flex-end"}>
+                        <IconButton onClick={handleMenuClick}>
+                            <MenuIcon />
+                        </IconButton>
+                        <HabitCardMenu 
+                            menuAnchorEl={menuAnchorEl} 
+                            menuOpen={menuOpen} 
+                            handleMenuClose={handleMenuClose} 
+                            handleDeleteClicked={handleDeleteClicked}
                         />
-                        <Button onClick={handleDeleteClicked}>
-                            <Close color="action" />
-                        </Button>
                     </Box>
 
                     {/* Title */}
