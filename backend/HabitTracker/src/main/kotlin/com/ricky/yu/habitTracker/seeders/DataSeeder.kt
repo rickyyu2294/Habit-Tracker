@@ -18,7 +18,7 @@ import java.time.LocalDateTime
 
 @Component
 @Profile("dev", "test")
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "MayBeConst")
 class DataSeeder(
     private val userRepository: UserRepository,
     private val habitRepository: HabitRepository,
