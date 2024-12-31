@@ -9,13 +9,11 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
-import jakarta.persistence.UniqueConstraint
 import java.time.LocalDateTime
 
 @Entity
 @Table(
-    name = "habitCompletions",
-    uniqueConstraints = [UniqueConstraint(columnNames = ["completion_date_time", "habit_id"])],
+    name = "habitCompletions"
 )
 data class HabitCompletion(
     @Id

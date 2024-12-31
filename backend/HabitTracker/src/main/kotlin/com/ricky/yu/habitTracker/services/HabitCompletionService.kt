@@ -62,21 +62,21 @@ class HabitCompletionService(
 
     fun deleteCompletion(
         habitId: Long,
-        date: LocalDateTime,
+        id: Long,
     ) {
         habitService.validateUserOwnsHabit(habitId)
 
-        val completion =
-            habitCompletionRepository.findByHabitIdAndCompletionDateTime(habitId, date)
-                ?: throw IllegalArgumentException("Habit $habitId has no completion for date $date")
+        val completion: HabitCompletion =
+            habitCompletionRepository.findByHabitIdAndId(habitId, id)
+                ?: throw IllegalArgumentException("Habit $habitId has no completion $id")
 
         habitCompletionRepository.delete(completion)
     }
 
     fun deleteCompletions(
         habitId: Long,
-        dateTimes: List<LocalDateTime>,
+        ids: List<Long>,
     ) {
-        habitCompletionRepository.deleteAllByHabitIdAndCompletionDateTimeIn(habitId, dateTimes)
+        habitCompletionRepository.deleteAllByHabitIdAndIdIn(habitId, ids)
     }
 }
