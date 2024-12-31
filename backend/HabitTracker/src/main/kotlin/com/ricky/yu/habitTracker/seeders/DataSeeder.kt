@@ -54,6 +54,7 @@ class DataSeeder(
                     id = 1L,
                     name = habitName,
                     description = habitDescription,
+                    frequency = 3,
                     interval = Interval.WEEKLY,
                     user = user,
                     group = group,
