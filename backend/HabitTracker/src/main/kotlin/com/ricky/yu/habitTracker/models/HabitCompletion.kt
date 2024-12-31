@@ -13,7 +13,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(
-    name = "habitCompletions"
+    name = "habitCompletions",
 )
 data class HabitCompletion(
     @Id

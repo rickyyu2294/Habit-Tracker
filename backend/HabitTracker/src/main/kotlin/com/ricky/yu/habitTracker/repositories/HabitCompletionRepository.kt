@@ -12,7 +12,13 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
         completionDateTIme: LocalDateTime,
     ): HabitCompletion?
 
-    fun findByHabitIdAndId(habitId: Long, id: Long): HabitCompletion?
+    fun findByHabitIdAndId(
+        habitId: Long,
+        id: Long,
+    ): HabitCompletion?
 
-    fun deleteAllByHabitIdAndIdIn(habitId: Long, ids: List<Long>)
+    fun deleteAllByHabitIdAndIdIn(
+        habitId: Long,
+        ids: List<Long>,
+    )
 }
