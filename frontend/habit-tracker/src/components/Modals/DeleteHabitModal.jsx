@@ -4,10 +4,10 @@ import api from "../../services/habit-tracker-api";
 import React from "react";
 import PropTypes from "prop-types";
 
-export default function DeleteHabitModal({ habit, open, onClose, onComplete }) {
+export default function DeleteHabitModal({ habit, open, onClose }) {
     const handleDelete = async () => {
         await api.deleteHabit(habit.id);
-        onComplete();
+        onClose();
     };
 
     return (
@@ -44,5 +44,4 @@ DeleteHabitModal.propTypes = {
     habit: PropTypes.object.isRequired,
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    onComplete: PropTypes.func.isRequired,
 };

@@ -9,11 +9,11 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 function Home() {
-    const isLoggedIn = localStorage.getItem("accessToken") != null
+    const isLoggedIn = localStorage.getItem("accessToken") != null;
     const navigate = useNavigate();
-    
+
     const redirect = () => {
-        if(isLoggedIn) {
+        if (isLoggedIn) {
             navigate("/dashboard");
         } else {
             navigate("/login");
@@ -22,9 +22,9 @@ function Home() {
 
     useEffect(() => {
         redirect();
-    }, [])
+    }, []);
 
-    return (<></>);
+    return <></>;
 }
 
 function App() {

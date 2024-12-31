@@ -13,7 +13,7 @@ export default function Page({ title, children }) {
             {children}
         </Container>
     );
-};
+}
 Page.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,

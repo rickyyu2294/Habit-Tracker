@@ -8,6 +8,7 @@ export default function HabitCardCompletionChip({
     interval,
     isComplete,
     isCurrent,
+    onClick,
 }) {
     return (
         <Chip
@@ -20,10 +21,7 @@ export default function HabitCardCompletionChip({
                         ? interval.split("-")[1] // Month name
                         : ""
             }
-            onClick={() => isCurrent }
-            // implement click to open completion dialog
-            // && toggleCompletion(habit, interval)}
-            clickable={isCurrent}
+            onClick={onClick}
             color={isComplete ? "success" : "default"}
             sx={{
                 border: isCurrent ? "2px solid grey" : "",
@@ -37,5 +35,6 @@ HabitCardCompletionChip.propTypes = {
     habit: PropTypes.object.isRequired,
     interval: PropTypes.string.isRequired,
     isComplete: PropTypes.bool.isRequired,
-    isCurrent: PropTypes.bool.isRequired
-}
+    isCurrent: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
+};

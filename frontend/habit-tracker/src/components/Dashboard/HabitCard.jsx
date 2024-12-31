@@ -8,10 +8,13 @@ import PropTypes from "prop-types";
 import MenuIcon from "@mui/icons-material/Menu";
 import HabitCardMenu from "./HabitCardMenu";
 import HabitCardCompletionChip from "./HabitCardCompletionChip";
+import CompletionModal from "./CompletionModal";
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [completionModalOpen, setCompletionModalOpen] = useState(false);
+    const [selectedInterval, setSelectedInterval] = useState(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null);
     const menuOpen = Boolean(menuAnchorEl);
 
@@ -75,6 +78,16 @@ export default function HabitCard({ habit, onComplete }) {
         onComplete();
     };
 
+    const handleCompletionChipClick = (interval) => {
+        setSelectedInterval(interval);
+        setCompletionModalOpen(true);
+    };
+
+    const handleCompletionModalClose = async () => {
+        setCompletionModalOpen(false);
+        onComplete();
+    };
+
     // const toggleCompletion = async (habit, date) => {
     //     // todo: change this from toggling to opening a dialog to complete or delete
 
@@ -134,18 +147,22 @@ export default function HabitCard({ habit, onComplete }) {
 
                 {/* Completion Icons */}
                 <Box display="flex" justifyContent="center" gap={1} mt={2}>
-                    {intervals.map((interval, index) => {
+                    {intervals.map((interval) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
                         const isComplete = isIntervalComplete(interval);
                         return (
-                            <HabitCardCompletionChip
-                                key={index}
-                                interval={interval}
-                                habit={habit}
-                                isCurrent={isCurrent}
-                                isComplete={isComplete}
-                            />
+                            <>
+                                <HabitCardCompletionChip
+                                    interval={interval}
+                                    habit={habit}
+                                    isCurrent={isCurrent}
+                                    isComplete={isComplete}
+                                    onClick={() =>
+                                        handleCompletionChipClick(interval)
+                                    }
+                                />
+                            </>
                         );
                     })}
                 </Box>
@@ -163,7 +180,13 @@ export default function HabitCard({ habit, onComplete }) {
                 open={deleteModalOpen}
                 onClose={handleDeleteModalClose}
                 habit={habit}
-                onComplete={onComplete}
+            />
+
+            <CompletionModal
+                open={completionModalOpen}
+                onClose={handleCompletionModalClose}
+                habit={habit}
+                interval={selectedInterval}
             />
         </Card>
     );

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Typography, Box, Grid2, Stack, Fab, Modal } from "@mui/material";
+import { Typography, Box, Stack, Fab, Modal } from "@mui/material";
 import HabitCard from "../components/Dashboard/HabitCard";
 import Page from "../components/Layout/Page";
 import api from "../services/habit-tracker-api";
@@ -46,13 +46,12 @@ const Dashboard = () => {
                             alignItems: "center",
                         }}
                     >
-                        {habits.map((habit) => (
-                            <Grid2 key={habit.id}>
-                                <HabitCard
-                                    habit={habit}
-                                    onComplete={fetchHabits}
-                                />
-                            </Grid2>
+                        {habits.map((habit, index) => (
+                            <HabitCard
+                                key={index}
+                                habit={habit}
+                                onComplete={fetchHabits}
+                            />
                         ))}
                     </Stack>
                 ) : (
