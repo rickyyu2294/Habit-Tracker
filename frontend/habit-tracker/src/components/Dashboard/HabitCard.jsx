@@ -8,7 +8,7 @@ import PropTypes from "prop-types";
 import MenuIcon from "@mui/icons-material/Menu";
 import HabitCardMenu from "./HabitCardMenu";
 import HabitCardCompletionChip from "./HabitCardCompletionChip";
-import CompletionModal from "./CompletionModal";
+import CompletionModal from "../Modals/CompletionModal";
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);

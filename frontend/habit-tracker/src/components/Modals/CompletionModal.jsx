@@ -4,13 +4,11 @@ import React from "react";
 import CompletionForm from "../Forms/CompletionForm";
 
 export default function CompletionModal({ open, onClose, habit, interval }) {
-    const numCompletions = habit.frequency;
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
                 {interval ? (
                     <CompletionForm
-                        numCompletions={numCompletions}
                         habit={habit}
                         interval={interval}
                     />
