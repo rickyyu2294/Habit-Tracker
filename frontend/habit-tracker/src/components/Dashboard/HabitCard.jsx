@@ -147,13 +147,14 @@ export default function HabitCard({ habit, onComplete }) {
 
                 {/* Completion Icons */}
                 <Box display="flex" justifyContent="center" gap={1} mt={2}>
-                    {intervals.map((interval) => {
+                    {intervals.map((interval, index) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
                         const isComplete = isIntervalComplete(interval);
                         return (
                             <>
                                 <HabitCardCompletionChip
+                                    key={index}
                                     interval={interval}
                                     habit={habit}
                                     isCurrent={isCurrent}
