@@ -13,7 +13,7 @@ export default function CompletionForm({ habit, interval }) {
     const fetchCompletions = async () => {
         try {
             // fetch completions
-            const response = await api.getCompletionsByInterval(habit.id, habit.interval);
+            const response = await api.getCompletions(habit.id, habit.interval);
             const completions = response.data.completions[interval];
             setCompletions(completions);
         } catch (err) {
