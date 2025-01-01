@@ -20,7 +20,7 @@ export default function HabitCard({ habit, onComplete }) {
 
     const fetchCompletions = async () => {
         try {
-            const response = await api.getCompletions(habit.id, habit.interval);
+            const response = await api.getCompletionsByInterval(habit.id, habit.interval);
             setCompletions(response.data);
         } catch (err) {
             console.log(err);
@@ -147,13 +147,14 @@ export default function HabitCard({ habit, onComplete }) {
 
                 {/* Completion Icons */}
                 <Box display="flex" justifyContent="center" gap={1} mt={2}>
-                    {intervals.map((interval) => {
+                    {intervals.map((interval, index) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
                         const isComplete = isIntervalComplete(interval);
                         return (
                             <>
                                 <HabitCardCompletionChip
+                                    key={index}
                                     interval={interval}
                                     habit={habit}
                                     isCurrent={isCurrent}

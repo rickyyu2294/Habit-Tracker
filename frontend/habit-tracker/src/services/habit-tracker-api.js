@@ -140,9 +140,9 @@ const api = {
     deleteHabit: (habitId) => habitTrackerApi.delete(`/habits/${habitId}`),
 
     // habit completion
-    getCompletions: (habitId, interval) => {
+    getCompletionsByInterval: (habitId, interval) => {
         const params = interval ? { interval } : {};
-        return habitTrackerApi.get(`/habits/${habitId}/completions`, {
+        return habitTrackerApi.get(`/habits/${habitId}/completions/intervals`, {
             params,
         });
     },
