@@ -2,7 +2,7 @@ package com.ricky.yu.habitTracker.models
 
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
@@ -35,7 +35,7 @@ data class Habit(
     val description: String = "",
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    val interval: Interval,
+    val interval: IntervalType,
     @Column(nullable = false)
     val frequency: Int = 1,
     // JSON representation of custom schedule

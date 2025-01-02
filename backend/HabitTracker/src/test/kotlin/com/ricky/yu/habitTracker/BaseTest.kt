@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.enums.Role
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitGroup
@@ -31,7 +31,7 @@ open class BaseTest {
             id = 998L,
             name = "Test Habit",
             description = "This is a test habit",
-            interval = Interval.WEEKLY,
+            interval = IntervalType.WEEKLY,
             user = testUser,
             group = testGroup,
         )

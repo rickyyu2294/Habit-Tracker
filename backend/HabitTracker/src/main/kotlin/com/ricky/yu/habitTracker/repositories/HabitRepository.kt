@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.repositories
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.Habit
 import org.springframework.data.jpa.repository.JpaRepository
 import java.util.Optional
@@ -25,6 +25,6 @@ interface HabitRepository : JpaRepository<Habit, Long> {
 
     fun findByUserIdAndInterval(
         userId: Long,
-        interval: Interval,
+        interval: IntervalType,
     ): List<Habit>
 }

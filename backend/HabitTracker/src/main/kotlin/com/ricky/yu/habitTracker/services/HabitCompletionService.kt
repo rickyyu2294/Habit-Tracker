@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.services
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
 import jakarta.transaction.Transactional
@@ -35,23 +35,23 @@ class HabitCompletionService(
 
     fun getCompletionsGroupedByInterval(
         habitId: Long,
-        frequency: Interval,
+        frequency: IntervalType,
     ): Map<String, List<HabitCompletion>> {
         habitService.validateUserOwnsHabit(habitId)
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
         return when (frequency) {
-            Interval.DAILY ->
+            IntervalType.DAILY ->
                 completions.groupBy {
                         completion ->
                     completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                 }
-            Interval.WEEKLY ->
+            IntervalType.WEEKLY ->
                 completions.groupBy {
                         completion ->
                     completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-'W'ww"))
                 }
-            Interval.MONTHLY ->
+            IntervalType.MONTHLY ->
                 completions.groupBy {
                         completion ->
                     completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM"))

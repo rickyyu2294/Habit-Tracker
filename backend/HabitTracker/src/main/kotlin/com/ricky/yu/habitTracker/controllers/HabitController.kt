@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.controllers
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.services.HabitService
 import org.springframework.http.ResponseEntity
@@ -63,7 +63,7 @@ class HabitController(
     fun getAllHabits(
         @RequestParam interval: String?,
     ): ResponseEntity<List<HabitResponse>> {
-        val habits = habitService.getHabitsForCurrentUser(interval = interval?.let { Interval.valueOf(it.uppercase()) })
+        val habits = habitService.getHabitsForCurrentUser(interval = interval?.let { IntervalType.valueOf(it.uppercase()) })
         return ResponseEntity.ok(habits.map { it.toResponse() })
     }
 

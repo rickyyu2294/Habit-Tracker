@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.controllers
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.services.HabitCompletionService
 import org.springframework.http.ResponseEntity
@@ -80,18 +80,18 @@ class HabitCompletionController(
     @GetMapping
     fun getCompletions(
         @PathVariable habitId: Long,
-        @RequestParam(required = false) interval: String?,
+        @RequestParam(required = false) intervalType: String?,
     ): ResponseEntity<Any> {
-        return if (!interval.isNullOrBlank()) {
+        return if (!intervalType.isNullOrBlank()) {
             val groupedCompletions =
                 habitCompletionService.getCompletionsGroupedByInterval(
                     habitId,
-                    Interval.valueOf(interval.uppercase()),
+                    IntervalType.valueOf(intervalType.uppercase()),
                 ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
 
             ResponseEntity.ok(
                 GroupedCompletionsResponse(
-                    interval = interval,
+                    interval = intervalType,
                     completions = groupedCompletions,
                 ),
             )

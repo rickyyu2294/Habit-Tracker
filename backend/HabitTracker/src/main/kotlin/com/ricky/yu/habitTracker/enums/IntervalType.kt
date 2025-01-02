@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.enums
 
-enum class Interval {
+enum class IntervalType {
     DAILY,
     WEEKLY,
     MONTHLY,

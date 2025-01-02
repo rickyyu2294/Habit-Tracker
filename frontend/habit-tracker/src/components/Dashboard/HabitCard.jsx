@@ -184,6 +184,7 @@ export default function HabitCard({ habit, onComplete }) {
             />
 
             <CompletionModal
+                key={selectedInterval}
                 open={completionModalOpen}
                 onClose={handleCompletionModalClose}
                 habit={habit}

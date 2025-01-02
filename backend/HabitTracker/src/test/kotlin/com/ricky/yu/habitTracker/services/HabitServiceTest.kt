@@ -4,7 +4,7 @@ import com.ricky.yu.habitTracker.BaseTest
 import com.ricky.yu.habitTracker.context.RequestCtx
 import com.ricky.yu.habitTracker.context.RequestCtxHolder
 import com.ricky.yu.habitTracker.controllers.HabitController
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.enums.Role
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.habitTracker.repositories.HabitRepository
@@ -123,7 +123,7 @@ class HabitServiceTest : BaseTest() {
 
     @Test
     fun `should update a habit`() {
-        val updatedHabit = testHabit.copy(name = "Updated Habit", interval = Interval.DAILY)
+        val updatedHabit = testHabit.copy(name = "Updated Habit", interval = IntervalType.DAILY)
         every { habitRepository.findByIdAndUserId(any(), any()) } returns Optional.of(testHabit)
         every { habitRepository.save(any()) } returns updatedHabit
         every { RequestCtxHolder.getRequestContext() } returns requestCtx
@@ -138,7 +138,7 @@ class HabitServiceTest : BaseTest() {
         val result = habitService.updateHabit(id = testHabit.id, update)
 
         assertEquals("Updated Habit", result.name)
-        assertEquals(Interval.DAILY, result.interval)
+        assertEquals(IntervalType.DAILY, result.interval)
 
         verify { habitRepository.findByIdAndUserId(any(), any()) }
         verify { habitRepository.save(any()) }

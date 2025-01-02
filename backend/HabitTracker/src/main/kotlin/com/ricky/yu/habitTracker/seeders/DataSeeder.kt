@@ -1,6 +1,6 @@
 package com.ricky.yu.habitTracker.seeders
 
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.enums.Role
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitCompletion
@@ -55,7 +55,7 @@ class DataSeeder(
                     name = habitName,
                     description = habitDescription,
                     frequency = 3,
-                    interval = Interval.WEEKLY,
+                    interval = IntervalType.WEEKLY,
                     user = user,
                     group = group,
                 )
@@ -64,7 +64,7 @@ class DataSeeder(
                     id = 2L,
                     name = "Meditate",
                     description = "gotta meditate",
-                    interval = Interval.DAILY,
+                    interval = IntervalType.DAILY,
                     user = user,
                 )
 
@@ -73,7 +73,7 @@ class DataSeeder(
                     id = 3L,
                     name = "Pay Bills",
                     description = "gotta pay bills",
-                    interval = Interval.MONTHLY,
+                    interval = IntervalType.MONTHLY,
                     user = user,
                 )
 

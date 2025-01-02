@@ -2,7 +2,7 @@ package com.ricky.yu.habitTracker.services
 
 import com.ricky.yu.habitTracker.context.RequestCtxHolder
 import com.ricky.yu.habitTracker.controllers.HabitController
-import com.ricky.yu.habitTracker.enums.Interval
+import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitGroup
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
@@ -33,7 +33,7 @@ class HabitService(
     }
 
     fun getHabitsForCurrentUser(
-        interval: Interval? = null,
+        interval: IntervalType? = null,
         groupId: Long? = null,
     ): List<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
@@ -105,10 +105,10 @@ class HabitService(
         return group
     }
 
-    private fun parseInterval(createHabitRequest: HabitController.CreateHabitRequest): Interval {
+    private fun parseInterval(createHabitRequest: HabitController.CreateHabitRequest): IntervalType {
         val frequency =
             try {
-                Interval.valueOf(createHabitRequest.interval.uppercase())
+                IntervalType.valueOf(createHabitRequest.interval.uppercase())
             } catch (e: IllegalArgumentException) {
                 throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}", e)
             }
