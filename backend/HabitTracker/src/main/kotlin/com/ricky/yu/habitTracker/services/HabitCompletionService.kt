@@ -90,27 +90,32 @@ class HabitCompletionService(
         val habit = habitService.getHabitById(habitId)
         require(habit.interval in IntervalType.entries)
 
-        val (startDateTime, endDateTime) = when (habit.interval) {
-            IntervalType.DAILY -> {
-                IntervalUtils.dailyIntervalToRange(interval)
-            }
-            IntervalType.WEEKLY -> {
-                IntervalUtils.weeklyIntervalToRange(interval)
-            }
-            IntervalType.MONTHLY -> {
-                IntervalUtils.monthlyIntervalToRange(interval)
+        val (startDateTime, endDateTime) =
+            when (habit.interval) {
+                IntervalType.DAILY -> {
+                    IntervalUtils.dailyIntervalToRange(interval)
+                }
+                IntervalType.WEEKLY -> {
+                    IntervalUtils.weeklyIntervalToRange(interval)
+                }
+                IntervalType.MONTHLY -> {
+                    IntervalUtils.monthlyIntervalToRange(interval)
+                }
+
+                IntervalType.YEARLY -> TODO()
             }
 
-            IntervalType.YEARLY -> TODO()
+        val latestCompletion =
+            habitCompletionRepository
+                .findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
+                    habitId,
+                    startDateTime,
+                    endDateTime,
+                )
+        requireNotNull(latestCompletion) {
+            "No completion in range $startDateTime and $endDateTime" +
+                " for interval $interval of habit $habitId"
         }
-
-        val latestCompletion = habitCompletionRepository.findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
-            habitId,
-            startDateTime,
-            endDateTime
-        )
-        requireNotNull(latestCompletion) { "No completion in range $startDateTime and $endDateTime" +
-                " for interval $interval of habit $habitId"}
 
         habitCompletionRepository.delete(latestCompletion)
     }

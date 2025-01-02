@@ -22,11 +22,12 @@ object IntervalUtils {
 
     fun weeklyIntervalToRange(interval: String): Pair<LocalDateTime, LocalDateTime> {
         val year = interval.substring(0, 4).toInt() // Extract year
-        val week = interval.substring(6).toInt()   // Extract week number
+        val week = interval.substring(6).toInt() // Extract week number
 
-        val startDate = LocalDate.ofYearDay(year, 1)
-            .with(WeekFields.SUNDAY_START.weekOfYear(), week.toLong())
-            .with(WeekFields.SUNDAY_START.dayOfWeek(), 1)
+        val startDate =
+            LocalDate.ofYearDay(year, 1)
+                .with(WeekFields.SUNDAY_START.weekOfYear(), week.toLong())
+                .with(WeekFields.SUNDAY_START.dayOfWeek(), 1)
 
         val start = startDate.atStartOfDay()
         val end = startDate.plusWeeks(1).atStartOfDay()

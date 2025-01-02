@@ -2,8 +2,6 @@ package com.ricky.yu.habitTracker.repositories
 
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import org.springframework.data.jpa.repository.JpaRepository
-import org.springframework.data.jpa.repository.Query
-import org.springframework.data.repository.query.Param
 import java.time.LocalDateTime
 
 interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
@@ -27,6 +25,6 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
     fun findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
         habitId: Long,
         startDateTime: LocalDateTime,
-        endDateTime: LocalDateTime
+        endDateTime: LocalDateTime,
     ): HabitCompletion?
 }
