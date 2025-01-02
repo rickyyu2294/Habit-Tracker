@@ -23,15 +23,15 @@ export default function CompletionForm({ habit, interval }) {
         }
     };
 
-    const handleIncrementCompletion = () => {
-        // increment completions
-        // todo: implement increment completions
+    const handleIncrementCompletion = async () => {
+        api.createCompletionInInterval(habit.id, interval);
+        setNumCompletions(numCompletions + 1);
         console.log("Decrementing completions");
     };
 
     const handleDecrementCompletion = () => {
-        // decrement completions
-        // todo: implement decrement completions
+        api.deleteLatestCompletionInInterval(habit.id, interval);
+        setNumCompletions(numCompletions - 1);
         console.log("Incrementing completions");
     };
 
@@ -85,13 +85,13 @@ export default function CompletionForm({ habit, interval }) {
                         }}
                     >
                         <IconButton
-                            onClick={handleIncrementCompletion}
+                            onClick={handleDecrementCompletion}
                             disabled={numCompletions === 0}
                         >
                             <Remove />
                         </IconButton>
                         <IconButton
-                            onClick={handleDecrementCompletion}
+                            onClick={handleIncrementCompletion}
                             disabled={numCompletions === habit.frequency}
                         >
                             <Add />

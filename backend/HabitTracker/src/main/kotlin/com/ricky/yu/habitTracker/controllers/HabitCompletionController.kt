@@ -85,7 +85,7 @@ class HabitCompletionController(
     }
 
     @DeleteMapping("/intervals/{interval}/latest")
-    fun deleteLatestCompletion(
+    fun deleteLatestCompletionInInterval(
         @PathVariable habitId: Long,
         @PathVariable interval: String,
     ): ResponseEntity<Void> {
