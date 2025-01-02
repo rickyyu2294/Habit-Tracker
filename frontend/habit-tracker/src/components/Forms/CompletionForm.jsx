@@ -13,9 +13,10 @@ export default function CompletionForm({ habit, interval }) {
         try {
             // fetch completions
             const response = await api.getCompletions(habit.id, habit.interval);
-            const groupedIntervalResponse = response.data.groupedIntervalResponses.find((group) => 
-                group.interval === interval
-            );
+            const groupedIntervalResponse =
+                response.data.groupedIntervalResponses.find(
+                    (group) => group.interval === interval,
+                );
             setNumCompletions(groupedIntervalResponse?.completions.length || 0);
         } catch (err) {
             console.error(err);
@@ -64,10 +65,14 @@ export default function CompletionForm({ habit, interval }) {
                             justifyContent: "center",
                         }}
                     >
-                        <Typography 
-                            variant="h6" 
-                            align="center" 
-                            color={numCompletions === habit.frequency ? "success" : "text.primary"}
+                        <Typography
+                            variant="h6"
+                            align="center"
+                            color={
+                                numCompletions === habit.frequency
+                                    ? "success"
+                                    : "text.primary"
+                            }
                         >
                             {numCompletions} / {habit.frequency}
                         </Typography>
@@ -76,7 +81,7 @@ export default function CompletionForm({ habit, interval }) {
                         sx={{
                             display: "flex",
                             justifyContent: "center",
-                            gap: 2
+                            gap: 2,
                         }}
                     >
                         <IconButton
@@ -99,5 +104,5 @@ export default function CompletionForm({ habit, interval }) {
 }
 CompletionForm.propTypes = {
     habit: PropTypes.object.isRequired,
-    interval: PropTypes.string.isRequired
+    interval: PropTypes.string.isRequired,
 };

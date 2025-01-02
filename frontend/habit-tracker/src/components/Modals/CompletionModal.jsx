@@ -8,10 +8,7 @@ export default function CompletionModal({ open, onClose, habit, interval }) {
         <Modal open={open} onClose={onClose}>
             <Box sx={{ display: "flex", flexDirection: "column" }}>
                 {interval ? (
-                    <CompletionForm
-                        habit={habit}
-                        interval={interval}
-                    />
+                    <CompletionForm habit={habit} interval={interval} />
                 ) : (
                     <Typography
                         variant="body1"

@@ -53,16 +53,15 @@ export default function HabitCard({ habit, onComplete }) {
         if (!completions?.groupedIntervalResponses) {
             return false; // Early return if the groupedIntervalResponses are not available
         }
-    
+
         // Find the interval in the grouped responses
-        const intervalGroup = completions.groupedIntervalResponses.find((group) => 
-            group.interval === interval
+        const intervalGroup = completions.groupedIntervalResponses.find(
+            (group) => group.interval === interval,
         );
-    
+
         // Check if completions exist for the interval
         return intervalGroup?.completions?.length > 0 || false;
     };
-    
 
     const handleMenuClick = (event) => {
         setMenuAnchorEl(event.currentTarget);
