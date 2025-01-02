@@ -55,8 +55,8 @@ export default function HabitCard({ habit, onComplete }) {
         }
     
         // Find the interval in the grouped responses
-        const intervalGroup = completions.groupedIntervalResponses.find(
-            (group) => group.interval === interval
+        const intervalGroup = completions.groupedIntervalResponses.find((group) => 
+            group.interval === interval
         );
     
         // Check if completions exist for the interval
@@ -91,25 +91,6 @@ export default function HabitCard({ habit, onComplete }) {
         setCompletionModalOpen(false);
         onComplete();
     };
-
-    // const toggleCompletion = async (habit, date) => {
-    //     // todo: change this from toggling to opening a dialog to complete or delete
-
-    //     const isComplete = isIntervalComplete(date);
-    //     const habitId = habit.id;
-    //     try {
-    //         if (isComplete) {
-    //             await api.deleteCompletion(habitId, date);
-    //         } else {
-    //             await api.markCompletion(habitId, date);
-    //         }
-    //         const response = await api.getCompletions(habitId);
-    //         setCompletions(response.data || []);
-    //         onComplete();
-    //     } catch (err) {
-    //         console.log(err);
-    //     }
-    // };
 
     useEffect(() => {
         fetchCompletions();

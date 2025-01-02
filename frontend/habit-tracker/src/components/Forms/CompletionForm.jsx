@@ -7,15 +7,16 @@ import { Add, Remove } from "@mui/icons-material";
 import api from "../../services/habit-tracker-api";
 
 export default function CompletionForm({ habit, interval }) {
-    const [completions, setCompletions] = useState({});
-    const numCompletions = completions ? completions.length : 0;
+    const [numCompletions, setNumCompletions] = useState(0);
 
     const fetchCompletions = async () => {
         try {
             // fetch completions
             const response = await api.getCompletions(habit.id, habit.interval);
-            const completions = response.data.completions[interval];
-            setCompletions(completions);
+            const groupedIntervalResponse = response.data.groupedIntervalResponses.find((group) => 
+                group.interval === interval
+            );
+            setNumCompletions(groupedIntervalResponse?.completions.length || 0);
         } catch (err) {
             console.error(err);
         }
