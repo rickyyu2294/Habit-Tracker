@@ -141,7 +141,7 @@ const api = {
 
     // habit completion
     getCompletions: (habitId, intervalType) => {
-        const params = intervalType ? { interval: intervalType } : {};
+        const params = intervalType ? { intervalType: intervalType } : {};
         return habitTrackerApi.get(`/habits/${habitId}/completions`, {
             params,
         });

@@ -5,6 +5,9 @@ import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
 import com.ricky.yu.habitTracker.utils.IntervalUtils
 import com.ricky.yu.habitTracker.utils.IntervalUtils.dailyFormatter
+import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInDailyInterval
+import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInMonthlyInterval
+import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInWeeklyInterval
 import com.ricky.yu.habitTracker.utils.IntervalUtils.monthlyFormatter
 import com.ricky.yu.habitTracker.utils.IntervalUtils.weeklyFormatter
 import jakarta.transaction.Transactional
@@ -19,16 +22,37 @@ class HabitCompletionService(
 ) {
     fun createCompletion(
         habitId: Long,
-        date: LocalDateTime,
+        dateTime: LocalDateTime,
     ): HabitCompletion {
-        val completion = habitCompletionRepository.findByHabitIdAndCompletionDateTime(habitId, date)
-        requireNotNull(completion) { "Habit $habitId already complete for date $date" }
+        habitService.validateUserOwnsHabit(habitId)
         val newCompletion =
             HabitCompletion(
                 habit = habitService.getHabitById(habitId),
-                completionDateTime = date,
+                completionDateTime = dateTime,
             )
         return habitCompletionRepository.save(newCompletion)
+    }
+
+    fun createCompletionInInterval(
+        habitId: Long,
+        interval: String
+    ): HabitCompletion {
+        val habit = habitService.getHabitById(habitId)
+
+        val dateTime = when (habit.interval) {
+            IntervalType.DAILY -> {
+                getEarliestDateTimeInDailyInterval(interval)
+            }
+            IntervalType.WEEKLY -> {
+                getEarliestDateTimeInWeeklyInterval(interval)
+            }
+            IntervalType.MONTHLY -> {
+                getEarliestDateTimeInMonthlyInterval(interval)
+            }
+            else -> throw IllegalArgumentException("Unsupported interval: $interval")
+        }
+
+        return createCompletion(habitId, dateTime)
     }
 
     fun getCompletions(habitId: Long): List<HabitCompletion> {
@@ -38,12 +62,12 @@ class HabitCompletionService(
 
     fun getCompletionsGroupedByInterval(
         habitId: Long,
-        frequency: IntervalType,
+        intervalType: IntervalType,
     ): Map<String, List<HabitCompletion>> {
         habitService.validateUserOwnsHabit(habitId)
         val completions = habitCompletionRepository.findByHabitId(habitId)
 
-        return when (frequency) {
+        return when (intervalType) {
             IntervalType.DAILY ->
                 completions.groupBy {
                         completion ->
@@ -59,7 +83,7 @@ class HabitCompletionService(
                         completion ->
                     completion.completionDateTime.format(monthlyFormatter)
                 }
-            else -> throw IllegalArgumentException("Unsupported interval: $frequency")
+            else -> throw IllegalArgumentException("Unsupported interval: $intervalType")
         }
     }
 

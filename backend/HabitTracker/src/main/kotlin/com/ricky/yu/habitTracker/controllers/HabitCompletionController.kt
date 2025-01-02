@@ -29,9 +29,14 @@ class HabitCompletionController(
         val completionDate: LocalDateTime,
     )
 
-    data class GroupedCompletionsResponse(
+    data class GroupedIntervalResponse(
         val interval: String,
-        val completions: Map<String, List<CompletionResponse>>,
+        val completions: List<CompletionResponse>
+    )
+
+    data class GroupedCompletionsResponse(
+        val intervalType: String,
+        val groupedIntervalResponses: List<GroupedIntervalResponse>,
     )
 
     fun HabitCompletion.toResponse(): CompletionResponse {
@@ -59,6 +64,17 @@ class HabitCompletionController(
         ).body(completion.toResponse())
     }
 
+    @PostMapping("/intervals/{interval}")
+    fun createCompletionInInterval(
+        @PathVariable habitId: Long,
+        @PathVariable interval: String,
+    ): ResponseEntity<CompletionResponse> {
+        val completion = habitCompletionService.createCompletionInInterval(habitId, interval)
+        return ResponseEntity.created(
+            URI.create(completion.toURI()),
+        ).body(completion.toResponse())
+    }
+
     @DeleteMapping("/{id}")
     fun deleteCompletion(
         @PathVariable habitId: Long,
@@ -68,10 +84,10 @@ class HabitCompletionController(
         return ResponseEntity.noContent().build()
     }
 
-    @DeleteMapping("/latest")
+    @DeleteMapping("/intervals/{interval}/latest")
     fun deleteLatestCompletion(
         @PathVariable habitId: Long,
-        @RequestParam interval: String,
+        @PathVariable interval: String,
     ): ResponseEntity<Void> {
         habitCompletionService.decrementCompletion(habitId, interval)
         return ResponseEntity.noContent().build()
@@ -80,9 +96,9 @@ class HabitCompletionController(
     @PostMapping("/bulkDelete")
     fun bulkDelete(
         @PathVariable habitId: Long,
-        @RequestBody completionResponses: List<CompletionResponse>,
+        @RequestBody ids: List<Long>,
     ): ResponseEntity<Unit> {
-        habitCompletionService.deleteCompletions(habitId, completionResponses.map { it.id })
+        habitCompletionService.deleteCompletions(habitId, ids)
         return ResponseEntity.noContent().build()
     }
 
@@ -90,23 +106,34 @@ class HabitCompletionController(
     fun getCompletions(
         @PathVariable habitId: Long,
         @RequestParam(required = false) intervalType: String?,
-    ): ResponseEntity<Any> {
+    ): ResponseEntity<GroupedCompletionsResponse> {
         return if (!intervalType.isNullOrBlank()) {
             val groupedCompletions =
                 habitCompletionService.getCompletionsGroupedByInterval(
                     habitId,
                     IntervalType.valueOf(intervalType.uppercase()),
-                ).mapValues { (_, completions) -> completions.map { it.toResponse() } }
+                ).map { (interval, completions) ->
+                    GroupedIntervalResponse(interval, completions.map { it.toResponse() })
+                }
 
             ResponseEntity.ok(
                 GroupedCompletionsResponse(
-                    interval = intervalType,
-                    completions = groupedCompletions,
+                    intervalType = intervalType,
+                    groupedIntervalResponses = groupedCompletions,
                 ),
             )
         } else {
             val completions = habitCompletionService.getCompletions(habitId)
-            ResponseEntity.ok(completions.map { it.toResponse() })
+            ResponseEntity.ok(
+                GroupedCompletionsResponse(
+                    intervalType = "all",
+                    groupedIntervalResponses = listOf(
+                        GroupedIntervalResponse("all", completions.map {
+                            it.toResponse()
+                        })
+                    )
+                )
+            )
         }
     }
 }

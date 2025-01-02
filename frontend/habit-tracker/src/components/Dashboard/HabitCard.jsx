@@ -50,15 +50,19 @@ export default function HabitCard({ habit, onComplete }) {
     const intervals = getIntervals(habit.interval);
 
     const isIntervalComplete = (interval) => {
-        // if completions is populated, find if completions map contains a key with this interval
-        if (completions && completions.completions) {
-            return Object.keys(completions.completions).some(
-                (value) => value === interval,
-            );
-        } else {
-            return false;
+        if (!completions?.groupedIntervalResponses) {
+            return false; // Early return if the groupedIntervalResponses are not available
         }
+    
+        // Find the interval in the grouped responses
+        const intervalGroup = completions.groupedIntervalResponses.find(
+            (group) => group.interval === interval
+        );
+    
+        // Check if completions exist for the interval
+        return intervalGroup?.completions?.length > 0 || false;
     };
+    
 
     const handleMenuClick = (event) => {
         setMenuAnchorEl(event.currentTarget);
