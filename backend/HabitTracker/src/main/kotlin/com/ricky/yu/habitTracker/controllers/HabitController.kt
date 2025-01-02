@@ -63,7 +63,11 @@ class HabitController(
     fun getAllHabits(
         @RequestParam interval: String?,
     ): ResponseEntity<List<HabitResponse>> {
-        val habits = habitService.getHabitsForCurrentUser(interval = interval?.let { IntervalType.valueOf(it.uppercase()) })
+        val habits = habitService.getHabitsForCurrentUser(
+            interval = interval?.let {
+                IntervalType.valueOf(it.uppercase())
+            }
+        )
         return ResponseEntity.ok(habits.map { it.toResponse() })
     }
 

@@ -1,5 +1,6 @@
 package com.ricky.yu.habitTracker.controllers
 
+import jakarta.persistence.EntityNotFoundException
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -27,6 +28,11 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(SQLException::class)
     fun handleSQLException(ex: SQLException): ResponseEntity<Any> {
+        return ResponseEntity.badRequest().body(ex.message)
+    }
+
+    @ExceptionHandler(EntityNotFoundException::class)
+    fun handleEntityNoFoundException(ex: EntityNotFoundException): ResponseEntity<Any> {
         return ResponseEntity.badRequest().body(ex.message)
     }
 }

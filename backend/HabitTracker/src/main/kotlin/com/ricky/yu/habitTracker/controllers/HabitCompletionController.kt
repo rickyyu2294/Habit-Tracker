@@ -68,6 +68,15 @@ class HabitCompletionController(
         return ResponseEntity.noContent().build()
     }
 
+    @DeleteMapping("/latest")
+    fun deleteLatestCompletion(
+        @PathVariable habitId: Long,
+        @RequestParam interval: String,
+    ): ResponseEntity<Void> {
+        habitCompletionService.decrementCompletion(habitId, interval)
+        return ResponseEntity.noContent().build()
+    }
+
     @PostMapping("/bulkDelete")
     fun bulkDelete(
         @PathVariable habitId: Long,

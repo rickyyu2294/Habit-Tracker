@@ -1,0 +1,3 @@
+./gradlew ktlintFormat
+
+./gradlew detekt

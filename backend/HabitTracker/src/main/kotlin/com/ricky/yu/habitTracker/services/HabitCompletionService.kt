@@ -3,10 +3,13 @@ package com.ricky.yu.habitTracker.services
 import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
+import com.ricky.yu.habitTracker.utils.IntervalUtils
+import com.ricky.yu.habitTracker.utils.IntervalUtils.dailyFormatter
+import com.ricky.yu.habitTracker.utils.IntervalUtils.monthlyFormatter
+import com.ricky.yu.habitTracker.utils.IntervalUtils.weeklyFormatter
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 @Transactional
 @Service
@@ -44,17 +47,17 @@ class HabitCompletionService(
             IntervalType.DAILY ->
                 completions.groupBy {
                         completion ->
-                    completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                    completion.completionDateTime.format(dailyFormatter)
                 }
             IntervalType.WEEKLY ->
                 completions.groupBy {
                         completion ->
-                    completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-'W'ww"))
+                    completion.completionDateTime.format(weeklyFormatter)
                 }
             IntervalType.MONTHLY ->
                 completions.groupBy {
                         completion ->
-                    completion.completionDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM"))
+                    completion.completionDateTime.format(monthlyFormatter)
                 }
             else -> throw IllegalArgumentException("Unsupported interval: $frequency")
         }
@@ -78,5 +81,37 @@ class HabitCompletionService(
         ids: List<Long>,
     ) {
         habitCompletionRepository.deleteAllByHabitIdAndIdIn(habitId, ids)
+    }
+
+    fun decrementCompletion(
+        habitId: Long,
+        interval: String,
+    ) {
+        val habit = habitService.getHabitById(habitId)
+        require(habit.interval in IntervalType.entries)
+
+        val (startDateTime, endDateTime) = when (habit.interval) {
+            IntervalType.DAILY -> {
+                IntervalUtils.dailyIntervalToRange(interval)
+            }
+            IntervalType.WEEKLY -> {
+                IntervalUtils.weeklyIntervalToRange(interval)
+            }
+            IntervalType.MONTHLY -> {
+                IntervalUtils.monthlyIntervalToRange(interval)
+            }
+
+            IntervalType.YEARLY -> TODO()
+        }
+
+        val latestCompletion = habitCompletionRepository.findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
+            habitId,
+            startDateTime,
+            endDateTime
+        )
+        requireNotNull(latestCompletion) { "No completion in range $startDateTime and $endDateTime" +
+                " for interval $interval of habit $habitId"}
+
+        habitCompletionRepository.delete(latestCompletion)
     }
 }
