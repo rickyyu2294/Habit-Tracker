@@ -8,8 +8,9 @@ import java.time.temporal.WeekFields
 
 object IntervalUtils {
     private const val DAILY_FORMAT = "yyyy-MM-dd"
-    private const val WEEKLY_FORMAT = "yyyy-'W'ww"
+    private const val WEEKLY_FORMAT = "YYYY-'W'ww"
     private const val MONTHLY_FORMAT = "yyyy-MM"
+    private val weekFields = WeekFields.SUNDAY_START
 
     val dailyFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(DAILY_FORMAT)
 
@@ -48,8 +49,8 @@ object IntervalUtils {
         val startDate =
             LocalDate.ofYearDay(year, 1)
                 // Currently hardcoding sunday_start
-                .with(WeekFields.SUNDAY_START.weekOfYear(), week.toLong())
-                .with(WeekFields.SUNDAY_START.dayOfWeek(), 1)
+                .with(weekFields.weekOfYear(), week.toLong())
+                .with(weekFields.dayOfWeek(), 1)
 
         return startDate.atStartOfDay()
     }

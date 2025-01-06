@@ -149,12 +149,15 @@ const api = {
     createCompletion: (habitId, date) =>
         habitTrackerApi.post(`/habits/${habitId}/completions`, { date: date }),
     createCompletionInInterval: (habitId, interval) =>
-        habitTrackerApi.post(`/habits/${habitId}/completions/intervals/${interval}`),
+        habitTrackerApi.post(
+            `/habits/${habitId}/completions/intervals/${interval}`,
+        ),
     deleteCompletion: (habitId, date) =>
         habitTrackerApi.delete(`/habits/${habitId}/completions/${date}`),
     deleteLatestCompletionInInterval: (habitId, interval) =>
-        habitTrackerApi.delete(`/habits/${habitId}/completions/intervals/${interval}/latest`),
-    
+        habitTrackerApi.delete(
+            `/habits/${habitId}/completions/intervals/${interval}/latest`,
+        ),
 
     // habit group
 };

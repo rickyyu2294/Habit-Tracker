@@ -9,6 +9,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HabitCardMenu from "./HabitCardMenu";
 import HabitCardCompletionChip from "./HabitCardCompletionChip";
 import CompletionModal from "../Modals/CompletionModal";
+import { CompletionStatus } from "../../utils/enums";
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);
@@ -36,7 +37,7 @@ export default function HabitCard({ habit, onComplete }) {
                 ).reverse();
             case "weekly":
                 return Array.from({ length: 7 }, (_, i) =>
-                    format(subWeeks(today, i), "yyyy-'W'ww"),
+                    format(subWeeks(today, i), "YYYY-'W'ww", { useAdditionalWeekYearTokens: true }),
                 ).reverse();
             case "monthly":
                 return Array.from({ length: 7 }, (_, i) =>
@@ -49,9 +50,9 @@ export default function HabitCard({ habit, onComplete }) {
 
     const intervals = getIntervals(habit.interval);
 
-    const isIntervalComplete = (interval) => {
+    const getCompletionStatus = (interval) => {
         if (!completions?.groupedIntervalResponses) {
-            return false; // Early return if the groupedIntervalResponses are not available
+            return CompletionStatus.INCOMPLETE; // Early return if the groupedIntervalResponses are not available
         }
 
         // Find the interval in the grouped responses
@@ -60,7 +61,15 @@ export default function HabitCard({ habit, onComplete }) {
         );
 
         // Check if completions exist for the interval
-        return intervalGroup?.completions?.length > 0 || false;
+        const completionCount = intervalGroup?.completions?.length || 0;
+
+        if (completionCount == habit.frequency) {
+            return CompletionStatus.COMPLETE;
+        } else if (completionCount == 0) {
+            return CompletionStatus.INCOMPLETE;
+        } else {
+            return CompletionStatus.PARTIAL;
+        }
     };
 
     const handleMenuClick = (event) => {
@@ -88,6 +97,7 @@ export default function HabitCard({ habit, onComplete }) {
 
     const handleCompletionModalClose = async () => {
         setCompletionModalOpen(false);
+        fetchCompletions();
         onComplete();
     };
 
@@ -134,7 +144,7 @@ export default function HabitCard({ habit, onComplete }) {
                     {intervals.map((interval, index) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
-                        const isComplete = isIntervalComplete(interval);
+                        const completionStatus = getCompletionStatus(interval);
                         return (
                             <>
                                 <HabitCardCompletionChip
@@ -142,7 +152,7 @@ export default function HabitCard({ habit, onComplete }) {
                                     interval={interval}
                                     habit={habit}
                                     isCurrent={isCurrent}
-                                    isComplete={isComplete}
+                                    completionStatus={completionStatus}
                                     onClick={() =>
                                         handleCompletionChipClick(interval)
                                     }
