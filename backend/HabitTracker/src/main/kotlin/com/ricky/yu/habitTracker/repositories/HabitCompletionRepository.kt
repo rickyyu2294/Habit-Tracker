@@ -31,6 +31,6 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
     fun countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(
         habitId: Long,
         startDateTime: LocalDateTime,
-        endDateTime: LocalDateTime
+        endDateTime: LocalDateTime,
     ): Int
 }

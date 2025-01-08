@@ -42,12 +42,10 @@ export default function HabitCardCompletionChip({
             onClick={onClick}
             color={getColor(completionStatus)}
             variant={getVariant(completionStatus)}
-            sx={
-                { 
-                    border: isCurrent ? "2px solid" : "",
-                    borderRadius: 200
-                }
-            }
+            sx={{
+                border: isCurrent ? "2px solid" : "",
+                borderRadius: 200,
+            }}
         >
             {habit.interval.toLowerCase() === "daily"
                 ? format(new Date(interval), "EE").charAt(0) // First letter of weekday

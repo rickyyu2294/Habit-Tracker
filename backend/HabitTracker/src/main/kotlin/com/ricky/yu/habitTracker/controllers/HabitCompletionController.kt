@@ -31,7 +31,7 @@ class HabitCompletionController(
 
     data class GroupedIntervalResponse(
         val interval: String,
-        val completions: List<CompletionResponse>
+        val completions: List<CompletionResponse>,
     )
 
     data class GroupedCompletionsResponse(
@@ -127,12 +127,16 @@ class HabitCompletionController(
             ResponseEntity.ok(
                 GroupedCompletionsResponse(
                     intervalType = "all",
-                    groupedIntervalResponses = listOf(
-                        GroupedIntervalResponse("all", completions.map {
-                            it.toResponse()
-                        })
-                    )
-                )
+                    groupedIntervalResponses =
+                        listOf(
+                            GroupedIntervalResponse(
+                                "all",
+                                completions.map {
+                                    it.toResponse()
+                                },
+                            ),
+                        ),
+                ),
             )
         }
     }

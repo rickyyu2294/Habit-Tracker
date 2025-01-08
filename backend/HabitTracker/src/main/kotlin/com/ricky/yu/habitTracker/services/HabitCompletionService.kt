@@ -35,33 +35,42 @@ class HabitCompletionService(
 
     fun createCompletionInInterval(
         habitId: Long,
-        interval: String
+        interval: String,
     ): HabitCompletion {
         val habit = habitService.getHabitById(habitId)
 
         check(!isIntervalFullyComplete(habitId, interval))
 
-        val dateTime = when (habit.interval) {
-            IntervalType.DAILY -> {
-                getEarliestDateTimeInDailyInterval(interval)
+        val dateTime =
+            when (habit.interval) {
+                IntervalType.DAILY -> {
+                    getEarliestDateTimeInDailyInterval(interval)
+                }
+                IntervalType.WEEKLY -> {
+                    getEarliestDateTimeInWeeklyInterval(interval)
+                }
+                IntervalType.MONTHLY -> {
+                    getEarliestDateTimeInMonthlyInterval(interval)
+                }
+                else -> throw IllegalArgumentException("Unsupported interval: $interval")
             }
-            IntervalType.WEEKLY -> {
-                getEarliestDateTimeInWeeklyInterval(interval)
-            }
-            IntervalType.MONTHLY -> {
-                getEarliestDateTimeInMonthlyInterval(interval)
-            }
-            else -> throw IllegalArgumentException("Unsupported interval: $interval")
-        }
 
         return createCompletion(habitId, dateTime)
     }
 
-    private fun isIntervalFullyComplete(habitId: Long, interval: String): Boolean {
+    private fun isIntervalFullyComplete(
+        habitId: Long,
+        interval: String,
+    ): Boolean {
         val habit = habitService.getHabitById(habitId)
         val (startDateTime, endDateTime) = intervalToStartAndEndTime(habit.interval, interval)
 
-        val completionCount = habitCompletionRepository.countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(habitId, startDateTime, endDateTime)
+        val completionCount =
+            habitCompletionRepository.countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(
+                habitId,
+                startDateTime,
+                endDateTime,
+            )
         return completionCount >= habit.frequency
     }
 

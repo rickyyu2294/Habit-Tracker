@@ -42,9 +42,11 @@ object IntervalUtils {
         return date.atStartOfDay()
     }
 
+    const val YEAR_END_INDEX = 4
+    const val WEEK_END_INDEX = 6
     fun getEarliestDateTimeInWeeklyInterval(interval: String): LocalDateTime {
-        val yearEndIndex = 4
-        val weekEndIndex = 6
+        val yearEndIndex = YEAR_END_INDEX
+        val weekEndIndex = WEEK_END_INDEX
         val year = interval.substring(0, yearEndIndex).toInt()
         val week = interval.substring(weekEndIndex).toInt()
         val startDate =
@@ -64,7 +66,7 @@ object IntervalUtils {
 
     fun intervalToStartAndEndTime(
         intervalType: IntervalType,
-        interval: String
+        interval: String,
     ) = when (intervalType) {
         IntervalType.DAILY -> {
             IntervalUtils.dailyIntervalToRange(interval)

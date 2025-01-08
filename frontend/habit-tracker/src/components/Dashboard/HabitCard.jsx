@@ -37,7 +37,9 @@ export default function HabitCard({ habit, onComplete }) {
                 ).reverse();
             case "weekly":
                 return Array.from({ length: 7 }, (_, i) =>
-                    format(subWeeks(today, i), "YYYY-'W'ww", { useAdditionalWeekYearTokens: true }),
+                    format(subWeeks(today, i), "YYYY-'W'ww", {
+                        useAdditionalWeekYearTokens: true,
+                    }),
                 ).reverse();
             case "monthly":
                 return Array.from({ length: 7 }, (_, i) =>
