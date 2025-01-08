@@ -22,9 +22,15 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
         ids: List<Long>,
     )
 
-    fun findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
+    fun findTopByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThanOrderByCompletionDateTimeDesc(
         habitId: Long,
         startDateTime: LocalDateTime,
         endDateTime: LocalDateTime,
     ): HabitCompletion?
+
+    fun countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(
+        habitId: Long,
+        startDateTime: LocalDateTime,
+        endDateTime: LocalDateTime
+    ): Int
 }

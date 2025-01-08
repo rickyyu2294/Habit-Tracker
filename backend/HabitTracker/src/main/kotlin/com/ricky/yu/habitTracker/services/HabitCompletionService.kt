@@ -3,11 +3,11 @@ package com.ricky.yu.habitTracker.services
 import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
-import com.ricky.yu.habitTracker.utils.IntervalUtils
 import com.ricky.yu.habitTracker.utils.IntervalUtils.dailyFormatter
 import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInDailyInterval
 import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInMonthlyInterval
 import com.ricky.yu.habitTracker.utils.IntervalUtils.getEarliestDateTimeInWeeklyInterval
+import com.ricky.yu.habitTracker.utils.IntervalUtils.intervalToStartAndEndTime
 import com.ricky.yu.habitTracker.utils.IntervalUtils.monthlyFormatter
 import com.ricky.yu.habitTracker.utils.IntervalUtils.weeklyFormatter
 import jakarta.transaction.Transactional
@@ -39,6 +39,8 @@ class HabitCompletionService(
     ): HabitCompletion {
         val habit = habitService.getHabitById(habitId)
 
+        check(!isIntervalFullyComplete(habitId, interval))
+
         val dateTime = when (habit.interval) {
             IntervalType.DAILY -> {
                 getEarliestDateTimeInDailyInterval(interval)
@@ -53,6 +55,14 @@ class HabitCompletionService(
         }
 
         return createCompletion(habitId, dateTime)
+    }
+
+    private fun isIntervalFullyComplete(habitId: Long, interval: String): Boolean {
+        val habit = habitService.getHabitById(habitId)
+        val (startDateTime, endDateTime) = intervalToStartAndEndTime(habit.interval, interval)
+
+        val completionCount = habitCompletionRepository.countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(habitId, startDateTime, endDateTime)
+        return completionCount >= habit.frequency
     }
 
     fun getCompletions(habitId: Long): List<HabitCompletion> {
@@ -115,23 +125,11 @@ class HabitCompletionService(
         require(habit.interval in IntervalType.entries)
 
         val (startDateTime, endDateTime) =
-            when (habit.interval) {
-                IntervalType.DAILY -> {
-                    IntervalUtils.dailyIntervalToRange(interval)
-                }
-                IntervalType.WEEKLY -> {
-                    IntervalUtils.weeklyIntervalToRange(interval)
-                }
-                IntervalType.MONTHLY -> {
-                    IntervalUtils.monthlyIntervalToRange(interval)
-                }
-
-                IntervalType.YEARLY -> TODO()
-            }
+            intervalToStartAndEndTime(habit.interval, interval)
 
         val latestCompletion =
             habitCompletionRepository
-                .findTopByHabitIdAndCompletionDateTimeBetweenOrderByCompletionDateTimeDesc(
+                .findTopByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThanOrderByCompletionDateTimeDesc(
                     habitId,
                     startDateTime,
                     endDateTime,

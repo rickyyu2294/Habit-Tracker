@@ -1,5 +1,6 @@
 package com.ricky.yu.habitTracker.utils
 
+import com.ricky.yu.habitTracker.enums.IntervalType
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -59,5 +60,24 @@ object IntervalUtils {
         val yearMonth = YearMonth.parse(interval, monthlyFormatter)
         val startDate = yearMonth.atDay(1)
         return startDate.atStartOfDay()
+    }
+
+    fun intervalToStartAndEndTime(
+        intervalType: IntervalType,
+        interval: String
+    ) = when (intervalType) {
+        IntervalType.DAILY -> {
+            IntervalUtils.dailyIntervalToRange(interval)
+        }
+
+        IntervalType.WEEKLY -> {
+            IntervalUtils.weeklyIntervalToRange(interval)
+        }
+
+        IntervalType.MONTHLY -> {
+            IntervalUtils.monthlyIntervalToRange(interval)
+        }
+
+        IntervalType.YEARLY -> TODO()
     }
 }

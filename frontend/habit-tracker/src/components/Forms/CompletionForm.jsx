@@ -24,15 +24,15 @@ export default function CompletionForm({ habit, interval }) {
     };
 
     const handleIncrementCompletion = async () => {
-        api.createCompletionInInterval(habit.id, interval);
+        await api.createCompletionInInterval(habit.id, interval);
         setNumCompletions(numCompletions + 1);
-        console.log("Decrementing completions");
+        console.log(`Incrementing ${habit.name} completions in ${interval}`);
     };
 
-    const handleDecrementCompletion = () => {
-        api.deleteLatestCompletionInInterval(habit.id, interval);
+    const handleDecrementCompletion = async () => {
+        await api.deleteLatestCompletionInInterval(habit.id, interval);
         setNumCompletions(numCompletions - 1);
-        console.log("Incrementing completions");
+        console.log(`Decrementing ${habit.name} completions in ${interval}`);
     };
 
     useEffect(() => {
