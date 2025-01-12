@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Typography, Box, Stack, Fab, Modal } from "@mui/material";
+import { Typography, Box, Stack, Fab } from "@mui/material";
 import HabitCard from "../components/Dashboard/HabitCard";
 import Page from "../components/Layout/Page";
 import api from "../services/habit-tracker-api";
 import { Add } from "@mui/icons-material";
-import NewHabitForm from "../components/Forms/NewHabitForm";
 import ErrorMessage from "../components/Layout/ErrorMessage";
 import React from "react";
+import NewHabitModal from "../components/Dashboard/NewHabitModal";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
@@ -75,12 +75,16 @@ const Dashboard = () => {
                         position: "fixed",
                         bottom: "5vw", // 16px from the bottom of the screen
                         right: "5vw", // 16px from the right of the screen
+                        pointerEvents: "none",
                     }}
                 >
                     <Fab
                         color="primary"
                         aria-label="add"
                         onClick={() => setNewHabitModalOpen(true)}
+                        sx={{
+                            pointerEvents: "auto"
+                        }}
                     >
                         <Add />
                     </Fab>
@@ -88,16 +92,10 @@ const Dashboard = () => {
             </Box>
 
             {/* New Habit Modal */}
-            <Modal
+            <NewHabitModal 
                 open={newHabitModalOpen}
                 onClose={handleNewHabitOnClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box display={"flex"}>
-                    <NewHabitForm onClose={handleNewHabitOnClose} />
-                </Box>
-            </Modal>
+            />
         </Page>
     );
 };
