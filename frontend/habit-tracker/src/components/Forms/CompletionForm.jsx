@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import Form from "./Form";
 import { Box, IconButton, Typography } from "@mui/material";
 import PropTypes from "prop-types";
@@ -9,7 +9,7 @@ import api from "../../services/habit-tracker-api";
 export default function CompletionForm({ habit, interval }) {
     const [numCompletions, setNumCompletions] = useState(0);
 
-    const fetchCompletions = async () => {
+    const fetchCompletions = useCallback(async () => {
         try {
             // fetch completions
             const response = await api.getCompletions(habit.id, habit.interval);
@@ -21,23 +21,23 @@ export default function CompletionForm({ habit, interval }) {
         } catch (err) {
             console.error(err);
         }
-    };
+    }, [habit.id, habit.interval]);
 
     const handleIncrementCompletion = async () => {
         await api.createCompletionInInterval(habit.id, interval);
-        setNumCompletions(numCompletions + 1);
+        fetchCompletions();
         console.log(`Incrementing ${habit.name} completions in ${interval}`);
     };
 
     const handleDecrementCompletion = async () => {
         await api.deleteLatestCompletionInInterval(habit.id, interval);
-        setNumCompletions(numCompletions - 1);
+        fetchCompletions();
         console.log(`Decrementing ${habit.name} completions in ${interval}`);
     };
 
     useEffect(() => {
         fetchCompletions();
-    }, []);
+    }, [fetchCompletions]);
 
     return (
         <Form>

@@ -3,13 +3,13 @@ import PropTypes from "prop-types";
 import React from "react";
 
 export default function HabitCardMenu({
-    menuAnchorEl,
+    menuAnchorElement,
     menuOpen,
     handleMenuClose,
     handleDeleteClicked,
 }) {
     return (
-        <Menu anchorEl={menuAnchorEl} open={menuOpen} onClose={handleMenuClose}>
+        <Menu anchorEl={menuAnchorElement} open={menuOpen} onClose={handleMenuClose}>
             <MenuItem onClick={handleDeleteClicked}>
                 <Typography color="error" variant="body2">
                     Delete
@@ -19,7 +19,7 @@ export default function HabitCardMenu({
     );
 }
 HabitCardMenu.propTypes = {
-    menuAnchorEl: PropTypes.object,
+    menuAnchorElement: PropTypes.object,
     menuOpen: PropTypes.bool.isRequired,
     handleMenuClose: PropTypes.func.isRequired,
     handleDeleteClicked: PropTypes.func.isRequired,

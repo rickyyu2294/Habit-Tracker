@@ -1,6 +1,5 @@
-import { format, subDays, subWeeks, subMonths } from "date-fns";
 import api from "../../services/habit-tracker-api";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import DeleteHabitModal from "../Modals/DeleteHabitModal";
 import React from "react";
@@ -9,70 +8,28 @@ import MenuIcon from "@mui/icons-material/Menu";
 import HabitCardMenu from "./HabitCardMenu";
 import HabitCardCompletionChip from "./HabitCardCompletionChip";
 import CompletionModal from "../Modals/CompletionModal";
-import { CompletionStatus } from "../../utils/enums";
+import { getCompletionStatus, getIntervals } from "../../utils/utils";
+
+const NUM_INTERVALS = 7;
 
 export default function HabitCard({ habit, onComplete }) {
     const [completions, setCompletions] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [completionModalOpen, setCompletionModalOpen] = useState(false);
     const [selectedInterval, setSelectedInterval] = useState(null);
-    const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-    const menuOpen = Boolean(menuAnchorEl);
+    const [menuAnchorElement, setMenuAnchorEl] = useState(null);
+    const menuOpen = Boolean(menuAnchorElement);
 
-    const fetchCompletions = async () => {
+    const fetchCompletions = useCallback( async () => {
         try {
             const response = await api.getCompletions(habit.id, habit.interval);
             setCompletions(response.data);
         } catch (err) {
             console.log(err);
         }
-    };
+    }, [habit.id, habit.interval]);
 
-    const getIntervals = (frequency) => {
-        const today = new Date();
-        switch (frequency.toLowerCase()) {
-            case "daily":
-                return Array.from({ length: 7 }, (_, i) =>
-                    format(subDays(today, i), "yyyy-MM-dd"),
-                ).reverse();
-            case "weekly":
-                return Array.from({ length: 7 }, (_, i) =>
-                    format(subWeeks(today, i), "YYYY-'W'ww", {
-                        useAdditionalWeekYearTokens: true,
-                    }),
-                ).reverse();
-            case "monthly":
-                return Array.from({ length: 7 }, (_, i) =>
-                    format(subMonths(today, i), "yyyy-MM"),
-                ).reverse();
-            default:
-                return [];
-        }
-    };
-
-    const intervals = getIntervals(habit.interval);
-
-    const getCompletionStatus = (interval) => {
-        if (!completions?.groupedIntervalResponses) {
-            return CompletionStatus.INCOMPLETE; // Early return if the groupedIntervalResponses are not available
-        }
-
-        // Find the interval in the grouped responses
-        const intervalGroup = completions.groupedIntervalResponses.find(
-            (group) => group.interval === interval,
-        );
-
-        // Check if completions exist for the interval
-        const completionCount = intervalGroup?.completions?.length || 0;
-
-        if (completionCount == habit.frequency) {
-            return CompletionStatus.COMPLETE;
-        } else if (completionCount == 0) {
-            return CompletionStatus.INCOMPLETE;
-        } else {
-            return CompletionStatus.PARTIAL;
-        }
-    };
+    const intervals = getIntervals(NUM_INTERVALS, habit.interval);
 
     const handleMenuClick = (event) => {
         setMenuAnchorEl(event.currentTarget);
@@ -105,7 +62,7 @@ export default function HabitCard({ habit, onComplete }) {
 
     useEffect(() => {
         fetchCompletions();
-    }, []);
+    }, [fetchCompletions]);
 
     return (
         <Card
@@ -146,7 +103,7 @@ export default function HabitCard({ habit, onComplete }) {
                     {intervals.map((interval, index) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
-                        const completionStatus = getCompletionStatus(interval);
+                        const completionStatus = getCompletionStatus(habit, completions, interval);
                         return (
                             <>
                                 <HabitCardCompletionChip
@@ -166,7 +123,7 @@ export default function HabitCard({ habit, onComplete }) {
             </CardContent>
             {/* Menus */}
             <HabitCardMenu
-                menuAnchorEl={menuAnchorEl}
+                menuAnchorElement={menuAnchorElement}
                 menuOpen={menuOpen}
                 handleMenuClose={handleMenuClose}
                 handleDeleteClicked={handleDeleteClicked}

@@ -6,7 +6,7 @@ import api from "../services/habit-tracker-api";
 import { Add } from "@mui/icons-material";
 import ErrorMessage from "../components/Layout/ErrorMessage";
 import React from "react";
-import NewHabitModal from "../components/Dashboard/NewHabitModal";
+import NewHabitModal from "../components/Modals/NewHabitModal";
 
 const Dashboard = () => {
     const [error, setError] = useState("");

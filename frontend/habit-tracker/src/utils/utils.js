@@ -1,3 +1,6 @@
+import { format, subDays, subMonths, subWeeks } from "date-fns";
+import { CompletionStatus } from "./enums";
+
 export function getCurrentDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -62,3 +65,60 @@ export function monthNumToName(num) {
             return "";
     }
 }
+
+/**
+ * 
+ * @param {*} length 
+ * @param {*} frequency 
+ * @returns 
+ */
+export const getIntervals = (length, frequency) => {
+        const today = new Date();
+        switch (frequency.toLowerCase()) {
+            case "daily":
+                return Array.from({ length: length }, (_, i) =>
+                    format(subDays(today, i), "yyyy-MM-dd"),
+                ).reverse();
+            case "weekly":
+                return Array.from({ length: length }, (_, i) =>
+                    format(subWeeks(today, i), "YYYY-'W'ww", {
+                        useAdditionalWeekYearTokens: true,
+                    }),
+                ).reverse();
+            case "monthly":
+                return Array.from({ length: length }, (_, i) =>
+                    format(subMonths(today, i), "yyyy-MM"),
+                ).reverse();
+            default:
+                return [];
+        }
+    };
+
+/**
+ * 
+ * @param {*} habit 
+ * @param {*} completions 
+ * @param {*} interval 
+ * @returns 
+ */
+export const getCompletionStatus = (habit, completions, interval) => {
+    if (!completions?.groupedIntervalResponses) {
+        return CompletionStatus.INCOMPLETE; // Early return if the groupedIntervalResponses are not available
+    }
+
+    // Find the interval in the grouped responses
+    const intervalGroup = completions.groupedIntervalResponses.find(
+        (group) => group.interval === interval,
+    );
+
+    // Check if completions exist for the interval
+    const completionCount = intervalGroup?.completions?.length || 0;
+
+    if (completionCount == habit.frequency) {
+        return CompletionStatus.COMPLETE;
+    } else if (completionCount == 0) {
+        return CompletionStatus.INCOMPLETE;
+    } else {
+        return CompletionStatus.PARTIAL;
+    }
+};
