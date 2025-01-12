@@ -26,6 +26,7 @@ class HabitService(
                 name = createRequest.name,
                 description = createRequest.description,
                 interval = parseInterval(createRequest),
+                frequency = createRequest.frequency,
                 user = user,
                 group = parseHabitGroup(createRequest),
             )
