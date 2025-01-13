@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Form from "./Form";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, Button, IconButton, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import { intervalToFormattedString } from "../../utils/utils";
 import { Add, Remove } from "@mui/icons-material";
@@ -35,6 +35,18 @@ export default function CompletionForm({ habit, interval }) {
         console.log(`Decrementing ${habit.name} completions in ${interval}`);
     };
 
+    const isComplete = () => {
+        return numCompletions === habit.frequency;
+    }
+
+    const handleCompletionToggle = () => {
+        if (isComplete()) {
+            handleDecrementCompletion();
+        } else {
+            handleIncrementCompletion();
+        }
+    }
+
     useEffect(() => {
         fetchCompletions();
     }, [fetchCompletions]);
@@ -48,10 +60,27 @@ export default function CompletionForm({ habit, interval }) {
                 <b>{intervalToFormattedString(interval, habit.interval)}</b>
             </Typography>
             {habit.frequency === 1 ? (
-                <Typography variant="body1" align="center">
-                    Complete Task?
-                </Typography>
+                // Single Frequency
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Typography variant="body1" align="center">
+                        {isComplete() ? "Complete" : "Incomplete"}
+                    </Typography>
+                    <Button
+                        variant="contained"
+                        color={isComplete() ? "success" : "error"}
+                        onClick={handleCompletionToggle}
+                    >
+                        {isComplete() ? "Complete" : "Incomplete"}
+                    </Button>
+                </Box>
             ) : (
+                // Multi Frequency
                 <Box
                     sx={{
                         display: "flex",
