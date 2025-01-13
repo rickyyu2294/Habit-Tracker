@@ -20,7 +20,7 @@ export default function HabitCard({ habit, onComplete }) {
     const [menuAnchorElement, setMenuAnchorEl] = useState(null);
     const menuOpen = Boolean(menuAnchorElement);
 
-    const fetchCompletions = useCallback( async () => {
+    const fetchCompletions = useCallback(async () => {
         try {
             const response = await api.getCompletions(habit.id, habit.interval);
             setCompletions(response.data);
@@ -103,7 +103,11 @@ export default function HabitCard({ habit, onComplete }) {
                     {intervals.map((interval, index) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
-                        const completionStatus = getCompletionStatus(habit, completions, interval);
+                        const completionStatus = getCompletionStatus(
+                            habit,
+                            completions,
+                            interval,
+                        );
                         return (
                             <>
                                 <HabitCardCompletionChip

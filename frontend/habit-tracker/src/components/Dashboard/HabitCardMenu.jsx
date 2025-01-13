@@ -9,7 +9,11 @@ export default function HabitCardMenu({
     handleDeleteClicked,
 }) {
     return (
-        <Menu anchorEl={menuAnchorElement} open={menuOpen} onClose={handleMenuClose}>
+        <Menu
+            anchorEl={menuAnchorElement}
+            open={menuOpen}
+            onClose={handleMenuClose}
+        >
             <MenuItem onClick={handleDeleteClicked}>
                 <Typography color="error" variant="body2">
                     Delete

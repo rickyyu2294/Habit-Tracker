@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Box, Modal } from "@mui/material";
 import NewHabitForm from "../Forms/NewHabitForm";
 
-export default function NewHabitModal({open, onClose}) {
+export default function NewHabitModal({ open, onClose }) {
     return (
         <Modal
             open={open}
@@ -19,5 +19,5 @@ export default function NewHabitModal({open, onClose}) {
 }
 NewHabitModal.propTypes = {
     open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired
+    onClose: PropTypes.func.isRequired,
 };

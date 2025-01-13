@@ -83,7 +83,7 @@ const Dashboard = () => {
                         aria-label="add"
                         onClick={() => setNewHabitModalOpen(true)}
                         sx={{
-                            pointerEvents: "auto"
+                            pointerEvents: "auto",
                         }}
                     >
                         <Add />
@@ -92,7 +92,7 @@ const Dashboard = () => {
             </Box>
 
             {/* New Habit Modal */}
-            <NewHabitModal 
+            <NewHabitModal
                 open={newHabitModalOpen}
                 onClose={handleNewHabitOnClose}
             />

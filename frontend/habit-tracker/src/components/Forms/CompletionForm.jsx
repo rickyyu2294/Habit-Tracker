@@ -37,7 +37,7 @@ export default function CompletionForm({ habit, interval }) {
 
     const isComplete = () => {
         return numCompletions === habit.frequency;
-    }
+    };
 
     const handleCompletionToggle = () => {
         if (isComplete()) {
@@ -45,7 +45,7 @@ export default function CompletionForm({ habit, interval }) {
         } else {
             handleIncrementCompletion();
         }
-    }
+    };
 
     useEffect(() => {
         fetchCompletions();

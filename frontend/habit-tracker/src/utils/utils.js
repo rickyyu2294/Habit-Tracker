@@ -67,39 +67,39 @@ export function monthNumToName(num) {
 }
 
 /**
- * 
- * @param {*} length 
- * @param {*} frequency 
- * @returns 
+ *
+ * @param {*} length
+ * @param {*} frequency
+ * @returns
  */
 export const getIntervals = (length, frequency) => {
-        const today = new Date();
-        switch (frequency.toLowerCase()) {
-            case "daily":
-                return Array.from({ length: length }, (_, i) =>
-                    format(subDays(today, i), "yyyy-MM-dd"),
-                ).reverse();
-            case "weekly":
-                return Array.from({ length: length }, (_, i) =>
-                    format(subWeeks(today, i), "YYYY-'W'ww", {
-                        useAdditionalWeekYearTokens: true,
-                    }),
-                ).reverse();
-            case "monthly":
-                return Array.from({ length: length }, (_, i) =>
-                    format(subMonths(today, i), "yyyy-MM"),
-                ).reverse();
-            default:
-                return [];
-        }
-    };
+    const today = new Date();
+    switch (frequency.toLowerCase()) {
+        case "daily":
+            return Array.from({ length: length }, (_, i) =>
+                format(subDays(today, i), "yyyy-MM-dd"),
+            ).reverse();
+        case "weekly":
+            return Array.from({ length: length }, (_, i) =>
+                format(subWeeks(today, i), "YYYY-'W'ww", {
+                    useAdditionalWeekYearTokens: true,
+                }),
+            ).reverse();
+        case "monthly":
+            return Array.from({ length: length }, (_, i) =>
+                format(subMonths(today, i), "yyyy-MM"),
+            ).reverse();
+        default:
+            return [];
+    }
+};
 
 /**
- * 
- * @param {*} habit 
- * @param {*} completions 
- * @param {*} interval 
- * @returns 
+ *
+ * @param {*} habit
+ * @param {*} completions
+ * @param {*} interval
+ * @returns
  */
 export const getCompletionStatus = (habit, completions, interval) => {
     if (!completions?.groupedIntervalResponses) {
