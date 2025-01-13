@@ -68,9 +68,6 @@ export default function CompletionForm({ habit, interval }) {
                         alignItems: "center",
                     }}
                 >
-                    <Typography variant="body1" align="center">
-                        {isComplete() ? "Complete" : "Incomplete"}
-                    </Typography>
                     <Button
                         variant="contained"
                         color={isComplete() ? "success" : "error"}

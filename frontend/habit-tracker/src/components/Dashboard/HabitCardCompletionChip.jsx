@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import { format } from "date-fns";
 import PropTypes from "prop-types";
 import React from "react";
-import { CompletionStatus } from "../../utils/enums";
+import { CompletionStatus, IntervalType } from "../../utils/enums";
 
 export default function HabitCardCompletionChip({
     habit,
@@ -37,6 +37,26 @@ export default function HabitCardCompletionChip({
         }
     };
 
+    const getIntervalShort = () => {
+        let result = "";
+        switch (habit.interval.toLowerCase()) {
+            case IntervalType.DAILY: {
+                const date = new Date(`${interval}T00:00:00`);
+                result = format(date, "EE").charAt(0);
+                break;
+            }
+            case IntervalType.WEEKLY: {
+                result = `W${interval.split("W")[1]}`;
+                break;
+            }
+            case IntervalType.MONTHLY: {
+                result = interval.split("-")[1];
+                break;
+            }
+        }
+        return result;
+    };
+
     return (
         <Button
             onClick={onClick}
@@ -47,13 +67,7 @@ export default function HabitCardCompletionChip({
                 borderRadius: 200,
             }}
         >
-            {habit.interval.toLowerCase() === "daily"
-                ? format(new Date(interval), "EE").charAt(0) // First letter of weekday
-                : habit.interval.toLowerCase() === "weekly"
-                  ? `W${interval.split("W")[1]}` // Week number
-                  : habit.interval.toLowerCase() === "monthly"
-                    ? interval.split("-")[1] // Month name
-                    : ""}
+            {getIntervalShort()}
         </Button>
     );
 }
