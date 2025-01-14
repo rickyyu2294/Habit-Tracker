@@ -1,16 +1,6 @@
 import { format, subDays, subMonths, subWeeks } from "date-fns";
 import { CompletionStatus } from "./enums";
 
-export function getCurrentDate() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const day = String(today.getDate()).padStart(2, "0");
-
-    const localDateString = `${year}-${month}-${day}`;
-    return localDateString;
-}
-
 /**
  * Takes interval and interval type and returns a formatted string
  * ex. interval "2024-W01" and intervalType "weekly" returns "Week 1 of 2024"
@@ -21,7 +11,8 @@ export function getCurrentDate() {
  */
 export function intervalToFormattedString(interval, intervalType) {
     if (intervalType.toLowerCase() === "daily") {
-        return interval;
+        const date = new Date(`${interval}T00:00:00`);
+        return format(date, "LLLL do yyyy");
     } else if (intervalType.toLowerCase() === "weekly") {
         return `Week ${interval.split("W")[1]} of ${interval.split("-W")[0]}`;
     } else if (intervalType.toLowerCase() === "monthly") {

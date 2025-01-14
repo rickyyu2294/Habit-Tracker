@@ -66,6 +66,7 @@ export default function CompletionForm({ habit, interval }) {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        mt: 2
                     }}
                 >
                     <Button
@@ -83,6 +84,7 @@ export default function CompletionForm({ habit, interval }) {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        mt: 2
                     }}
                 >
                     <Box
