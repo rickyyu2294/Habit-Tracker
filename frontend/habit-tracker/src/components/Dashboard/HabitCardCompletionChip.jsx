@@ -63,7 +63,6 @@ export default function HabitCardCompletionChip({
             color={getColor(completionStatus)}
             variant={getVariant(completionStatus)}
             sx={{
-                border: isCurrent ? "2px solid" : "",
                 borderRadius: 200,
             }}
         >
