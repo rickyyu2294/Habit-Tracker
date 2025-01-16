@@ -8,11 +8,6 @@ import java.util.Optional
 interface HabitRepository : JpaRepository<Habit, Long> {
     fun findByUserId(userId: Long): List<Habit>
 
-    fun findByUserIdAndGroupId(
-        userId: Long,
-        groupId: Long,
-    ): List<Habit>
-
     fun existsByIdAndUserId(
         habitId: Long,
         userId: Long,

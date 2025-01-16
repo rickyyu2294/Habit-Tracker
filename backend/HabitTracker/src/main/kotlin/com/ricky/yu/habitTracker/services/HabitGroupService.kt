@@ -44,7 +44,10 @@ class HabitGroupService(
 
     fun getGroupById(groupId: Long): HabitGroup {
         val userId = RequestCtxHolder.getRequestContext().userId
-        val group = habitGroupRepository.findByIdAndUserId(groupId, userId).orElseThrow()
+        val group =
+            habitGroupRepository.findByIdAndUserId(groupId, userId).orElseThrow {
+                NoSuchElementException("No habit group $groupId for user $userId")
+            }
         return group
     }
 

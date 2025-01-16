@@ -5,8 +5,11 @@ import com.ricky.yu.habitTracker.enums.Role
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitCompletion
 import com.ricky.yu.habitTracker.models.HabitGroup
+import com.ricky.yu.habitTracker.models.HabitGroupHabit
 import com.ricky.yu.habitTracker.models.User
+import com.ricky.yu.habitTracker.models.compositeKeys.HabitGroupHabitKey
 import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
+import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
 import com.ricky.yu.habitTracker.repositories.HabitRepository
 import com.ricky.yu.habitTracker.repositories.UserRepository
@@ -25,6 +28,7 @@ class DataSeeder(
     private val habitCompletionRepository: HabitCompletionRepository,
     private val groupRepository: HabitGroupRepository,
     private val passwordEncoder: PasswordEncoder,
+    private val habitGroupHabitRepository: HabitGroupHabitRepository,
 ) : CommandLineRunner {
     @Suppress("LongMethod")
     override fun run(vararg args: String?) {
@@ -57,8 +61,16 @@ class DataSeeder(
                     frequency = 3,
                     interval = IntervalType.WEEKLY,
                     user = user,
-                    group = group,
                 )
+
+            val groupHabit =
+                HabitGroupHabit(
+                    id = HabitGroupHabitKey(1L, 1L),
+                    habit = habit,
+                    habitGroup = group,
+                    order = 1,
+                )
+
             val habit2 =
                 Habit(
                     id = 2L,
@@ -116,6 +128,8 @@ class DataSeeder(
             habitCompletionRepository.save(completion3)
             habitCompletionRepository.save(completion4)
             habitCompletionRepository.save(completion6)
+            habitGroupHabitRepository.save(groupHabit)
+
             println("Test user seeded: ${user.email}")
         } else {
             println("Test user already exists")

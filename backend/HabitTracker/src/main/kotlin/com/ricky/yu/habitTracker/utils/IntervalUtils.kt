@@ -44,6 +44,7 @@ object IntervalUtils {
 
     const val YEAR_END_INDEX = 4
     const val WEEK_END_INDEX = 6
+
     fun getEarliestDateTimeInWeeklyInterval(interval: String): LocalDateTime {
         val yearEndIndex = YEAR_END_INDEX
         val weekEndIndex = WEEK_END_INDEX

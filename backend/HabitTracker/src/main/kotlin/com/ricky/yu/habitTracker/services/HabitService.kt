@@ -5,7 +5,9 @@ import com.ricky.yu.habitTracker.controllers.HabitController
 import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitGroup
-import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
+import com.ricky.yu.habitTracker.models.HabitGroupHabit
+import com.ricky.yu.habitTracker.models.compositeKeys.HabitGroupHabitKey
+import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
 import com.ricky.yu.habitTracker.repositories.HabitRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -15,12 +17,15 @@ import java.time.LocalDateTime
 @Service
 class HabitService(
     private val habitRepository: HabitRepository,
-    private val habitGroupRepository: HabitGroupRepository,
     private val userService: UserService,
+    private val habitGroupService: HabitGroupService,
+    private val habitGroupHabitRepository: HabitGroupHabitRepository,
 ) {
     fun createHabit(createRequest: HabitController.CreateHabitRequest): Habit {
         val ctx = RequestCtxHolder.getRequestContext()
         val user = userService.getUserById(ctx.userId)
+        val groups = parseHabitGroups(createRequest)
+
         val habit =
             Habit(
                 name = createRequest.name,
@@ -28,30 +33,29 @@ class HabitService(
                 interval = parseInterval(createRequest),
                 frequency = createRequest.frequency,
                 user = user,
-                group = parseHabitGroup(createRequest),
             )
+
+        syncHabitGroups(habit, groups)
         return habitRepository.save(habit)
     }
 
     fun getHabitsForCurrentUser(
         interval: IntervalType? = null,
         groupId: Long? = null,
-    ): List<Habit> {
+    ): Set<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
         return if (interval != null) {
-            habitRepository.findByUserIdAndInterval(userId, interval)
+            habitRepository.findByUserIdAndInterval(userId, interval).toSet()
         } else if (groupId != null) {
-            getHabitsForCurrentUserAndGroup(groupId)
+            getHabitsForCurrentUserAndGroup(groupId).toSet()
         } else {
-            habitRepository.findByUserId(userId)
+            habitRepository.findByUserId(userId).toSet()
         }
     }
 
-    fun getHabitsForCurrentUserAndGroup(groupId: Long): List<Habit> {
-        val userId = RequestCtxHolder.getRequestContext().userId
-        val group = habitGroupRepository.findById(groupId).get()
-        require(userId == group.user.id) { "User $userId does not own group $groupId" }
-        return habitRepository.findByUserIdAndGroupId(userId, groupId)
+    fun getHabitsForCurrentUserAndGroup(groupId: Long): Set<Habit> {
+        habitGroupService.validateUserOwnsHabitGroup(groupId)
+        return habitGroupHabitRepository.findByHabitGroup_Id(groupId).map { it.habit }.toSet()
     }
 
     fun getHabitById(id: Long): Habit {
@@ -66,8 +70,7 @@ class HabitService(
     ): Habit {
         val existingHabit = getHabitById(id)
 
-        // Find and validate the group if a groupId is provided
-        val group = parseHabitGroup(updateRequest)
+        val updatedGroups = parseHabitGroups(updateRequest)
 
         // Create updated habit entity
         val updatedHabit =
@@ -76,8 +79,9 @@ class HabitService(
                 description = updateRequest.description,
                 interval = parseInterval(updateRequest),
                 updatedAt = LocalDateTime.now(),
-                group = group,
             )
+
+        syncHabitGroups(updatedHabit, updatedGroups)
 
         // Save and return updated habit
         return habitRepository.save(updatedHabit)
@@ -95,15 +99,13 @@ class HabitService(
     }
 
     // helpers
-    // todo: maybe move these helpers
-    private fun parseHabitGroup(createHabitRequest: HabitController.CreateHabitRequest): HabitGroup? {
-        val group =
-            createHabitRequest.groupId?.let {
-                habitGroupRepository.findById(it).orElseThrow {
-                    NoSuchElementException("Habit group with ID $it not found")
-                }
+    // maybe move these helpers
+    private fun parseHabitGroups(createHabitRequest: HabitController.CreateHabitRequest): Set<HabitGroup> {
+        val groups =
+            createHabitRequest.groupIds.map { groupId ->
+                habitGroupService.getGroupById(groupId)
             }
-        return group
+        return groups.toSet()
     }
 
     private fun parseInterval(createHabitRequest: HabitController.CreateHabitRequest): IntervalType {
@@ -114,5 +116,39 @@ class HabitService(
                 throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}", e)
             }
         return frequency
+    }
+
+    private fun syncHabitGroups(
+        habit: Habit,
+        updatedGroups: Set<HabitGroup>,
+    ) {
+        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
+
+        val groupsToAdd = updatedGroups - currentGroups
+        val groupsToRemove = currentGroups - updatedGroups
+
+        // Remove old group associations
+        groupsToRemove.forEach { group ->
+            habit.habitGroupHabits.find { it.habitGroup == group }?.let {
+                habit.habitGroupHabits.remove(it)
+            }
+        }
+
+        // TODO: re-order groups
+        var size = habit.habitGroupHabits.size
+
+        groupsToAdd.forEach { group ->
+            val newMapping =
+                HabitGroupHabit(
+                    id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
+                    habit = habit,
+                    habitGroup = group,
+                    // Default or user-defined
+                    order = 0,
+                )
+            habit.habitGroupHabits.add(newMapping)
+        }
+
+        // Add new group associations
     }
 }

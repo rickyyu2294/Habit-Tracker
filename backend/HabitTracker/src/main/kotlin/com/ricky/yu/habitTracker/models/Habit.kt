@@ -52,7 +52,10 @@ data class Habit(
     @OneToMany(mappedBy = "habit", cascade = [CascadeType.ALL], orphanRemoval = true)
     @JsonManagedReference
     val completions: List<HabitCompletion> = listOf(),
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    val group: HabitGroup? = null,
+    @OneToMany(
+        mappedBy = "habit",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+    )
+    val habitGroupHabits: MutableSet<HabitGroupHabit> = mutableSetOf(),
 )

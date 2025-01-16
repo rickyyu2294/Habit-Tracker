@@ -26,7 +26,7 @@ class HabitController(
         val description: String,
         val interval: String,
         val frequency: Int,
-        val groupId: Long? = null,
+        val groupIds: Set<Long>,
     )
 
     data class HabitResponse(
@@ -35,7 +35,7 @@ class HabitController(
         val description: String,
         val interval: String,
         val frequency: Int,
-        val groupId: Long?,
+        val groupIds: Set<Long>,
     )
 
     fun Habit.toResponse(): HabitResponse {
@@ -45,7 +45,7 @@ class HabitController(
             description = this.description,
             interval = this.interval.toString(),
             frequency = this.frequency,
-            groupId = this.group?.id,
+            groupIds = this.habitGroupHabits.map { it.habitGroup.id }.toSet(),
         )
     }
 
