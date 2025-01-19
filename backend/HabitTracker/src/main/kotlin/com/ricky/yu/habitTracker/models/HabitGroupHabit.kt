@@ -21,5 +21,5 @@ data class HabitGroupHabit(
     @JoinColumn(name = "habit_group_id")
     val habitGroup: HabitGroup,
     @Column(name = "sort_order", nullable = false)
-    val order: Int = 0,
+    var order: Int = 0,
 )

@@ -16,4 +16,6 @@ interface HabitGroupRepository : JpaRepository<HabitGroup, Long> {
         groupId: Long,
         userId: Long,
     ): Optional<HabitGroup>
+
+    fun countById(groupId: Long): Int
 }

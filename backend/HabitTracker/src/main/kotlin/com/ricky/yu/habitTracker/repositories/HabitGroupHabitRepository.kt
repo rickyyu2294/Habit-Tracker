@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface HabitGroupHabitRepository : JpaRepository<HabitGroupHabit, HabitGroupHabitKey> {
     @Suppress("FunctionNaming", "ktlint:standard:function-naming")
-    fun findByHabitGroup_Id(groupId: Long): List<HabitGroupHabit>
+    fun findByHabitGroup_IdOrderByOrderAsc(groupId: Long): List<HabitGroupHabit>
 }

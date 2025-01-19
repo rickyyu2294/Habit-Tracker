@@ -63,12 +63,12 @@ class DataSeeder(
                     user = user,
                 )
 
-            val groupHabit =
+            val groupHabit1 =
                 HabitGroupHabit(
                     id = HabitGroupHabitKey(1L, 1L),
                     habit = habit,
                     habitGroup = group,
-                    order = 1,
+                    order = 0,
                 )
 
             val habit2 =
@@ -78,6 +78,14 @@ class DataSeeder(
                     description = "gotta meditate",
                     interval = IntervalType.DAILY,
                     user = user,
+                )
+
+            val groupHabit2 =
+                HabitGroupHabit(
+                    id = HabitGroupHabitKey(2L, 1L),
+                    habit = habit2,
+                    habitGroup = group,
+                    order = 1,
                 )
 
             val habit3 =
@@ -128,7 +136,8 @@ class DataSeeder(
             habitCompletionRepository.save(completion3)
             habitCompletionRepository.save(completion4)
             habitCompletionRepository.save(completion6)
-            habitGroupHabitRepository.save(groupHabit)
+            habitGroupHabitRepository.save(groupHabit1)
+            habitGroupHabitRepository.save(groupHabit2)
 
             println("Test user seeded: ${user.email}")
         } else {

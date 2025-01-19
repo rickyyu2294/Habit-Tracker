@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
+import java.util.Collections
 
 @RestController
 @RequestMapping("/habits")
@@ -26,7 +27,7 @@ class HabitController(
         val description: String,
         val interval: String,
         val frequency: Int,
-        val groupIds: Set<Long>,
+        val groupIds: List<Long> = Collections.emptyList(),
     )
 
     data class HabitResponse(
@@ -35,7 +36,7 @@ class HabitController(
         val description: String,
         val interval: String,
         val frequency: Int,
-        val groupIds: Set<Long>,
+        val groupIds: List<Long> = Collections.emptyList(),
     )
 
     fun Habit.toResponse(): HabitResponse {
@@ -45,7 +46,7 @@ class HabitController(
             description = this.description,
             interval = this.interval.toString(),
             frequency = this.frequency,
-            groupIds = this.habitGroupHabits.map { it.habitGroup.id }.toSet(),
+            groupIds = this.habitGroupHabits.map { it.habitGroup.id },
         )
     }
 
@@ -62,6 +63,7 @@ class HabitController(
     @GetMapping
     fun getAllHabits(
         @RequestParam interval: String?,
+        @RequestParam groupId: String?,
     ): ResponseEntity<List<HabitResponse>> {
         val habits =
             habitService.getHabitsForCurrentUser(
@@ -69,6 +71,7 @@ class HabitController(
                     interval?.let {
                         IntervalType.valueOf(it.uppercase())
                     },
+                groupId = groupId?.toLong()
             )
         return ResponseEntity.ok(habits.map { it.toResponse() })
     }

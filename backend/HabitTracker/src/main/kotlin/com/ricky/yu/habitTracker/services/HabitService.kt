@@ -42,20 +42,20 @@ class HabitService(
     fun getHabitsForCurrentUser(
         interval: IntervalType? = null,
         groupId: Long? = null,
-    ): Set<Habit> {
+    ): List<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
-        return if (interval != null) {
-            habitRepository.findByUserIdAndInterval(userId, interval).toSet()
-        } else if (groupId != null) {
-            getHabitsForCurrentUserAndGroup(groupId).toSet()
+        var habits = if (interval != null) {
+            habitRepository.findByUserIdAndInterval(userId, interval)
         } else {
-            habitRepository.findByUserId(userId).toSet()
+            habitRepository.findByUserId(userId)
         }
-    }
 
-    fun getHabitsForCurrentUserAndGroup(groupId: Long): Set<Habit> {
-        habitGroupService.validateUserOwnsHabitGroup(groupId)
-        return habitGroupHabitRepository.findByHabitGroup_Id(groupId).map { it.habit }.toSet()
+        if (groupId != null) {
+            val habitIds = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
+            habits = habits.filter { it.id in habitIds }
+        }
+
+        return habits
     }
 
     fun getHabitById(id: Long): Habit {
@@ -132,10 +132,9 @@ class HabitService(
             habit.habitGroupHabits.find { it.habitGroup == group }?.let {
                 habit.habitGroupHabits.remove(it)
             }
+            habitGroupService.reorderGroup(group.id)
         }
 
-        // TODO: re-order groups
-        var size = habit.habitGroupHabits.size
 
         groupsToAdd.forEach { group ->
             val newMapping =
@@ -144,7 +143,7 @@ class HabitService(
                     habit = habit,
                     habitGroup = group,
                     // Default or user-defined
-                    order = 0,
+                    order = habitGroupService.getGroupSize(group.id) + 1,
                 )
             habit.habitGroupHabits.add(newMapping)
         }

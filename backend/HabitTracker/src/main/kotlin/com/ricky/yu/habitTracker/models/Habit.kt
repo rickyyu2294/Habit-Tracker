@@ -57,5 +57,5 @@ data class Habit(
         cascade = [CascadeType.ALL],
         orphanRemoval = true,
     )
-    val habitGroupHabits: MutableSet<HabitGroupHabit> = mutableSetOf(),
+    val habitGroupHabits: MutableList<HabitGroupHabit> = mutableListOf(),
 )

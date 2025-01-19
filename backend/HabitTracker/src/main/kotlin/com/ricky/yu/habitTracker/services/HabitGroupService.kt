@@ -2,6 +2,7 @@ package com.ricky.yu.habitTracker.services
 
 import com.ricky.yu.habitTracker.context.RequestCtxHolder
 import com.ricky.yu.habitTracker.models.HabitGroup
+import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service
 class HabitGroupService(
     private val habitGroupRepository: HabitGroupRepository,
     private val userService: UserService,
+    private val habitGroupHabitRepository: HabitGroupHabitRepository
 ) {
     fun createGroup(name: String): HabitGroup {
         val userId = RequestCtxHolder.getRequestContext().userId
@@ -56,5 +58,20 @@ class HabitGroupService(
         val userId = ctx.userId
         val isOwner = habitGroupRepository.existsByIdAndUserId(groupId, userId)
         require(isOwner) { "User $userId does not own group $groupId" }
+    }
+
+    fun reorderGroup(groupId: Long) {
+        // get all habitGroupHabits for group, sorted asc by order
+        // and reset ordering starting from 0
+        val groupHabits = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId)
+        var index = 0
+        groupHabits.forEach { habit ->
+            habit.order = index++
+        }
+    }
+
+    fun getGroupSize(groupId: Long): Int {
+        validateUserOwnsHabitGroup(groupId)
+        return habitGroupRepository.countById(groupId)
     }
 }
