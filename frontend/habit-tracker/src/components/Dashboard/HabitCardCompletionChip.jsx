@@ -8,7 +8,6 @@ export default function HabitCardCompletionChip({
     habit,
     interval,
     completionStatus,
-    isCurrent,
     onClick,
 }) {
     const getColor = (status) => {

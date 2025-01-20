@@ -61,7 +61,7 @@ class HabitController(
     }
 
     @GetMapping
-    fun getAllHabits(
+    fun getHabits(
         @RequestParam interval: String?,
         @RequestParam groupId: String?,
     ): ResponseEntity<List<HabitResponse>> {
