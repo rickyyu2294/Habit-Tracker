@@ -63,49 +63,10 @@ class HabitGroupService(
         require(isOwner) { "User $userId does not own group $groupId" }
     }
 
-    fun reorderGroup(groupId: Long) {
-        // get all habitGroupHabits for group, sorted asc by order
-        // and reset ordering starting from 0
-        val groupHabits = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId)
-        var index = 0
-        groupHabits.forEach { habit ->
-            habit.order = index++
-        }
-    }
-
-    fun getGroupSize(groupId: Long): Int {
+    fun getLastOrderInGroup(groupId: Long): Int {
         validateUserOwnsHabitGroup(groupId)
-        return habitGroupRepository.countById(groupId)
-    }
-
-    fun syncHabitGroups(
-        habit: Habit,
-        updatedGroups: Set<HabitGroup>,
-    ) {
-        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
-
-        val groupsToAdd = updatedGroups - currentGroups
-        val groupsToRemove = currentGroups - updatedGroups
-
-        // Remove old group associations
-        groupsToRemove.forEach { group ->
-            habit.habitGroupHabits.find { it.habitGroup == group }?.let {
-                habit.habitGroupHabits.remove(it)
-            }
-            reorderGroup(group.id)
-        }
-
-        // Add new group associations
-        groupsToAdd.forEach { group ->
-            val newMapping =
-                HabitGroupHabit(
-                    id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
-                    habit = habit,
-                    habitGroup = group,
-                    // Default or user-defined
-                    order = getGroupSize(group.id) + 1,
-                )
-            habit.habitGroupHabits.add(newMapping)
-        }
+        // Fetch the highest order value in the group
+        return habitGroupHabitRepository.findTopByHabitGroup_IdOrderByOrderDesc(groupId)
+            ?.order ?: -1 // Return -1 if no habits exist in the group
     }
 }

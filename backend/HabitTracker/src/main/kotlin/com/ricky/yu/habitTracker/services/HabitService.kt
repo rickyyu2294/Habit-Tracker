@@ -26,7 +26,7 @@ class HabitService(
         val user = userService.getUserById(ctx.userId)
         val groups = parseHabitGroups(createRequest)
 
-        val habit =
+        var habit =
             Habit(
                 name = createRequest.name,
                 description = createRequest.description,
@@ -34,9 +34,9 @@ class HabitService(
                 frequency = createRequest.frequency,
                 user = user,
             )
-
-        habitGroupService.syncHabitGroups(habit, groups)
-        return habitRepository.save(habit)
+        habit = habitRepository.save(habit)
+        updateHabitGroups(habit, groups)
+        return habit
     }
 
     fun getHabitsForCurrentUser(
@@ -81,7 +81,7 @@ class HabitService(
                 updatedAt = LocalDateTime.now(),
             )
 
-        habitGroupService.syncHabitGroups(updatedHabit, updatedGroups)
+        updateHabitGroups(updatedHabit, updatedGroups)
 
         // Save and return updated habit
         return habitRepository.save(updatedHabit)
@@ -100,12 +100,12 @@ class HabitService(
 
     // helpers
     // maybe move these helpers
-    private fun parseHabitGroups(createHabitRequest: HabitController.CreateHabitRequest): Set<HabitGroup> {
+    private fun parseHabitGroups(createHabitRequest: HabitController.CreateHabitRequest): List<HabitGroup> {
         val groups =
             createHabitRequest.groupIds.map { groupId ->
                 habitGroupService.getGroupById(groupId)
             }
-        return groups.toSet()
+        return groups
     }
 
     private fun parseInterval(createHabitRequest: HabitController.CreateHabitRequest): IntervalType {
@@ -113,8 +113,31 @@ class HabitService(
             try {
                 IntervalType.valueOf(createHabitRequest.interval.uppercase())
             } catch (e: IllegalArgumentException) {
-                throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}", e)
+                throw IllegalArgumentException("Invalid interval: ${createHabitRequest.frequency}", e)
             }
         return frequency
     }
+
+    fun updateHabitGroups(habit: Habit, updatedGroups: List<HabitGroup>) {
+        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
+        val groupsToAdd = updatedGroups - currentGroups
+        val groupsToRemove = currentGroups - updatedGroups
+
+        // Remove associations
+        groupsToRemove.forEach { group ->
+            habit.habitGroupHabits.removeIf { it.habitGroup == group }
+        }
+
+        // Add new associations
+        groupsToAdd.forEach { group ->
+            val habitGroupHabit = HabitGroupHabit(
+                id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
+                habit = habit,
+                habitGroup = group,
+                order = habitGroupService.getLastOrderInGroup(group.id) + 1
+            )
+            habit.habitGroupHabits.add(habitGroupHabit)
+        }
+    }
+
 }
