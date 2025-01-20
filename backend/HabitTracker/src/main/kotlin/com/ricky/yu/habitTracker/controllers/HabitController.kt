@@ -71,7 +71,7 @@ class HabitController(
                     interval?.let {
                         IntervalType.valueOf(it.uppercase())
                     },
-                groupId = groupId?.toLong()
+                groupId = groupId?.toLong(),
             )
         return ResponseEntity.ok(habits.map { it.toResponse() })
     }

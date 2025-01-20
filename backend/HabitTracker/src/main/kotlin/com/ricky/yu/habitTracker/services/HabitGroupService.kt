@@ -1,10 +1,7 @@
 package com.ricky.yu.habitTracker.services
 
 import com.ricky.yu.habitTracker.context.RequestCtxHolder
-import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitGroup
-import com.ricky.yu.habitTracker.models.HabitGroupHabit
-import com.ricky.yu.habitTracker.models.compositeKeys.HabitGroupHabitKey
 import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
 import jakarta.transaction.Transactional

@@ -44,11 +44,12 @@ class HabitService(
         groupId: Long? = null,
     ): List<Habit> {
         val userId = RequestCtxHolder.getRequestContext().userId
-        var habits = if (interval != null) {
-            habitRepository.findByUserIdAndInterval(userId, interval)
-        } else {
-            habitRepository.findByUserId(userId)
-        }
+        var habits =
+            if (interval != null) {
+                habitRepository.findByUserIdAndInterval(userId, interval)
+            } else {
+                habitRepository.findByUserId(userId)
+            }
 
         if (groupId != null) {
             val habitIds = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
@@ -118,7 +119,10 @@ class HabitService(
         return frequency
     }
 
-    fun updateHabitGroups(habit: Habit, updatedGroups: List<HabitGroup>) {
+    fun updateHabitGroups(
+        habit: Habit,
+        updatedGroups: List<HabitGroup>,
+    ) {
         val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
         val groupsToAdd = updatedGroups - currentGroups
         val groupsToRemove = currentGroups - updatedGroups
@@ -130,14 +134,14 @@ class HabitService(
 
         // Add new associations
         groupsToAdd.forEach { group ->
-            val habitGroupHabit = HabitGroupHabit(
-                id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
-                habit = habit,
-                habitGroup = group,
-                order = habitGroupService.getLastOrderInGroup(group.id) + 1
-            )
+            val habitGroupHabit =
+                HabitGroupHabit(
+                    id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
+                    habit = habit,
+                    habitGroup = group,
+                    order = habitGroupService.getLastOrderInGroup(group.id) + 1,
+                )
             habit.habitGroupHabits.add(habitGroupHabit)
         }
     }
-
 }
