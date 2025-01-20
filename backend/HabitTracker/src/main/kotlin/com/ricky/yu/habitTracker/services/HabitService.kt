@@ -35,7 +35,7 @@ class HabitService(
                 user = user,
             )
 
-        syncHabitGroups(habit, groups)
+        habitGroupService.syncHabitGroups(habit, groups)
         return habitRepository.save(habit)
     }
 
@@ -81,7 +81,7 @@ class HabitService(
                 updatedAt = LocalDateTime.now(),
             )
 
-        syncHabitGroups(updatedHabit, updatedGroups)
+        habitGroupService.syncHabitGroups(updatedHabit, updatedGroups)
 
         // Save and return updated habit
         return habitRepository.save(updatedHabit)
@@ -116,38 +116,5 @@ class HabitService(
                 throw IllegalArgumentException("Invalid frequency: ${createHabitRequest.frequency}", e)
             }
         return frequency
-    }
-
-    private fun syncHabitGroups(
-        habit: Habit,
-        updatedGroups: Set<HabitGroup>,
-    ) {
-        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
-
-        val groupsToAdd = updatedGroups - currentGroups
-        val groupsToRemove = currentGroups - updatedGroups
-
-        // Remove old group associations
-        groupsToRemove.forEach { group ->
-            habit.habitGroupHabits.find { it.habitGroup == group }?.let {
-                habit.habitGroupHabits.remove(it)
-            }
-            habitGroupService.reorderGroup(group.id)
-        }
-
-
-        groupsToAdd.forEach { group ->
-            val newMapping =
-                HabitGroupHabit(
-                    id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
-                    habit = habit,
-                    habitGroup = group,
-                    // Default or user-defined
-                    order = habitGroupService.getGroupSize(group.id) + 1,
-                )
-            habit.habitGroupHabits.add(newMapping)
-        }
-
-        // Add new group associations
     }
 }

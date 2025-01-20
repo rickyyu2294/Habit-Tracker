@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
-@RequestMapping("/habitGroup")
+@RequestMapping("/habitGroups")
 class HabitGroupController(
     private val habitGroupService: HabitGroupService,
 ) {

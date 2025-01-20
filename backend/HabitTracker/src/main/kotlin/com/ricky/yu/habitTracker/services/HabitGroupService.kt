@@ -1,7 +1,10 @@
 package com.ricky.yu.habitTracker.services
 
 import com.ricky.yu.habitTracker.context.RequestCtxHolder
+import com.ricky.yu.habitTracker.models.Habit
 import com.ricky.yu.habitTracker.models.HabitGroup
+import com.ricky.yu.habitTracker.models.HabitGroupHabit
+import com.ricky.yu.habitTracker.models.compositeKeys.HabitGroupHabitKey
 import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
 import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
 import jakarta.transaction.Transactional
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Service
 class HabitGroupService(
     private val habitGroupRepository: HabitGroupRepository,
     private val userService: UserService,
-    private val habitGroupHabitRepository: HabitGroupHabitRepository
+    private val habitGroupHabitRepository: HabitGroupHabitRepository,
 ) {
     fun createGroup(name: String): HabitGroup {
         val userId = RequestCtxHolder.getRequestContext().userId
@@ -73,5 +76,36 @@ class HabitGroupService(
     fun getGroupSize(groupId: Long): Int {
         validateUserOwnsHabitGroup(groupId)
         return habitGroupRepository.countById(groupId)
+    }
+
+    fun syncHabitGroups(
+        habit: Habit,
+        updatedGroups: Set<HabitGroup>,
+    ) {
+        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
+
+        val groupsToAdd = updatedGroups - currentGroups
+        val groupsToRemove = currentGroups - updatedGroups
+
+        // Remove old group associations
+        groupsToRemove.forEach { group ->
+            habit.habitGroupHabits.find { it.habitGroup == group }?.let {
+                habit.habitGroupHabits.remove(it)
+            }
+            reorderGroup(group.id)
+        }
+
+        // Add new group associations
+        groupsToAdd.forEach { group ->
+            val newMapping =
+                HabitGroupHabit(
+                    id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),
+                    habit = habit,
+                    habitGroup = group,
+                    // Default or user-defined
+                    order = getGroupSize(group.id) + 1,
+                )
+            habit.habitGroupHabits.add(newMapping)
+        }
     }
 }
