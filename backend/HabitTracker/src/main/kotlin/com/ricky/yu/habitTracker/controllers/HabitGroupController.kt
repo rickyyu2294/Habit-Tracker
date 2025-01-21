@@ -5,6 +5,7 @@ import com.ricky.yu.habitTracker.services.HabitGroupService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -26,6 +27,11 @@ class HabitGroupController(
         val id: Long,
         val name: String,
         val userId: Long,
+        val habitGroupIds: List<Long>,
+    )
+
+    data class HabitGroupOrderingRequest(
+        val habitIds: List<Long>,
     )
 
     fun HabitGroup.toResponse(): HabitGroupResponse {
@@ -33,6 +39,7 @@ class HabitGroupController(
             id = this.id,
             name = this.name,
             userId = this.user.id,
+            habitGroupIds = habitGroupService.getHabitIdsForGroup(id),
         )
     }
 
@@ -47,7 +54,19 @@ class HabitGroupController(
             .body(newGroup.toResponse())
     }
 
-    @DeleteMapping("/{id}")
+    @GetMapping
+    fun getAllGroups(): ResponseEntity<List<HabitGroupResponse>> {
+        return ResponseEntity.ok(habitGroupService.getGroups().map { it.toResponse() })
+    }
+
+    @GetMapping("/{groupId}")
+    fun getGroupById(
+        @PathVariable groupId: Long,
+    ): ResponseEntity<HabitGroupResponse> {
+        return ResponseEntity.ok(habitGroupService.getGroupById(groupId).toResponse())
+    }
+
+    @DeleteMapping("/{groupId}")
     fun deleteGroup(
         @PathVariable groupId: Long,
     ): ResponseEntity<Unit> {
@@ -55,8 +74,12 @@ class HabitGroupController(
         return ResponseEntity.ok().body(null)
     }
 
-    @GetMapping
-    fun getAllGroups(): ResponseEntity<List<HabitGroupResponse>> {
-        return ResponseEntity.ok(habitGroupService.getGroups().map { it.toResponse() })
+    @PatchMapping("/{groupId}/order")
+    fun updateGroupOrdering(
+        @PathVariable groupId: Long,
+        @RequestBody requestBody: HabitGroupOrderingRequest,
+    ): ResponseEntity<HabitGroupResponse> {
+        habitGroupService.updateGroupOrdering(groupId, requestBody.habitIds)
+        return ResponseEntity.ok(habitGroupService.getGroupById(groupId).toResponse())
     }
 }

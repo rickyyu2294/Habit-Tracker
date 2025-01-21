@@ -66,4 +66,33 @@ class HabitGroupService(
         return habitGroupHabitRepository.findTopByHabitGroup_IdOrderByOrderDesc(groupId)
             ?.order ?: -1 // Return -1 if no habits exist in the group
     }
+
+    fun updateGroupOrdering(
+        groupId: Long,
+        habitIds: List<Long>,
+    ) {
+        validateUserOwnsHabitGroup(groupId)
+
+        // Fetch the current habits in the group
+        val groupHabits = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId)
+        val habitMap = groupHabits.associateBy { it.habit.id }
+
+        // Validation
+        require(habitIds.size == groupHabits.size) { "The number of provided habit IDs does not match the group size." }
+        require(habitIds.toSet().size == habitIds.size) { "Duplicate habit ids not allowed in group update request" }
+        habitIds.forEach { habitId ->
+            require(habitMap.containsKey(habitId)) { "Habit ID $habitId does not belong to group $groupId." }
+        }
+
+        habitIds.forEachIndexed { index, habitId ->
+            habitMap[habitId]?.order = index
+        }
+
+        habitGroupHabitRepository.saveAll(groupHabits)
+    }
+
+    fun getHabitIdsForGroup(groupId: Long): List<Long> {
+        validateUserOwnsHabitGroup(groupId)
+        return habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
+    }
 }
