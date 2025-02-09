@@ -27,7 +27,7 @@ class HabitGroupController(
         val id: Long,
         val name: String,
         val userId: Long,
-        val habitGroupIds: List<Long>,
+        val habitIds: List<Long>,
     )
 
     data class HabitGroupOrderingRequest(
@@ -39,7 +39,7 @@ class HabitGroupController(
             id = this.id,
             name = this.name,
             userId = this.user.id,
-            habitGroupIds = habitGroupService.getHabitIdsForGroup(id),
+            habitIds = habitGroupService.getHabitIdsForGroup(id),
         )
     }
 

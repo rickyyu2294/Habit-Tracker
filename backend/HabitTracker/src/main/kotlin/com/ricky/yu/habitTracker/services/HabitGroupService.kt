@@ -74,8 +74,7 @@ class HabitGroupService(
     // helpers
 
     fun validateUserOwnsHabitGroup(groupId: Long) {
-        val ctx = RequestCtxHolder.get()
-        val userId = ctx.userId
+        val userId = RequestCtxHolder.get().userId
         val isOwner = habitGroupRepository.existsByIdAndUserId(groupId, userId)
         require(isOwner) { "User $userId does not own group $groupId" }
     }
@@ -109,5 +108,9 @@ class HabitGroupService(
         }
 
         habitGroupHabitRepository.saveAll(groupHabits)
+    }
+
+    fun getGroupByName(name: String): HabitGroup {
+        return habitGroupRepository.findByNameAndUserId(name, RequestCtxHolder.get().userId)
     }
 }

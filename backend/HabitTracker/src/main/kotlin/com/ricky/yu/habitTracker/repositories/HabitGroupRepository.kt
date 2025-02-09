@@ -25,4 +25,6 @@ interface HabitGroupRepository : JpaRepository<HabitGroup, Long> {
     fun findIsSystemGeneratedByGroupId(
         @Param("groupId") groupId: Long,
     ): Optional<Boolean>
+
+    fun findByNameAndUserId(name: String, userId: Long): HabitGroup
 }

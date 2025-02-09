@@ -105,10 +105,15 @@ class HabitService(
     // helpers
     // maybe move these helpers
     private fun parseHabitGroups(createHabitRequest: HabitController.CreateHabitRequest): List<HabitGroup> {
+        // Ensure the groupsId include the system generated group 'All'
+        val allGroup = habitGroupService.getGroupByName("All")
+
         val groups =
             createHabitRequest.groupIds.map { groupId ->
                 habitGroupService.getGroupById(groupId)
-            }
+            }.toMutableList()
+
+        if (!groups.contains(allGroup)) groups.add(allGroup)
         return groups
     }
 
