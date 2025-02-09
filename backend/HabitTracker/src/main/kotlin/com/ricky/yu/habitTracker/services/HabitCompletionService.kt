@@ -138,7 +138,7 @@ class HabitCompletionService(
 
         val latestCompletion =
             habitCompletionRepository
-                .findLatestCompletion(
+                .findLatestCompletionInRange(
                     habitId,
                     startDateTime,
                     endDateTime,

@@ -24,23 +24,28 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
         ids: List<Long>,
     )
 
-    @Query("""
+    @Query(
+        """
         SELECT hc FROM HabitCompletion hc
         WHERE hc.habit.id = :habitId 
         AND hc.completionDateTime BETWEEN :startDate AND :endDate
         ORDER BY hc.completionDateTime DESC
-        """)
-    fun findLatestCompletion(
+        LIMIT 1
+        """,
+    )
+    fun findLatestCompletionInRange(
         @Param("habitId") habitId: Long,
         @Param("startDate") startDateTime: LocalDateTime,
-        @Param("endDate") endDateTime: LocalDateTime
+        @Param("endDate") endDateTime: LocalDateTime,
     ): HabitCompletion?
 
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(hc) FROM HabitCompletion hc
         WHERE hc.habit.id = :habitId
         AND hc.completionDateTime BETWEEN :startDate AND :endDate
-    """)
+    """,
+    )
     fun countCompletionsInRange(
         @Param("habitId") habitId: Long,
         @Param("startDate") startDateTime: LocalDateTime,

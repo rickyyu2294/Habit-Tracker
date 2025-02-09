@@ -16,3 +16,15 @@ object RequestCtxHolder {
         threadLocal.remove()
     }
 }
+
+inline fun <T> usingTempCtx(
+    tempCtx: RequestCtx,
+    block: () -> T,
+): T {
+    RequestCtxHolder.set(tempCtx)
+    return try {
+        block() // Execute the function with the temp context
+    } finally {
+        RequestCtxHolder.clear() // Always clear the context afterward
+    }
+}

@@ -1,7 +1,7 @@
 package com.ricky.yu.habitTracker.seeders
 
 import com.ricky.yu.habitTracker.context.RequestCtx
-import com.ricky.yu.habitTracker.context.RequestCtxHolder
+import com.ricky.yu.habitTracker.context.usingTempCtx
 import com.ricky.yu.habitTracker.controllers.HabitController
 import com.ricky.yu.habitTracker.enums.IntervalType
 import com.ricky.yu.habitTracker.services.HabitCompletionService
@@ -31,76 +31,74 @@ class DataSeeder(
         userService.registerUser(USER_EMAIL, USER_PASSWORD, USER_NAME)
         val user = userService.getUserByEmail(USER_EMAIL)
 
-        RequestCtxHolder.set(
+        usingTempCtx(
             RequestCtx(
                 userId = user.id,
                 role = user.role,
                 requestId = UUID.randomUUID().toString(),
             ),
-        )
+        ) {
+            // Create Groups
+            val habitGroup = habitGroupService.createGroup("Test Group")
 
-        // Create Groups
-        val habitGroup = habitGroupService.createGroup("Test Group")
+            // Create Habits
+            val climb =
+                habitService.createHabit(
+                    HabitController.CreateHabitRequest(
+                        name = "Climb",
+                        description = "Gotta climb",
+                        interval = IntervalType.WEEKLY.name,
+                        frequency = 3,
+                        groupIds = listOf(habitGroup.id),
+                    ),
+                )
 
-        // Create Habits
-        val climb =
-            habitService.createHabit(
-                HabitController.CreateHabitRequest(
-                    name = "Climb",
-                    description = "Gotta climb",
-                    interval = IntervalType.WEEKLY.name,
-                    frequency = 3,
-                    groupIds = listOf(habitGroup.id),
-                ),
+            val meditate =
+                habitService.createHabit(
+                    HabitController.CreateHabitRequest(
+                        name = "Meditate",
+                        description = "Gotta meditate",
+                        interval = IntervalType.DAILY.name,
+                        frequency = 1,
+                        groupIds = listOf(habitGroup.id),
+                    ),
+                )
+
+            val bills =
+                habitService.createHabit(
+                    HabitController.CreateHabitRequest(
+                        name = "Pay Bills",
+                        description = "Gotta pay bills",
+                        interval = IntervalType.MONTHLY.name,
+                        frequency = 1,
+                    ),
+                )
+
+            habitCompletionService.createCompletion(
+                habitId = climb.id,
+                dateTime = LocalDateTime.now().minusWeeks(3),
             )
 
-        val meditate =
-            habitService.createHabit(
-                HabitController.CreateHabitRequest(
-                    name = "Meditate",
-                    description = "Gotta meditate",
-                    interval = IntervalType.DAILY.name,
-                    frequency = 1,
-                    groupIds = listOf(habitGroup.id),
-                ),
+            habitCompletionService.createCompletion(
+                habitId = climb.id,
+                dateTime = LocalDateTime.now().minusWeeks(1),
             )
 
-        val bills =
-            habitService.createHabit(
-                HabitController.CreateHabitRequest(
-                    name = "Pay Bills",
-                    description = "Gotta pay bills",
-                    interval = IntervalType.MONTHLY.name,
-                    frequency = 1,
-                ),
+            habitCompletionService.createCompletion(
+                habitId = climb.id,
+                dateTime = LocalDateTime.now().minusWeeks(1).minusDays(1),
             )
 
-        habitCompletionService.createCompletion(
-            habitId = climb.id,
-            dateTime = LocalDateTime.now().minusWeeks(3),
-        )
+            habitCompletionService.createCompletion(
+                habitId = meditate.id,
+                dateTime = LocalDateTime.now().minusDays(3),
+            )
 
-        habitCompletionService.createCompletion(
-            habitId = climb.id,
-            dateTime = LocalDateTime.now().minusWeeks(1),
-        )
-
-        habitCompletionService.createCompletion(
-            habitId = climb.id,
-            dateTime = LocalDateTime.now().minusWeeks(1).minusDays(1),
-        )
-
-        habitCompletionService.createCompletion(
-            habitId = meditate.id,
-            dateTime = LocalDateTime.now().minusDays(3),
-        )
-
-        habitCompletionService.createCompletion(
-            habitId = bills.id,
-            dateTime = LocalDateTime.now().minusMonths(3),
-        )
-
-        RequestCtxHolder.clear()
+            habitCompletionService.createCompletion(
+                habitId = bills.id,
+                dateTime = LocalDateTime.now().minusMonths(3),
+            )
+        }
     }
 
     companion object {
