@@ -28,7 +28,8 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
         """
         SELECT hc FROM HabitCompletion hc
         WHERE hc.habit.id = :habitId 
-        AND hc.completionDateTime BETWEEN :startDate AND :endDate
+        AND hc.completionDateTime >= :startDate
+        AND hc.completionDateTime < :endDate
         ORDER BY hc.completionDateTime DESC
         LIMIT 1
         """,
@@ -43,7 +44,8 @@ interface HabitCompletionRepository : JpaRepository<HabitCompletion, Long> {
         """
         SELECT COUNT(hc) FROM HabitCompletion hc
         WHERE hc.habit.id = :habitId
-        AND hc.completionDateTime BETWEEN :startDate AND :endDate
+        AND hc.completionDateTime >= :startDate
+        AND hc.completionDateTime < :endDate
     """,
     )
     fun countCompletionsInRange(
