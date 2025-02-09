@@ -3,16 +3,16 @@ package com.ricky.yu.habitTracker.context
 object RequestCtxHolder {
     private val threadLocal = ThreadLocal<RequestCtx>()
 
-    fun getRequestContext(): RequestCtx {
+    fun get(): RequestCtx {
         checkNotNull(threadLocal.get()) { "No requestContext found" }
         return threadLocal.get()
     }
 
-    fun setRequestContext(context: RequestCtx) {
+    fun set(context: RequestCtx) {
         threadLocal.set(context)
     }
 
-    fun clearRequestContext() {
+    fun clear() {
         threadLocal.remove()
     }
 }

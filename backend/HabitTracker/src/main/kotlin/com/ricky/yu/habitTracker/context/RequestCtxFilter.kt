@@ -20,7 +20,7 @@ class RequestCtxFilter : OncePerRequestFilter() {
 
             if (authentication != null && authentication.isAuthenticated && authentication.principal is User) {
                 val user = authentication.principal as User
-                RequestCtxHolder.setRequestContext(
+                RequestCtxHolder.set(
                     RequestCtx(
                         userId = user.id,
                         role = user.role,
@@ -31,7 +31,7 @@ class RequestCtxFilter : OncePerRequestFilter() {
 
             filterChain.doFilter(request, response)
         } finally {
-            RequestCtxHolder.clearRequestContext()
+            RequestCtxHolder.clear()
         }
     }
 }

@@ -14,19 +14,31 @@ class HabitGroupService(
     private val userService: UserService,
     private val habitGroupHabitRepository: HabitGroupHabitRepository,
 ) {
-    fun createGroup(name: String): HabitGroup {
-        val userId = RequestCtxHolder.getRequestContext().userId
+    fun createGroup(
+        name: String,
+        isSystemGenerated: Boolean = false,
+    ): HabitGroup {
+        val user = userService.getUserById(RequestCtxHolder.get().userId)
         val habitGroup =
             HabitGroup(
                 name = name,
-                user = userService.getUserById(userId),
+                user = user,
+                isSystemGenerated = isSystemGenerated,
             )
         return habitGroupRepository.save(habitGroup)
     }
 
     fun deleteGroup(groupId: Long) {
         val group = getGroupById(groupId)
+        validateUserOwnsHabitGroup(groupId)
+        require(!isSystemGenerated(groupId)) { "Cannot delete system generated group: group $groupId" }
         habitGroupRepository.delete(group)
+    }
+
+    fun isSystemGenerated(groupId: Long): Boolean {
+        return habitGroupRepository.findIsSystemGeneratedByGroupId(groupId).orElseThrow {
+            NoSuchElementException("Group Id $groupId doesn't exist")
+        }
     }
 
     fun renameGroup(
@@ -34,18 +46,19 @@ class HabitGroupService(
         newName: String,
     ): HabitGroup {
         val group = getGroupById(groupId)
-
+        validateUserOwnsHabitGroup(groupId)
+        require(!isSystemGenerated(groupId)) { "Cannot rename system generated group: group $groupId" }
         val updatedGroup = group.copy(name = newName)
         return habitGroupRepository.save(updatedGroup)
     }
 
     fun getGroups(): List<HabitGroup> {
-        val userId = RequestCtxHolder.getRequestContext().userId
+        val userId = RequestCtxHolder.get().userId
         return habitGroupRepository.findAllByUserId(userId)
     }
 
     fun getGroupById(groupId: Long): HabitGroup {
-        val userId = RequestCtxHolder.getRequestContext().userId
+        val userId = RequestCtxHolder.get().userId
         val group =
             habitGroupRepository.findByIdAndUserId(groupId, userId).orElseThrow {
                 NoSuchElementException("No habit group $groupId for user $userId")
@@ -53,8 +66,15 @@ class HabitGroupService(
         return group
     }
 
+    fun getHabitIdsForGroup(groupId: Long): List<Long> {
+        validateUserOwnsHabitGroup(groupId)
+        return habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
+    }
+
+    // helpers
+
     fun validateUserOwnsHabitGroup(groupId: Long) {
-        val ctx = RequestCtxHolder.getRequestContext()
+        val ctx = RequestCtxHolder.get()
         val userId = ctx.userId
         val isOwner = habitGroupRepository.existsByIdAndUserId(groupId, userId)
         require(isOwner) { "User $userId does not own group $groupId" }
@@ -89,10 +109,5 @@ class HabitGroupService(
         }
 
         habitGroupHabitRepository.saveAll(groupHabits)
-    }
-
-    fun getHabitIdsForGroup(groupId: Long): List<Long> {
-        validateUserOwnsHabitGroup(groupId)
-        return habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
     }
 }

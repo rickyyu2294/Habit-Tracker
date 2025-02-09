@@ -22,8 +22,7 @@ class HabitService(
     private val habitGroupHabitRepository: HabitGroupHabitRepository,
 ) {
     fun createHabit(createRequest: HabitController.CreateHabitRequest): Habit {
-        val ctx = RequestCtxHolder.getRequestContext()
-        val user = userService.getUserById(ctx.userId)
+        val user = userService.getUserById(RequestCtxHolder.get().userId)
         val groups = parseHabitGroups(createRequest)
 
         var habit =
@@ -35,7 +34,11 @@ class HabitService(
                 user = user,
             )
         habit = habitRepository.save(habit)
-        updateHabitGroups(habit, groups)
+        updateHabitGroups(
+            habit = habit,
+            updatedGroups = groups,
+            allowSystemGeneratedGroupsEdit = true,
+        )
         return habit
     }
 
@@ -43,7 +46,7 @@ class HabitService(
         interval: IntervalType? = null,
         groupId: Long? = null,
     ): List<Habit> {
-        val userId = RequestCtxHolder.getRequestContext().userId
+        val userId = RequestCtxHolder.get().userId
         var habits =
             if (interval != null) {
                 habitRepository.findByUserIdAndInterval(userId, interval)
@@ -60,7 +63,7 @@ class HabitService(
     }
 
     fun getHabitById(id: Long): Habit {
-        val userId = RequestCtxHolder.getRequestContext().userId
+        val userId = RequestCtxHolder.get().userId
         val habit = habitRepository.findByIdAndUserId(id, userId).orElseThrow()
         return habit
     }
@@ -82,7 +85,7 @@ class HabitService(
                 updatedAt = LocalDateTime.now(),
             )
 
-        updateHabitGroups(updatedHabit, updatedGroups)
+        updateHabitGroups(updatedHabit, updatedGroups, true)
 
         // Save and return updated habit
         return habitRepository.save(updatedHabit)
@@ -94,7 +97,7 @@ class HabitService(
     }
 
     fun validateUserOwnsHabit(habitId: Long) {
-        val userId = RequestCtxHolder.getRequestContext().userId
+        val userId = RequestCtxHolder.get().userId
         val isOwner = habitRepository.existsByIdAndUserId(habitId, userId)
         require(isOwner) { throw IllegalArgumentException("User $userId does not own habit $habitId") }
     }
@@ -122,18 +125,30 @@ class HabitService(
     fun updateHabitGroups(
         habit: Habit,
         updatedGroups: List<HabitGroup>,
+        allowSystemGeneratedGroupsEdit: Boolean = false,
     ) {
-        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }.toSet()
-        val groupsToAdd = updatedGroups - currentGroups
-        val groupsToRemove = currentGroups - updatedGroups
+        val currentGroups = habit.habitGroupHabits.map { it.habitGroup }
+        val groupsToAdd = updatedGroups - currentGroups.toSet()
+        val groupsToRemove = currentGroups - updatedGroups.toSet()
 
         // Remove associations
         groupsToRemove.forEach { group ->
+            // validate group is not system generated
+            if (!allowSystemGeneratedGroupsEdit) {
+                require(!habitGroupService.isSystemGenerated(group.id)) {
+                    "Cannot remove habit from system generated group: group id ${group.id}"
+                }
+            }
             habit.habitGroupHabits.removeIf { it.habitGroup == group }
         }
 
         // Add new associations
         groupsToAdd.forEach { group ->
+            if (!allowSystemGeneratedGroupsEdit) {
+                require(!habitGroupService.isSystemGenerated(group.id)) {
+                    "Cannot add habit to system generated group: group id ${group.id}"
+                }
+            }
             val habitGroupHabit =
                 HabitGroupHabit(
                     id = HabitGroupHabitKey(habitId = habit.id, habitGroupId = group.id),

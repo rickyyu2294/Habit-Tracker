@@ -66,7 +66,7 @@ class HabitCompletionService(
         val (startDateTime, endDateTime) = intervalToStartAndEndTime(habit.interval, interval)
 
         val completionCount =
-            habitCompletionRepository.countByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThan(
+            habitCompletionRepository.countCompletionsInRange(
                 habitId,
                 startDateTime,
                 endDateTime,
@@ -138,7 +138,7 @@ class HabitCompletionService(
 
         val latestCompletion =
             habitCompletionRepository
-                .findTopByHabitIdAndCompletionDateTimeGreaterThanEqualAndCompletionDateTimeLessThanOrderByCompletionDateTimeDesc(
+                .findLatestCompletion(
                     habitId,
                     startDateTime,
                     endDateTime,
