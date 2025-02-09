@@ -1,155 +1,111 @@
 package com.ricky.yu.habitTracker.seeders
 
+import com.ricky.yu.habitTracker.context.RequestCtx
+import com.ricky.yu.habitTracker.context.RequestCtxHolder
+import com.ricky.yu.habitTracker.controllers.HabitController
 import com.ricky.yu.habitTracker.enums.IntervalType
-import com.ricky.yu.habitTracker.enums.Role
-import com.ricky.yu.habitTracker.models.Habit
-import com.ricky.yu.habitTracker.models.HabitCompletion
-import com.ricky.yu.habitTracker.models.HabitGroup
-import com.ricky.yu.habitTracker.models.HabitGroupHabit
-import com.ricky.yu.habitTracker.models.User
-import com.ricky.yu.habitTracker.models.compositeKeys.HabitGroupHabitKey
-import com.ricky.yu.habitTracker.repositories.HabitCompletionRepository
-import com.ricky.yu.habitTracker.repositories.HabitGroupHabitRepository
-import com.ricky.yu.habitTracker.repositories.HabitGroupRepository
-import com.ricky.yu.habitTracker.repositories.HabitRepository
-import com.ricky.yu.habitTracker.repositories.UserRepository
+import com.ricky.yu.habitTracker.services.HabitCompletionService
+import com.ricky.yu.habitTracker.services.HabitGroupService
+import com.ricky.yu.habitTracker.services.HabitService
+import com.ricky.yu.habitTracker.services.UserService
+import jakarta.transaction.Transactional
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Profile
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.util.UUID
 
 @Component
 @Profile("dev", "test")
 @Suppress("MagicNumber", "MayBeConst")
 class DataSeeder(
-    private val userRepository: UserRepository,
-    private val habitRepository: HabitRepository,
-    private val habitCompletionRepository: HabitCompletionRepository,
-    private val groupRepository: HabitGroupRepository,
-    private val passwordEncoder: PasswordEncoder,
-    private val habitGroupHabitRepository: HabitGroupHabitRepository,
+    private val userService: UserService,
+    private val habitService: HabitService,
+    private val habitCompletionService: HabitCompletionService,
+    private val habitGroupService: HabitGroupService,
 ) : CommandLineRunner {
+    @Transactional
     @Suppress("LongMethod")
     override fun run(vararg args: String?) {
         // Check if the test user already exists
+        userService.registerUser(USER_EMAIL, USER_PASSWORD, USER_NAME)
+        val user = userService.getUserByEmail(USER_EMAIL)
 
-        if (!userRepository.existsByEmail(userEmail)) {
-            // Create a test user
+        RequestCtxHolder.set(
+            RequestCtx(
+                userId = user.id,
+                role = user.role,
+                requestId = UUID.randomUUID().toString(),
+            ),
+        )
 
-            val user =
-                User(
-                    id = 1L,
-                    email = userEmail,
-                    name = userName,
-                    password = passwordEncoder.encode(userPassword),
-                    role = Role.USER,
-                )
+        // Create Groups
+        val habitGroup = habitGroupService.createGroup("Test Group")
 
-            val group =
-                HabitGroup(
-                    id = 1L,
-                    name = "Test Group",
-                    user = user,
-                )
-
-            val habit =
-                Habit(
-                    id = 1L,
-                    name = habitName,
-                    description = habitDescription,
+        // Create Habits
+        val climb =
+            habitService.createHabit(
+                HabitController.CreateHabitRequest(
+                    name = "Climb",
+                    description = "Gotta climb",
+                    interval = IntervalType.WEEKLY.name,
                     frequency = 3,
-                    interval = IntervalType.WEEKLY,
-                    user = user,
-                )
+                    groupIds = listOf(habitGroup.id),
+                ),
+            )
 
-            val groupHabit1 =
-                HabitGroupHabit(
-                    id = HabitGroupHabitKey(1L, 1L),
-                    habit = habit,
-                    habitGroup = group,
-                    order = 0,
-                )
-
-            val habit2 =
-                Habit(
-                    id = 2L,
+        val meditate =
+            habitService.createHabit(
+                HabitController.CreateHabitRequest(
                     name = "Meditate",
-                    description = "gotta meditate",
-                    interval = IntervalType.DAILY,
-                    user = user,
-                )
+                    description = "Gotta meditate",
+                    interval = IntervalType.DAILY.name,
+                    frequency = 1,
+                    groupIds = listOf(habitGroup.id),
+                ),
+            )
 
-            val groupHabit2 =
-                HabitGroupHabit(
-                    id = HabitGroupHabitKey(2L, 1L),
-                    habit = habit2,
-                    habitGroup = group,
-                    order = 1,
-                )
-
-            val habit3 =
-                Habit(
-                    id = 3L,
+        val bills =
+            habitService.createHabit(
+                HabitController.CreateHabitRequest(
                     name = "Pay Bills",
-                    description = "gotta pay bills",
-                    interval = IntervalType.MONTHLY,
-                    user = user,
-                )
+                    description = "Gotta pay bills",
+                    interval = IntervalType.MONTHLY.name,
+                    frequency = 1,
+                ),
+            )
 
-            val completion1 =
-                HabitCompletion(
-                    habit = habit,
-                    completionDateTime = LocalDateTime.now().minusWeeks(3),
-                )
+        habitCompletionService.createCompletion(
+            habitId = climb.id,
+            dateTime = LocalDateTime.now().minusWeeks(3),
+        )
 
-            val completion3 =
-                HabitCompletion(
-                    habit = habit,
-                    completionDateTime = LocalDateTime.now().minusWeeks(1),
-                )
+        habitCompletionService.createCompletion(
+            habitId = climb.id,
+            dateTime = LocalDateTime.now().minusWeeks(1),
+        )
 
-            val completion4 =
-                HabitCompletion(
-                    habit = habit,
-                    completionDateTime = LocalDateTime.now().minusWeeks(1).minusDays(1),
-                )
+        habitCompletionService.createCompletion(
+            habitId = climb.id,
+            dateTime = LocalDateTime.now().minusWeeks(1).minusDays(1),
+        )
 
-            val completion2 =
-                HabitCompletion(
-                    habit = habit2,
-                    completionDateTime = LocalDateTime.now().minusDays(3),
-                )
+        habitCompletionService.createCompletion(
+            habitId = meditate.id,
+            dateTime = LocalDateTime.now().minusDays(3),
+        )
 
-            val completion6 =
-                HabitCompletion(
-                    habit = habit3,
-                    completionDateTime = LocalDateTime.now().minusMonths(3),
-                )
-            userRepository.save(user)
-            groupRepository.save(group)
-            habitRepository.save(habit)
-            habitRepository.save(habit2)
-            habitRepository.save(habit3)
-            habitCompletionRepository.save(completion1)
-            habitCompletionRepository.save(completion2)
-            habitCompletionRepository.save(completion3)
-            habitCompletionRepository.save(completion4)
-            habitCompletionRepository.save(completion6)
-            habitGroupHabitRepository.save(groupHabit1)
-            habitGroupHabitRepository.save(groupHabit2)
+        habitCompletionService.createCompletion(
+            habitId = bills.id,
+            dateTime = LocalDateTime.now().minusMonths(3),
+        )
 
-            println("Test user seeded: ${user.email}")
-        } else {
-            println("Test user already exists")
-        }
+        RequestCtxHolder.clear()
     }
 
     companion object {
-        val userEmail = "test.user@test.com"
-        val userName = "Test User"
-        val userPassword = "testPassword"
-        val habitName = "Climb"
-        val habitDescription = "gotta climb"
+        const val USER_EMAIL = "test.user@test.com"
+        const val USER_NAME = "Test User"
+        const val USER_PASSWORD = "testPassword"
     }
 }
