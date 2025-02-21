@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 export default function Page({ title, children }) {
     return (
-        <Container maxWidth="lg" sx={{ minHeight: "100vh", py: 4 }}>
+        <Container maxWidth="lg" sx={{ minHeight: "100vh", py: 4 , display: 'flex', flexDirection: 'column', alignContent: 'center'}}>
             <Box sx={{ mb: 4 }}>
                 <Typography variant="h4" component="h1" gutterBottom>
                     {title}

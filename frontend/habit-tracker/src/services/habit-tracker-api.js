@@ -160,6 +160,7 @@ const api = {
         ),
 
     // habit group
+    getHabitGroups: () => habitTrackerApi.get("/habitGroups"),
 };
 
 export default api;

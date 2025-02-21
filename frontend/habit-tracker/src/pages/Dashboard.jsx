@@ -7,6 +7,7 @@ import { Add } from "@mui/icons-material";
 import ErrorMessage from "../components/Layout/ErrorMessage";
 import React from "react";
 import NewHabitModal from "../components/Modals/NewHabitModal";
+import Sidebar from "../components/Layout/Sidebar";
 
 const Dashboard = () => {
     const [error, setError] = useState("");
@@ -34,6 +35,7 @@ const Dashboard = () => {
 
     return (
         <Page title="Dashboard">
+            <Sidebar />
             <Box display="flex" flexDirection="column" alignItems="center">
                 {error && <ErrorMessage error={error} />}
                 {habits.length > 0 ? (
