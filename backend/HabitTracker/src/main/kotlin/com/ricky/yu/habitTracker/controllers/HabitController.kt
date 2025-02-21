@@ -62,15 +62,10 @@ class HabitController(
 
     @GetMapping
     fun getHabits(
-        @RequestParam interval: String?,
         @RequestParam groupId: String?,
     ): ResponseEntity<List<HabitResponse>> {
         val habits =
-            habitService.getHabitsForCurrentUser(
-                interval =
-                    interval?.let {
-                        IntervalType.valueOf(it.uppercase())
-                    },
+            habitService.getHabits(
                 groupId = groupId?.toLong(),
             )
         return ResponseEntity.ok(habits.map { it.toResponse() })

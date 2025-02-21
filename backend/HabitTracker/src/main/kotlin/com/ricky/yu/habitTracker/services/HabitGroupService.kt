@@ -113,4 +113,8 @@ class HabitGroupService(
     fun getGroupByName(name: String): HabitGroup {
         return habitGroupRepository.findByNameAndUserId(name, RequestCtxHolder.get().userId)
     }
+
+    companion object {
+        const val ALL_GROUP_NAME = "All"
+    }
 }

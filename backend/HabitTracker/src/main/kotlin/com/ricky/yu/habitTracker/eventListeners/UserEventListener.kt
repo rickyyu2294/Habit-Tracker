@@ -21,7 +21,7 @@ class UserEventListener(
                 requestId = UUID.randomUUID().toString(),
             ),
         ) {
-            habitGroupService.createGroup(name = "All", isSystemGenerated = true)
+            habitGroupService.createGroup(name = HabitGroupService.ALL_GROUP_NAME, isSystemGenerated = true)
         }
     }
 }

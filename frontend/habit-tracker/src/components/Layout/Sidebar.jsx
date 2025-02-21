@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
 import { InboxOutlined } from "@mui/icons-material";
 import api from "../../services/habit-tracker-api";
+import PropTypes from "prop-types";
 
 const drawerWidth = 240;
 
-export default function Sidebar() {
+export default function Sidebar({ onGroupSelect }) {
     const [groups, setGroups] = useState([]);
 
     const fetchHabitGroups = async () => {
@@ -37,13 +38,13 @@ export default function Sidebar() {
             <Toolbar />
             <Divider />
             <List>
-                {groups.map((group, index) => (
+                {groups.map((group) => (
                     <ListItem key={group.id} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => onGroupSelect(group.id)}>
                             <ListItemIcon>
                                 <InboxOutlined />
                             </ListItemIcon>
-                            <ListItemText primary={`${index + 1}. ${group.name}`} />
+                            <ListItemText primary={group.name} />
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -53,4 +54,5 @@ export default function Sidebar() {
     );
 }
 Sidebar.propTypes = {
+    onGroupSelect: PropTypes.func
 };

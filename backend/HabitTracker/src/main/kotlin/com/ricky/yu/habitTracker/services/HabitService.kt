@@ -42,24 +42,16 @@ class HabitService(
         return habit
     }
 
-    fun getHabitsForCurrentUser(
-        interval: IntervalType? = null,
+    fun getHabits(
         groupId: Long? = null,
     ): List<Habit> {
         val userId = RequestCtxHolder.get().userId
-        var habits =
-            if (interval != null) {
-                habitRepository.findByUserIdAndInterval(userId, interval)
-            } else {
-                habitRepository.findByUserId(userId)
-            }
 
-        if (groupId != null) {
-            val habitIds = habitGroupHabitRepository.findByHabitGroup_IdOrderByOrderAsc(groupId).map { it.habit.id }
-            habits = habits.filter { it.id in habitIds }
-        }
+        // Determine the correct groupId to use
+        val resolvedGroupId = groupId ?: habitGroupService.getGroupByName(HabitGroupService.ALL_GROUP_NAME).id
 
-        return habits
+        // Fetch habits directly using a query instead of fetching and filtering in-memory
+        return habitRepository.findByUserIdAndGroupId(userId, resolvedGroupId)
     }
 
     fun getHabitById(id: Long): Habit {
@@ -106,7 +98,7 @@ class HabitService(
     // maybe move these helpers
     private fun parseHabitGroups(createHabitRequest: HabitController.CreateHabitRequest): List<HabitGroup> {
         // Ensure the groupsId include the system generated group 'All'
-        val allGroup = habitGroupService.getGroupByName("All")
+        val allGroup = habitGroupService.getGroupByName(HabitGroupService.ALL_GROUP_NAME)
 
         val groups =
             createHabitRequest.groupIds.map { groupId ->

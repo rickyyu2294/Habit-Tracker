@@ -12,6 +12,7 @@ import Sidebar from "../components/Layout/Sidebar";
 const Dashboard = () => {
     const [error, setError] = useState("");
     const [habits, setHabits] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null);
     const [newHabitModalOpen, setNewHabitModalOpen] = useState(false);
 
     const handleNewHabitOnClose = () => {
@@ -19,9 +20,11 @@ const Dashboard = () => {
         fetchHabits();
     };
 
-    const fetchHabits = async () => {
+    const fetchHabits = async (groupId) => {
         try {
-            const response = await api.getHabits();
+            const response = groupId
+                ? await api.getHabits(groupId)
+                : await api.getHabits();
             setHabits(response.data);
         } catch (err) {
             setError("Failed to load habits. Please try again.");
@@ -30,12 +33,12 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        fetchHabits();
-    }, []);
+        fetchHabits(selectedGroup);
+    }, [selectedGroup]);
 
     return (
         <Page title="Dashboard">
-            <Sidebar />
+            <Sidebar onGroupSelect={setSelectedGroup}/>
             <Box display="flex" flexDirection="column" alignItems="center">
                 {error && <ErrorMessage error={error} />}
                 {habits.length > 0 ? (

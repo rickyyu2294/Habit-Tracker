@@ -128,7 +128,12 @@ const api = {
     login: (email, password) => login(email, password),
 
     // habit
-    getHabits: () => habitTrackerApi.get("/habits"),
+    getHabits: (groupId) => {
+        const params = groupId ? { groupId: groupId } : {};
+        return habitTrackerApi.get("/habits", {
+            params,
+        })
+    },
     createHabit: (name, description, interval, frequency) => {
         return habitTrackerApi.post("/habits", {
             name,

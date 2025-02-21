@@ -74,6 +74,15 @@ class DataSeeder(
                     ),
                 )
 
+            habitGroupService.updateGroupOrdering(habitGroup.id, listOf(meditate.id, climb.id))
+            habitGroupService.updateGroupOrdering(
+                habitGroupService
+                    .getGroupByName(
+                        HabitGroupService.ALL_GROUP_NAME
+                    ).id,
+                listOf(bills.id, climb.id, meditate.id)
+            )
+
             habitCompletionService.createCompletion(
                 habitId = climb.id,
                 dateTime = LocalDateTime.now().minusWeeks(3),
