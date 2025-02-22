@@ -20,11 +20,6 @@ interface HabitRepository : JpaRepository<Habit, Long> {
         userId: Long,
     ): Optional<Habit>
 
-    fun findByUserIdAndInterval(
-        userId: Long,
-        interval: IntervalType,
-    ): List<Habit>
-
     @Query("""
     SELECT h FROM Habit h 
     JOIN HabitGroupHabit hgh ON h.id = hgh.habit.id

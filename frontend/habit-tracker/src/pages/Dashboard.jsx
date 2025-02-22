@@ -17,13 +17,13 @@ const Dashboard = () => {
 
     const handleNewHabitOnClose = () => {
         setNewHabitModalOpen(false);
-        fetchHabits();
+        fetchHabits(selectedGroup);
     };
 
-    const fetchHabits = async (groupId) => {
+    const fetchHabits = async () => {
         try {
-            const response = groupId
-                ? await api.getHabits(groupId)
+            const response = selectedGroup
+                ? await api.getHabits(selectedGroup)
                 : await api.getHabits();
             setHabits(response.data);
         } catch (err) {
