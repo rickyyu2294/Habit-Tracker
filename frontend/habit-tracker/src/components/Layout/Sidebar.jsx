@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from "@mui/material";
-import { InboxOutlined } from "@mui/icons-material";
+import {
+    Divider,
+    Drawer,
+    List,
+    ListItem,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Toolbar,
+} from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import MenuIcon from "@mui/icons-material/Menu";
 import api from "../../services/habit-tracker-api";
 import PropTypes from "prop-types";
 
 const drawerWidth = 240;
 
-export default function Sidebar({ onGroupSelect }) {
+export default function Sidebar({ selectedGroup, onGroupSelect }) {
     const [groups, setGroups] = useState([]);
 
     const fetchHabitGroups = async () => {
@@ -27,9 +37,9 @@ export default function Sidebar({ onGroupSelect }) {
             sx={{
                 width: drawerWidth,
                 flexShrink: 0,
-                '& .MuiDrawer-paper': {
+                "& .MuiDrawer-paper": {
                     width: drawerWidth,
-                    boxSizing: 'border-box',
+                    boxSizing: "border-box",
                 },
             }}
             variant="permanent"
@@ -40,19 +50,33 @@ export default function Sidebar({ onGroupSelect }) {
             <List>
                 {groups.map((group) => (
                     <ListItem key={group.id} disablePadding>
-                        <ListItemButton onClick={() => onGroupSelect(group.id)}>
+                        <ListItemButton
+                            onClick={() => onGroupSelect(group.id)}
+                            sx={{
+                                backgroundColor:
+                                    selectedGroup === group.id
+                                        ? "#eeeeee"
+                                        : "transparent",
+                                "&:hover": {
+                                    backgroundColor: "#e0e0e0",
+                                },
+                            }}
+                        >
                             <ListItemIcon>
-                                <InboxOutlined />
+                                <DashboardIcon />
                             </ListItemIcon>
                             <ListItemText primary={group.name} />
+                            <ListItemIcon>
+                                <MenuIcon />
+                            </ListItemIcon>
                         </ListItemButton>
                     </ListItem>
                 ))}
             </List>
-      </Drawer>
-
+        </Drawer>
     );
 }
 Sidebar.propTypes = {
-    onGroupSelect: PropTypes.func
+    selectedGroup: PropTypes.number,
+    onGroupSelect: PropTypes.func,
 };
