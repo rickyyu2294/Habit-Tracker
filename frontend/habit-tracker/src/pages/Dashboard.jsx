@@ -23,7 +23,7 @@ const Dashboard = () => {
     const fetchHabits = async () => {
         try {
             const response = selectedGroup
-                ? await api.getHabits(selectedGroup)
+                ? await api.getHabits(selectedGroup.id)
                 : await api.getHabits();
             setHabits(response.data);
         } catch (err) {
@@ -37,7 +37,7 @@ const Dashboard = () => {
     }, [selectedGroup]);
 
     return (
-        <Page title="Dashboard">
+        <Page title={selectedGroup ? selectedGroup.name : "All"}>
             <Sidebar selectedGroup={selectedGroup} onGroupSelect={setSelectedGroup}/>
             <Box display="flex" flexDirection="column" alignItems="center">
                 {error && <ErrorMessage error={error} />}

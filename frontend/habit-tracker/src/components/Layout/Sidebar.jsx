@@ -10,11 +10,10 @@ import {
     Toolbar,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import MenuIcon from "@mui/icons-material/Menu";
 import api from "../../services/habit-tracker-api";
 import PropTypes from "prop-types";
 
-const drawerWidth = 240;
+const drawerWidth = 360;
 
 export default function Sidebar({ selectedGroup, onGroupSelect }) {
     const [groups, setGroups] = useState([]);
@@ -23,6 +22,14 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
         try {
             const response = await api.getHabitGroups();
             setGroups(response.data);
+
+            // set 'all' group to selectedby default
+            const allGroup = response.data.find(
+                (group) => group.name === "All",
+            );
+            if (!selectedGroup) {
+                onGroupSelect(allGroup);
+            }
         } catch (err) {
             console.error(err);
         }
@@ -30,7 +37,7 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
 
     useEffect(() => {
         fetchHabitGroups();
-    }, []);
+    }, [selectedGroup]);
 
     return (
         <Drawer
@@ -51,10 +58,10 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
                 {groups.map((group) => (
                     <ListItem key={group.id} disablePadding>
                         <ListItemButton
-                            onClick={() => onGroupSelect(group.id)}
+                            onClick={() => onGroupSelect(group)}
                             sx={{
                                 backgroundColor:
-                                    selectedGroup === group.id
+                                    (selectedGroup?.id ?? false) === group.id
                                         ? "#eeeeee"
                                         : "transparent",
                                 "&:hover": {
@@ -66,9 +73,6 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
                                 <DashboardIcon />
                             </ListItemIcon>
                             <ListItemText primary={group.name} />
-                            <ListItemIcon>
-                                <MenuIcon />
-                            </ListItemIcon>
                         </ListItemButton>
                     </ListItem>
                 ))}
@@ -77,6 +81,6 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
     );
 }
 Sidebar.propTypes = {
-    selectedGroup: PropTypes.number,
+    selectedGroup: PropTypes.object,
     onGroupSelect: PropTypes.func,
 };
