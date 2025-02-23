@@ -51,9 +51,9 @@ const Dashboard = () => {
                             alignItems: "center",
                         }}
                     >
-                        {habits.map((habit, index) => (
+                        {habits.map((habit) => (
                             <HabitCard
-                                key={index}
+                                key={habit.id}
                                 habit={habit}
                                 onComplete={fetchHabits}
                             />

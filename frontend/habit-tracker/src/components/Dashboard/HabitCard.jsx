@@ -100,7 +100,7 @@ export default function HabitCard({ habit, onComplete }) {
 
                 {/* Completion Icons */}
                 <Box display="flex" justifyContent="center" gap={1} mt={2}>
-                    {intervals.map((interval, index) => {
+                    {intervals.map((interval) => {
                         const isCurrent =
                             interval === intervals[intervals.length - 1];
                         const completionStatus = getCompletionStatus(
@@ -109,9 +109,8 @@ export default function HabitCard({ habit, onComplete }) {
                             interval,
                         );
                         return (
-                            <>
-                                <HabitCardCompletionChip
-                                    key={index}
+                            <HabitCardCompletionChip
+                                    key={interval}
                                     interval={interval}
                                     habit={habit}
                                     isCurrent={isCurrent}
@@ -119,8 +118,7 @@ export default function HabitCard({ habit, onComplete }) {
                                     onClick={() =>
                                         handleCompletionChipClick(interval)
                                     }
-                                />
-                            </>
+                            />
                         );
                     })}
                 </Box>
