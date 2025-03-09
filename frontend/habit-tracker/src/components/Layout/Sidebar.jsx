@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+    Button,
     Divider,
     Drawer,
     List,
@@ -11,6 +12,7 @@ import {
     Typography,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import SettingsIcon from "@mui/icons-material/Settings";
 import api from "../../services/habit-tracker-api";
 import PropTypes from "prop-types";
 
@@ -36,6 +38,11 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
         }
     };
 
+    const openManageHabitGroupsModal = () => {
+        // set openManageHabitGroupsModal to true
+        console.log("Open manage habit groups modal")
+    };
+
     useEffect(() => {
         fetchHabitGroups();
     }, [selectedGroup]);
@@ -53,13 +60,22 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
             variant="permanent"
             anchor="left"
         >
-            <Toolbar>
-                <Typography
-                    variant="h6"
+            <Toolbar
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                }}
+            >
+                <Typography variant="h6">Habit Groups</Typography>
+                <Button
+                    onClick={() => openManageHabitGroupsModal()}
                 >
-                    Habit Groups
-                </Typography>
+                    <SettingsIcon color="action"/>
+                </Button>
             </Toolbar>
+            <List>
+               
+            </List>
             <Divider />
             <List>
                 {groups.map((group) => (
