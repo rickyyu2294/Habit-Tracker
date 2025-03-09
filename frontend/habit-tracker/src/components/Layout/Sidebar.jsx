@@ -8,6 +8,7 @@ import {
     ListItemIcon,
     ListItemText,
     Toolbar,
+    Typography,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import api from "../../services/habit-tracker-api";
@@ -52,7 +53,13 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
             variant="permanent"
             anchor="left"
         >
-            <Toolbar />
+            <Toolbar>
+                <Typography
+                    variant="h6"
+                >
+                    Habit Groups
+                </Typography>
+            </Toolbar>
             <Divider />
             <List>
                 {groups.map((group) => (
