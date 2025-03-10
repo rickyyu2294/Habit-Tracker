@@ -20,6 +20,7 @@ const drawerWidth = 360;
 
 export default function Sidebar({ selectedGroup, onGroupSelect }) {
     const [groups, setGroups] = useState([]);
+    const [manageGroupModalOpen, setManageGroupModalOpen] = useState(false);
 
     const fetchHabitGroups = async () => {
         try {
@@ -38,7 +39,7 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
         }
     };
 
-    const openManageHabitGroupsModal = () => {
+    const openManageGroupsModal = () => {
         // set openManageHabitGroupsModal to true
         console.log("Open manage habit groups modal")
     };
@@ -68,7 +69,7 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
             >
                 <Typography variant="h6">Habit Groups</Typography>
                 <Button
-                    onClick={() => openManageHabitGroupsModal()}
+                    onClick={() => openManageGroupsModal()}
                 >
                     <SettingsIcon color="action"/>
                 </Button>
