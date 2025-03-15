@@ -1,24 +1,18 @@
 import { Box, Modal, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import React from "react";
+import ManageGroupForm from "../Forms/ManageGroupForm";
 
-export default function CompletionModal({ open, onClose, groups }) {
+export default function ManageGroupModal({ open, onClose }) {
     return (
         <Modal open={open} onClose={onClose}>
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography>
-                    Moo
-                </Typography>
-                <Typography>
-                    {groups.map((group) => {
-                        console.log(group.name)
-                    })}
-                </Typography>
+            <Box display={"flex"}>
+                <ManageGroupForm onClose={onClose} />
             </Box>
         </Modal>
     );
 }
-CompletionModal.propTypes = {
+ManageGroupModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     groups: PropTypes.array.isRequired,

@@ -8,8 +8,6 @@ export default function NewHabitModal({ open, onClose }) {
         <Modal
             open={open}
             onClose={onClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
         >
             <Box display={"flex"}>
                 <NewHabitForm onClose={onClose} />
