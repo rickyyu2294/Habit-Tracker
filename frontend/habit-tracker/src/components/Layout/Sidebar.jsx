@@ -111,6 +111,7 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
             <ManageGroupModal
                 open={manageGroupModalOpen}
                 onClose={handleManageGroupModalOnClose}
+                groups={groups}
             />
         </>
     );
