@@ -1,9 +1,9 @@
 import React, {  } from "react";
 import Form from "./Form";
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 
-export default function ManageGroupForm({ onClose }) {
+export default function ManageGroupForm({ groups, onClose }) {
     return (
         <Form>
             <Typography variant="h5" align="center" gutterBottom>
@@ -12,10 +12,13 @@ export default function ManageGroupForm({ onClose }) {
             <Typography variant="subtitle2" align="center" gutterBottom>
                 Moo
             </Typography>
+
+            <Button onClick={onClose()}>
+                Close
+            </Button>
         </Form>
     );
 }
 ManageGroupForm.propTypes = {
-    habit: PropTypes.object.isRequired,
-    interval: PropTypes.string.isRequired,
+    onClose: PropTypes.func
 };
