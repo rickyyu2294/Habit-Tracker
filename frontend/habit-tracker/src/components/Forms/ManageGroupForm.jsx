@@ -1,6 +1,13 @@
 import React, { useEffect } from "react";
 import Form from "./Form";
-import { Button, List, ListItem, ListItemButton, Typography } from "@mui/material";
+import {
+    Box,
+    Button,
+    List,
+    ListItem,
+    ListItemButton,
+    Typography,
+} from "@mui/material";
 import PropTypes from "prop-types";
 
 export default function ManageGroupForm({ groups, onClose }) {
@@ -20,7 +27,10 @@ export default function ManageGroupForm({ groups, onClose }) {
                 ))}
             </List>
 
-            <Button onClick={() => onClose()}>Close</Button>
+            <Box>
+                <Button onClick={() => onClose()}>Close</Button>
+                <Button onClick={() => console.log("Add new group")}>Add New Group</Button>
+            </Box>
         </Form>
     );
 }

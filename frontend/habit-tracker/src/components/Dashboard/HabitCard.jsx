@@ -77,26 +77,30 @@ export default function HabitCard({ habit, onComplete }) {
         >
             <CardContent>
                 {/* Action Icons */}
-                <Box display={"flex"} justifyContent={"flex-end"}>
+
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Box display="flex" flexDirection="column" alignItems="center" flexGrow="1">
+                        <Typography variant="h6" align="center" gutterBottom>
+                            {habit.name}
+                        </Typography>
+                        <Typography
+                            variant="subtitle2"
+                            align="center"
+                            sx={{
+                                textTransform: "lowercase",
+                                color: "text.secondary",
+                            }}
+                        >
+                            {habit.interval}
+                        </Typography>
+                    </Box>
+
                     <IconButton onClick={handleMenuClick}>
                         <MenuIcon />
                     </IconButton>
                 </Box>
 
                 {/* Title */}
-                <Typography variant="h6" align="center" gutterBottom>
-                    {habit.name}
-                </Typography>
-                <Typography
-                    variant="subtitle2"
-                    align="center"
-                    sx={{
-                        textTransform: "lowercase",
-                        color: "text.secondary",
-                    }}
-                >
-                    {habit.interval}
-                </Typography>
 
                 {/* Completion Icons */}
                 <Box display="flex" justifyContent="center" gap={1} mt={2}>
@@ -110,14 +114,14 @@ export default function HabitCard({ habit, onComplete }) {
                         );
                         return (
                             <HabitCardCompletionChip
-                                    key={interval}
-                                    interval={interval}
-                                    habit={habit}
-                                    isCurrent={isCurrent}
-                                    completionStatus={completionStatus}
-                                    onClick={() =>
-                                        handleCompletionChipClick(interval)
-                                    }
+                                key={interval}
+                                interval={interval}
+                                habit={habit}
+                                isCurrent={isCurrent}
+                                completionStatus={completionStatus}
+                                onClick={() =>
+                                    handleCompletionChipClick(interval)
+                                }
                             />
                         );
                     })}
