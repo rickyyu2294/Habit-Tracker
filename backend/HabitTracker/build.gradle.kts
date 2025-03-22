@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jboss.logging:jboss-logging:3.5.3.Final")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
