@@ -10,3 +10,9 @@ export const IntervalType = {
     WEEKLY: "weekly",
     YEARLY: "yearly",
 };
+
+export const ManageGroupMode = {
+    DEFAULT: "DEFAULT",
+    ADD: "ADD",
+    EDIT: "EDIT",
+};

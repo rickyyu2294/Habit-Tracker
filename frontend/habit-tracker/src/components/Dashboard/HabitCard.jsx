@@ -78,8 +78,17 @@ export default function HabitCard({ habit, onComplete }) {
             <CardContent>
                 {/* Action Icons */}
 
-                <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Box display="flex" flexDirection="column" alignItems="center" flexGrow="1">
+                <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    alignItems="center"
+                >
+                    <Box
+                        display="flex"
+                        flexDirection="column"
+                        alignItems="center"
+                        flexGrow="1"
+                    >
                         <Typography variant="h6" align="center" gutterBottom>
                             {habit.name}
                         </Typography>

@@ -132,7 +132,7 @@ const api = {
         const params = groupId ? { groupId: groupId } : {};
         return habitTrackerApi.get("/habits", {
             params,
-        })
+        });
     },
     createHabit: (name, description, interval, frequency) => {
         return habitTrackerApi.post("/habits", {

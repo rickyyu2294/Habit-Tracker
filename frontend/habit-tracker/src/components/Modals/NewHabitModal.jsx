@@ -5,10 +5,7 @@ import NewHabitForm from "../Forms/NewHabitForm";
 
 export default function NewHabitModal({ open, onClose }) {
     return (
-        <Modal
-            open={open}
-            onClose={onClose}
-        >
+        <Modal open={open} onClose={onClose}>
             <Box display={"flex"}>
                 <NewHabitForm onClose={onClose} />
             </Box>

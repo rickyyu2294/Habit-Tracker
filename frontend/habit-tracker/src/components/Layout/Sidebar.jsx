@@ -49,7 +49,7 @@ export default function Sidebar({ selectedGroup, onGroupSelect }) {
     const handleManageGroupModalOnClose = () => {
         setManageGroupModalOpen(false);
         fetchHabitGroups();
-        console.log("Handling Mange Group Modal On Close")
+        console.log("Handling Mange Group Modal On Close");
     };
 
     useEffect(() => {

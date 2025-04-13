@@ -1,18 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Form from "./Form";
-import {
-    Box,
-    Button,
-    List,
-    ListItem,
-    ListItemButton,
-    Typography,
-} from "@mui/material";
+import { Box, Button, List, ListItemButton, Typography } from "@mui/material";
 import PropTypes from "prop-types";
+import { ManageGroupMode } from "../../utils/enums";
 
-export default function ManageGroupForm({ groups, onClose }) {
-    console.log(groups.length);
-
+export default function ManageGroupForm({
+    groups,
+    onClose,
+    setMode,
+    setSelectedGroup,
+}) {
     return (
         <Form>
             <Typography variant="h5" align="center" gutterBottom>
@@ -21,7 +18,13 @@ export default function ManageGroupForm({ groups, onClose }) {
 
             <List>
                 {groups.map((group) => (
-                    <ListItemButton key={group.id}>
+                    <ListItemButton
+                        key={group.id}
+                        onClick={() => {
+                            setSelectedGroup(group.id);
+                            setMode(ManageGroupMode.EDIT);
+                        }}
+                    >
                         <Typography>{group.name}</Typography>
                     </ListItemButton>
                 ))}
@@ -29,7 +32,9 @@ export default function ManageGroupForm({ groups, onClose }) {
 
             <Box>
                 <Button onClick={() => onClose()}>Close</Button>
-                <Button onClick={() => console.log("Add new group")}>Add New Group</Button>
+                <Button onClick={() => setMode(ManageGroupMode.ADD)}>
+                    Add New Group
+                </Button>
             </Box>
         </Form>
     );
@@ -37,4 +42,6 @@ export default function ManageGroupForm({ groups, onClose }) {
 ManageGroupForm.propTypes = {
     groups: PropTypes.array,
     onClose: PropTypes.func,
+    setMode: PropTypes.func,
+    setSelectedGroup: PropTypes.func,
 };

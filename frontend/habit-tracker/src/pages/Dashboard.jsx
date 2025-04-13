@@ -38,7 +38,10 @@ const Dashboard = () => {
 
     return (
         <Page title={selectedGroup ? selectedGroup.name : "All"}>
-            <Sidebar selectedGroup={selectedGroup} onGroupSelect={setSelectedGroup}/>
+            <Sidebar
+                selectedGroup={selectedGroup}
+                onGroupSelect={setSelectedGroup}
+            />
             <Box display="flex" flexDirection="column" alignItems="center">
                 {error && <ErrorMessage error={error} />}
                 {habits.length > 0 ? (
