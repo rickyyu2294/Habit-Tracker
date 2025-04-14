@@ -8,31 +8,28 @@ import { ManageGroupMode } from "../../utils/enums";
 
 export default function ManageGroupModal({ open, onClose, groups }) {
     const [mode, setMode] = useState(ManageGroupMode.DEFAULT);
-    const [selectedGroup, setSelectedGroup] = useState(null);
+    const [selectedGroupId, setSelectedGroupId] = useState(null);
 
     const modalClose = () => {
         setMode(ManageGroupMode.DEFAULT);
         onClose();
     };
 
-    useEffect(() => {}, [mode]);
-
     const renderContent = () => {
-        console.log(mode);
         switch (mode) {
+            case ManageGroupMode.DEFAULT:
+                return  <ManageGroupForm
+                onClose={onClose}
+                groups={groups}
+                setMode={setMode}
+                setSelectedGroup={setSelectedGroupId}
+            />;
             case ManageGroupMode.ADD:
                 return <AddGroupForm />;
             case ManageGroupMode.EDIT:
-                return <EditGroupForm />;
+                return <EditGroupForm selectedGroupId={selectedGroupId} />;
             default:
-                return (
-                    <ManageGroupForm
-                        onClose={onClose}
-                        groups={groups}
-                        setMode={setMode}
-                        setSelectedGroup={setSelectedGroup}
-                    />
-                );
+                console.log("Unknown Mode: " + mode);
         }
     };
 
